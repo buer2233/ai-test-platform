@@ -280,6 +280,7 @@ feat(api-automation): add test case execution feature
 
 | 触发条件 | 操作 |
 |---------|------|
+| **每次 commit 前** | 必须先执行 `git pull` 更新代码 |
 | **每次修改文件** | 必须执行 `git commit` |
 | **修改文件超过 3 个** | 必须执行 `git push` |
 | **本地 commit 超过 3 个** | 必须执行 `git push` |
@@ -288,11 +289,20 @@ feat(api-automation): add test case execution feature
 ```
 1. 修改代码
 2. git add <修改的文件>
-3. git commit -m "类型: 描述"
-4. 检查触发条件：
+3. git pull (更新最新代码)
+   ├─ 无冲突 → 继续
+   └─ 有冲突 → 等待用户确认解决
+4. git commit -m "类型: 描述"
+5. 检查触发条件：
    - 修改文件数 > 3？→ git push
    - 未推送 commit 数 > 3？→ git push
 ```
+
+**冲突处理规则**：
+- 如果 `git pull` 检测到冲突，**必须停止自动操作**
+- 向用户报告冲突信息
+- 等待用户手动解决冲突
+- 用户确认后才能继续 commit
 
 **Commit 消息规范**：
 ```
