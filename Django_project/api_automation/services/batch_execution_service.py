@@ -21,7 +21,7 @@ from api_automation.services.assertion_engine import AssertionEngine
 from api_automation.services.extraction_engine import ExtractionEngine
 from api_automation.services.variable_pool_service import VariablePool
 from api_automation.services.result_storage_service import ResultStorageService
-from api_automation.services.websocket_service import WebSocketService
+from api_automation.services.websocket_service import WebSocketBroadcastService
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class BatchExecutionService:
 
     def __init__(self):
         self.variable_pool = None
-        self.websocket = WebSocketService()
+        self.websocket = WebSocketBroadcastService()
         self.executor = None
 
     def execute_by_collection(
@@ -258,7 +258,7 @@ class BatchExecutionService:
             self.executor = HttpExecutor()
 
             # 通过WebSocket通知执行开始
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {'status': 'RUNNING', 'message': '开始执行批量测试'}
             )
@@ -292,7 +292,7 @@ class BatchExecutionService:
             execution.save()
 
             # 通过WebSocket通知执行完成
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {
                     'status': 'COMPLETED',
@@ -311,7 +311,7 @@ class BatchExecutionService:
             execution.end_time = timezone.now()
             execution.save()
 
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {'status': 'FAILED', 'message': f'批量执行失败: {str(e)}'}
             )
@@ -338,7 +338,7 @@ class BatchExecutionService:
         start_time = timezone.now()
 
         # 通过WebSocket通知当前执行进度
-        self.websocket.broadcast_execution_update(
+        self.websocket.broadcast_execution_status(
             execution.id,
             {
                 'current_index': index,
