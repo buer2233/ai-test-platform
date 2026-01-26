@@ -1,0 +1,1610 @@
+{
+  "timestamp": "2025-12-24T10:47:26.655179",
+  "base_url": "http://127.0.0.1:8000",
+  "tests": [
+    {
+      "category": "Auth",
+      "name": "当前用户信息",
+      "url": "auth/user/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.008579,
+      "response_data": {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@example.com",
+        "first_name": "",
+        "last_name": ""
+      }
+    },
+    {
+      "category": "Project",
+      "name": "项目列表",
+      "url": "projects/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.024761,
+      "response_data": {
+        "count": 8,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": 12,
+            "name": "API测试项目_副本",
+            "description": "克隆自项目: API测试项目",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-24T10:45:54.597864+08:00",
+            "updated_time": "2025-12-24T10:45:54.597864+08:00",
+            "collections_count": 0,
+            "test_cases_count": 0
+          },
+          {
+            "id": 11,
+            "name": "测试编辑器项目_副本",
+            "description": "克隆自项目: 测试编辑器项目",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-24T10:43:14.558669+08:00",
+            "updated_time": "2025-12-24T10:43:14.558669+08:00",
+            "collections_count": 0,
+            "test_cases_count": 0
+          },
+          {
+            "id": 8,
+            "name": "测试编辑器项目",
+            "description": "用于测试编辑器功能的项目",
+            "owner": {
+              "id": 3,
+              "username": "test_editor_user",
+              "email": "test@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-23T13:53:51.562090+08:00",
+            "updated_time": "2025-12-23T13:53:51.562090+08:00",
+            "collections_count": 1,
+            "test_cases_count": 57
+          },
+          {
+            "id": 7,
+            "name": "主测试项目",
+            "description": "主要手动测试项目",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-19T15:37:43.914883+08:00",
+            "updated_time": "2025-12-19T15:37:43.914883+08:00",
+            "collections_count": 1,
+            "test_cases_count": 1
+          },
+          {
+            "id": 6,
+            "name": "测试项目",
+            "description": "这是一个测试项目",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-19T15:26:10.529775+08:00",
+            "updated_time": "2025-12-19T15:26:10.529775+08:00",
+            "collections_count": 0,
+            "test_cases_count": 1
+          },
+          {
+            "id": 5,
+            "name": "API Integration Test Project",
+            "description": "Updated description for integration testing",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-19T14:33:29.414549+08:00",
+            "updated_time": "2025-12-19T14:33:42.741945+08:00",
+            "collections_count": 1,
+            "test_cases_count": 0
+          },
+          {
+            "id": 2,
+            "name": "New Test Project",
+            "description": "A new API test project",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-18T18:08:50.709822+08:00",
+            "updated_time": "2025-12-18T18:08:50.709822+08:00",
+            "collections_count": 0,
+            "test_cases_count": 1
+          },
+          {
+            "id": 1,
+            "name": "API测试项目",
+            "description": "这是一个用于测试的API项目",
+            "owner": {
+              "id": 1,
+              "username": "admin",
+              "email": "admin@example.com",
+              "first_name": "",
+              "last_name": ""
+            },
+            "is_active": true,
+            "created_time": "2025-12-18T17:25:21.172326+08:00",
+            "updated_time": "2025-12-18T17:25:21.172326+08:00",
+            "collections_count": 1,
+            "test_cases_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "category": "Project",
+      "name": "项目详情",
+      "url": "projects/1/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.011621,
+      "response_data": {
+        "id": 1,
+        "name": "API测试项目",
+        "description": "这是一个用于测试的API项目",
+        "owner": {
+          "id": 1,
+          "username": "admin",
+          "email": "admin@example.com",
+          "first_name": "",
+          "last_name": ""
+        },
+        "is_active": true,
+        "created_time": "2025-12-18T17:25:21.172326+08:00",
+        "updated_time": "2025-12-18T17:25:21.172326+08:00",
+        "collections_count": 1,
+        "test_cases_count": 2
+      }
+    },
+    {
+      "category": "Project",
+      "name": "项目克隆",
+      "url": "projects/1/clone/",
+      "method": "POST",
+      "status_code": 201,
+      "success": true,
+      "response_time": 0.018712,
+      "response_data": {
+        "id": 14,
+        "name": "API测试项目_副本",
+        "description": "克隆自项目: API测试项目",
+        "owner": {
+          "id": 1,
+          "username": "admin",
+          "email": "admin@example.com",
+          "first_name": "",
+          "last_name": ""
+        },
+        "is_active": true,
+        "created_time": "2025-12-24T10:47:26.715552+08:00",
+        "updated_time": "2025-12-24T10:47:26.715552+08:00",
+        "collections_count": 0,
+        "test_cases_count": 0
+      }
+    },
+    {
+      "category": "Collection",
+      "name": "集合列表",
+      "url": "collections/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.013041,
+      "response_data": {
+        "count": 5,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": 5,
+            "name": "测试集合",
+            "description": "测试集合",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "created_time": "2025-12-23T13:53:51.575783+08:00",
+            "updated_time": "2025-12-23T13:53:51.575783+08:00",
+            "test_cases_count": 57
+          },
+          {
+            "id": 4,
+            "name": "手工测试集合",
+            "description": "主要的手工测试集合",
+            "project": 7,
+            "project_name": "主测试项目",
+            "created_time": "2025-12-19T15:41:50.865582+08:00",
+            "updated_time": "2025-12-19T15:41:50.865582+08:00",
+            "test_cases_count": 1
+          },
+          {
+            "id": 3,
+            "name": "Test APIs",
+            "description": "API collection for testing",
+            "project": 5,
+            "project_name": "API Integration Test Project",
+            "created_time": "2025-12-19T14:33:32.852841+08:00",
+            "updated_time": "2025-12-19T14:33:32.852841+08:00",
+            "test_cases_count": 0
+          },
+          {
+            "id": 2,
+            "name": "User APIs",
+            "description": "User management APIs",
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "created_time": "2025-12-19T12:27:21.788125+08:00",
+            "updated_time": "2025-12-19T12:27:21.788125+08:00",
+            "test_cases_count": 1
+          },
+          {
+            "id": 1,
+            "name": "用户管理接口",
+            "description": "用户相关的API接口",
+            "project": 1,
+            "project_name": "API测试项目",
+            "created_time": "2025-12-18T17:25:21.184497+08:00",
+            "updated_time": "2025-12-18T17:25:21.184497+08:00",
+            "test_cases_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "category": "Collection",
+      "name": "集合详情",
+      "url": "collections/1/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.03614,
+      "response_data": {
+        "id": 1,
+        "name": "用户管理接口",
+        "description": "用户相关的API接口",
+        "project": 1,
+        "project_name": "API测试项目",
+        "created_time": "2025-12-18T17:25:21.184497+08:00",
+        "updated_time": "2025-12-18T17:25:21.184497+08:00",
+        "test_cases_count": 2,
+        "test_cases": [
+          {
+            "id": 68,
+            "name": "获取用户列表_副本",
+            "project": 1,
+            "project_name": "API测试项目",
+            "collection": 1,
+            "collection_name": "用户管理接口",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-24T10:45:54.785311+08:00"
+          },
+          {
+            "id": 1,
+            "name": "获取用户列表",
+            "project": 1,
+            "project_name": "API测试项目",
+            "collection": 1,
+            "collection_name": "用户管理接口",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-18T17:25:21.195176+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "category": "Collection",
+      "name": "集合的测试用例",
+      "url": "collections/1/test_cases/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.011318,
+      "response_data": [
+        {
+          "id": 68,
+          "name": "获取用户列表_副本",
+          "project": 1,
+          "project_name": "API测试项目",
+          "collection": 1,
+          "collection_name": "用户管理接口",
+          "method": "GET",
+          "url": "/api/v1/users/",
+          "created_time": "2025-12-24T10:45:54.785311+08:00"
+        },
+        {
+          "id": 1,
+          "name": "获取用户列表",
+          "project": 1,
+          "project_name": "API测试项目",
+          "collection": 1,
+          "collection_name": "用户管理接口",
+          "method": "GET",
+          "url": "/api/v1/users/",
+          "created_time": "2025-12-18T17:25:21.195176+08:00"
+        }
+      ]
+    },
+    {
+      "category": "TestCase",
+      "name": "测试用例列表",
+      "url": "test-cases/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.064166,
+      "response_data": {
+        "count": 63,
+        "next": "http://127.0.0.1:8000/api/v1/api-automation/test-cases/?page=2",
+        "previous": null,
+        "results": [
+          {
+            "id": 68,
+            "name": "获取用户列表_副本",
+            "project": 1,
+            "project_name": "API测试项目",
+            "collection": 1,
+            "collection_name": "用户管理接口",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-24T10:45:54.785311+08:00"
+          },
+          {
+            "id": 67,
+            "name": "TEST_DELETE_方法_副本",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "DELETE",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-24T10:43:14.970905+08:00"
+          },
+          {
+            "id": 66,
+            "name": "TEST_DELETE_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "DELETE",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T14:29:49.848203+08:00"
+          },
+          {
+            "id": 65,
+            "name": "TEST_PATCH_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "PATCH",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T14:29:49.833635+08:00"
+          },
+          {
+            "id": 64,
+            "name": "TEST_PUT_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "PUT",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T14:29:49.815092+08:00"
+          },
+          {
+            "id": 63,
+            "name": "TEST_POST_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "POST",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T14:29:49.795135+08:00"
+          },
+          {
+            "id": 62,
+            "name": "TEST_GET_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T14:29:49.777174+08:00"
+          },
+          {
+            "id": 60,
+            "name": "TEST_编辑后",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/new/",
+            "created_time": "2025-12-23T14:29:49.703352+08:00"
+          },
+          {
+            "id": 59,
+            "name": "TEST_数据提取配置测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.673469+08:00"
+          },
+          {
+            "id": 58,
+            "name": "TEST_断言配置测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.642646+08:00"
+          },
+          {
+            "id": 57,
+            "name": "TEST_测试请求成功",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/get",
+            "created_time": "2025-12-23T14:29:49.562918+08:00"
+          },
+          {
+            "id": 56,
+            "name": "TEST_Form_Data测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "POST",
+            "url": "/api/v1/login/",
+            "created_time": "2025-12-23T14:29:49.544151+08:00"
+          },
+          {
+            "id": 55,
+            "name": "TEST_JSON_Body测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "POST",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.529539+08:00"
+          },
+          {
+            "id": 54,
+            "name": "TEST_Headers配置测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.514418+08:00"
+          },
+          {
+            "id": 53,
+            "name": "TEST_查询参数测试",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.496160+08:00"
+          },
+          {
+            "id": 52,
+            "name": "TEST_创建测试用例基本",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "GET",
+            "url": "/api/v1/users/",
+            "created_time": "2025-12-23T14:29:49.418894+08:00"
+          },
+          {
+            "id": 51,
+            "name": "TEST_DELETE_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "DELETE",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T13:58:41.829906+08:00"
+          },
+          {
+            "id": 50,
+            "name": "TEST_PATCH_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "PATCH",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T13:58:41.810824+08:00"
+          },
+          {
+            "id": 49,
+            "name": "TEST_PUT_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "PUT",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T13:58:41.796272+08:00"
+          },
+          {
+            "id": 48,
+            "name": "TEST_POST_方法",
+            "project": 8,
+            "project_name": "测试编辑器项目",
+            "collection": 5,
+            "collection_name": "测试集合",
+            "method": "POST",
+            "url": "/api/v1/test/",
+            "created_time": "2025-12-23T13:58:41.781893+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "category": "TestCase",
+      "name": "测试用例详情",
+      "url": "test-cases/1/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.014041,
+      "response_data": {
+        "id": 1,
+        "name": "获取用户列表",
+        "description": "获取所有用户的列表",
+        "project": 1,
+        "project_name": "API测试项目",
+        "collection": 1,
+        "collection_name": "用户管理接口",
+        "method": "GET",
+        "url": "/api/v1/users/",
+        "headers": {
+          "Authorization": "Bearer {token}"
+        },
+        "params": {
+          "page": 1,
+          "limit": 10
+        },
+        "body": {},
+        "tests": [],
+        "headers_display": {
+          "Authorization": "Bearer {token}"
+        },
+        "params_display": {
+          "page": 1,
+          "limit": 10
+        },
+        "body_display": {},
+        "created_by": null,
+        "created_time": "2025-12-18T17:25:21.195176+08:00",
+        "updated_time": "2025-12-18T17:25:21.195176+08:00"
+      }
+    },
+    {
+      "category": "TestCase",
+      "name": "测试用例克隆",
+      "url": "test-cases/1/clone/",
+      "method": "POST",
+      "status_code": 201,
+      "success": true,
+      "response_time": 0.031744,
+      "response_data": {
+        "id": 69,
+        "name": "获取用户列表_副本",
+        "description": "获取所有用户的列表",
+        "project": 1,
+        "project_name": "API测试项目",
+        "collection": 1,
+        "collection_name": "用户管理接口",
+        "method": "GET",
+        "url": "/api/v1/users/",
+        "headers": {
+          "Authorization": "Bearer {token}"
+        },
+        "params": {
+          "page": 1,
+          "limit": 10
+        },
+        "body": {},
+        "tests": [],
+        "headers_display": {
+          "Authorization": "Bearer {token}"
+        },
+        "params_display": {
+          "page": 1,
+          "limit": 10
+        },
+        "body_display": {},
+        "created_by": 1,
+        "created_by_name": "admin",
+        "created_time": "2025-12-24T10:47:26.900050+08:00",
+        "updated_time": "2025-12-24T10:47:26.900050+08:00"
+      }
+    },
+    {
+      "category": "Environment",
+      "name": "环境列表",
+      "url": "environments/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.022743,
+      "response_data": {
+        "count": 6,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": 7,
+            "name": "Project 3 Env",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "base_url": "https://httpbin.org",
+            "global_headers": {},
+            "global_variables": {},
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-23T10:04:32.428537+08:00",
+            "updated_time": "2025-12-24T10:43:14.862401+08:00"
+          },
+          {
+            "id": 6,
+            "name": "New Project Env",
+            "description": null,
+            "project": 2,
+            "project_name": "New Test Project",
+            "base_url": "https://httpbin.org",
+            "global_headers": {},
+            "global_variables": {},
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-23T10:04:32.417644+08:00",
+            "updated_time": "2025-12-23T10:04:32.417644+08:00"
+          },
+          {
+            "id": 5,
+            "name": "Test Env 1",
+            "description": null,
+            "project": 1,
+            "project_name": "API测试项目",
+            "base_url": "https://httpbin.org",
+            "global_headers": {},
+            "global_variables": {},
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-23T10:04:32.405258+08:00",
+            "updated_time": "2025-12-23T10:04:32.405258+08:00"
+          },
+          {
+            "id": 4,
+            "name": "主测试环境-开发",
+            "description": "用于测试的环境",
+            "project": 7,
+            "project_name": "主测试项目",
+            "base_url": "https://api.example.com",
+            "global_headers": {},
+            "global_variables": {},
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-23T10:03:19.843748+08:00",
+            "updated_time": "2025-12-23T10:03:19.843748+08:00"
+          },
+          {
+            "id": 2,
+            "name": "测试环境",
+            "description": "HTTPBin测试环境",
+            "project": 6,
+            "project_name": "测试项目",
+            "base_url": "https://httpbin.org",
+            "global_headers": {
+              "Content-Type": "application/json"
+            },
+            "global_variables": {},
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-19T15:26:29.954570+08:00",
+            "updated_time": "2025-12-22T16:53:59.123467+08:00"
+          },
+          {
+            "id": 1,
+            "name": "Development Environment",
+            "description": "Development testing environment",
+            "project": 5,
+            "project_name": "API Integration Test Project",
+            "base_url": "http://localhost:8000",
+            "global_headers": {
+              "Content-Type": "application/json"
+            },
+            "global_variables": {
+              "api_version": "v1"
+            },
+            "is_default": true,
+            "is_active": true,
+            "created_time": "2025-12-19T15:01:06.622602+08:00",
+            "updated_time": "2025-12-22T16:51:08.670836+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "category": "Environment",
+      "name": "环境详情",
+      "url": "environments/1/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.025135,
+      "response_data": {
+        "id": 1,
+        "name": "Development Environment",
+        "description": "Development testing environment",
+        "project": 5,
+        "project_name": "API Integration Test Project",
+        "base_url": "http://localhost:8000",
+        "global_headers": {
+          "Content-Type": "application/json"
+        },
+        "global_variables": {
+          "api_version": "v1"
+        },
+        "is_default": true,
+        "is_active": true,
+        "created_time": "2025-12-19T15:01:06.622602+08:00",
+        "updated_time": "2025-12-22T16:51:08.670836+08:00"
+      }
+    },
+    {
+      "category": "Environment",
+      "name": "环境连接测试",
+      "url": "environments/1/test_connection/",
+      "method": "GET",
+      "status_code": 400,
+      "success": false,
+      "response_time": 0.038303,
+      "response_data": {
+        "status": "error",
+        "message": "连接失败，状态码: 404"
+      }
+    },
+    {
+      "category": "Environment",
+      "name": "设置默认环境",
+      "url": "environments/1/set-default/",
+      "method": "POST",
+      "status_code": 404,
+      "success": false,
+      "response_time": 0.023217,
+      "response_text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n  <title>Page not found at /api/v1/api-automation/environments/1/set-default/</title>\n  <m"
+    },
+    {
+      "category": "Execution",
+      "name": "执行列表",
+      "url": "executions/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.041125,
+      "response_data": {
+        "count": 7,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": 7,
+            "name": "Project 3 Env - 全部用例执行",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 0,
+            "failed_count": 0,
+            "skipped_count": 1,
+            "start_time": "2025-12-23T12:31:42.060871+08:00",
+            "end_time": "2025-12-23T12:31:42.091691+08:00",
+            "duration": 0,
+            "created_by": 2,
+            "created_by_name": "test_user",
+            "created_time": "2025-12-23T12:31:42.060871+08:00",
+            "updated_time": "2025-12-23T12:31:42.091691+08:00"
+          },
+          {
+            "id": 6,
+            "name": "Project 3 Env - 全部用例执行",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 0,
+            "failed_count": 0,
+            "skipped_count": 1,
+            "start_time": "2025-12-23T12:30:59.706386+08:00",
+            "end_time": "2025-12-23T12:30:59.729703+08:00",
+            "duration": 0,
+            "created_by": 2,
+            "created_by_name": "test_user",
+            "created_time": "2025-12-23T12:30:59.706386+08:00",
+            "updated_time": "2025-12-23T12:30:59.730722+08:00"
+          },
+          {
+            "id": 5,
+            "name": "Project 3 Env - 全部用例执行",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 0,
+            "failed_count": 0,
+            "skipped_count": 1,
+            "start_time": "2025-12-23T12:30:41.919729+08:00",
+            "end_time": "2025-12-23T12:30:41.954621+08:00",
+            "duration": 0,
+            "created_by": 2,
+            "created_by_name": "test_user",
+            "created_time": "2025-12-23T12:30:41.919729+08:00",
+            "updated_time": "2025-12-23T12:30:41.955138+08:00"
+          },
+          {
+            "id": 4,
+            "name": "Project 3 Env - 全部用例执行",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 0,
+            "failed_count": 0,
+            "skipped_count": 1,
+            "start_time": "2025-12-23T12:29:57.056376+08:00",
+            "end_time": "2025-12-23T12:29:57.083690+08:00",
+            "duration": 0,
+            "created_by": 2,
+            "created_by_name": "test_user",
+            "created_time": "2025-12-23T12:29:57.056376+08:00",
+            "updated_time": "2025-12-23T12:29:57.083690+08:00"
+          },
+          {
+            "id": 3,
+            "name": "测试执行 - Project 3 Env",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 1,
+            "failed_count": 4,
+            "skipped_count": 0,
+            "start_time": "2025-12-23T12:28:03.901236+08:00",
+            "end_time": "2025-12-23T12:28:03.928172+08:00",
+            "duration": 0,
+            "created_by": null,
+            "created_time": "2025-12-23T12:28:03.903940+08:00",
+            "updated_time": "2025-12-23T12:28:03.928172+08:00"
+          },
+          {
+            "id": 2,
+            "name": "测试执行 - Project 3 Env",
+            "description": null,
+            "project": 3,
+            "project_name": "Frontend Test Project",
+            "environment": 7,
+            "environment_name": "Project 3 Env",
+            "test_cases": [
+              3
+            ],
+            "status": "COMPLETED",
+            "total_count": 1,
+            "passed_count": 1,
+            "failed_count": 4,
+            "skipped_count": 0,
+            "start_time": "2025-12-23T12:27:42.930595+08:00",
+            "end_time": "2025-12-23T12:27:42.952977+08:00",
+            "duration": 0,
+            "created_by": null,
+            "created_time": "2025-12-23T12:27:42.932632+08:00",
+            "updated_time": "2025-12-23T12:27:42.952977+08:00"
+          },
+          {
+            "id": 1,
+            "name": "API Integration Test Execution",
+            "description": "Testing API integration functionality",
+            "project": 5,
+            "project_name": "API Integration Test Project",
+            "environment": 1,
+            "environment_name": "Development Environment",
+            "test_cases": [
+              4
+            ],
+            "status": "COMPLETED",
+            "total_count": 0,
+            "passed_count": 0,
+            "failed_count": 0,
+            "skipped_count": 0,
+            "start_time": "2025-12-19T15:06:26.613537+08:00",
+            "end_time": "2025-12-19T15:06:26.624767+08:00",
+            "duration": 0,
+            "created_by": 1,
+            "created_by_name": "admin",
+            "created_time": "2025-12-19T15:01:22.376100+08:00",
+            "updated_time": "2025-12-19T15:06:26.624767+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "category": "Execution",
+      "name": "执行详情",
+      "url": "executions/1/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.011748,
+      "response_data": {
+        "id": 1,
+        "name": "API Integration Test Execution",
+        "description": "Testing API integration functionality",
+        "project": 5,
+        "project_name": "API Integration Test Project",
+        "environment": 1,
+        "environment_name": "Development Environment",
+        "test_cases": [
+          4
+        ],
+        "status": "COMPLETED",
+        "total_count": 0,
+        "passed_count": 0,
+        "failed_count": 0,
+        "skipped_count": 0,
+        "start_time": "2025-12-19T15:06:26.613537+08:00",
+        "end_time": "2025-12-19T15:06:26.624767+08:00",
+        "duration": 0,
+        "created_by": 1,
+        "created_by_name": "admin",
+        "created_time": "2025-12-19T15:01:22.376100+08:00",
+        "updated_time": "2025-12-19T15:06:26.624767+08:00",
+        "test_results": [],
+        "report": {
+          "id": 1,
+          "execution": 1,
+          "name": "API Integration Test Execution - 测试报告",
+          "project_name": "API Integration Test Project",
+          "execution_name": "API Integration Test Execution",
+          "summary": {
+            "total": 0,
+            "passed": 0,
+            "failed": 0,
+            "skipped": 0,
+            "pass_rate": 0,
+            "duration": 0,
+            "start_time": "2025-12-19T07:06:26.613537+00:00",
+            "end_time": "2025-12-19T07:06:26.624767+00:00"
+          },
+          "test_results": [],
+          "charts_data": {
+            "status_pie": {
+              "labels": [
+                "通过",
+                "失败",
+                "跳过"
+              ],
+              "data": [
+                0,
+                0,
+                0
+              ]
+            },
+            "response_time": {
+              "labels": [],
+              "data": []
+            }
+          },
+          "created_time": "2025-12-19T15:06:26.636354+08:00",
+          "updated_time": "2025-12-19T15:06:26.636354+08:00"
+        }
+      }
+    },
+    {
+      "category": "Report",
+      "name": "报告列表",
+      "url": "reports/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.009094,
+      "response_data": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": 1,
+            "execution": 1,
+            "name": "API Integration Test Execution - 测试报告",
+            "project_name": "API Integration Test Project",
+            "execution_name": "API Integration Test Execution",
+            "summary": {
+              "total": 0,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "pass_rate": 0,
+              "duration": 0,
+              "start_time": "2025-12-19T07:06:26.613537+00:00",
+              "end_time": "2025-12-19T07:06:26.624767+00:00"
+            },
+            "test_results": [],
+            "charts_data": {
+              "status_pie": {
+                "labels": [
+                  "通过",
+                  "失败",
+                  "跳过"
+                ],
+                "data": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "response_time": {
+                "labels": [],
+                "data": []
+              }
+            },
+            "created_time": "2025-12-19T15:06:26.636354+08:00",
+            "updated_time": "2025-12-19T15:06:26.636354+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "category": "Dashboard",
+      "name": "Dashboard列表",
+      "url": "dashboard/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.023242,
+      "response_data": {
+        "overview": {
+          "total_projects": 9,
+          "total_collections": 5,
+          "total_test_cases": 64,
+          "total_executions": 7
+        },
+        "test_stats": {
+          "total_cases": 6,
+          "passed_cases": 0,
+          "failed_cases": 0,
+          "skipped_cases": 0,
+          "error_cases": 0,
+          "pass_rate": 0.0,
+          "avg_response_time": 33.33
+        },
+        "recent_results": [
+          {
+            "id": 6,
+            "execution": 7,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "SKIPPED",
+            "response_status": null,
+            "response_time": null,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:31:42.076018+08:00",
+            "end_time": "2025-12-23T12:31:42.076018+08:00",
+            "duration": null
+          },
+          {
+            "id": 5,
+            "execution": 6,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "SKIPPED",
+            "response_status": null,
+            "response_time": null,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:30:59.720661+08:00",
+            "end_time": "2025-12-23T12:30:59.720661+08:00",
+            "duration": null
+          },
+          {
+            "id": 4,
+            "execution": 5,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "SKIPPED",
+            "response_status": null,
+            "response_time": null,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:30:41.934120+08:00",
+            "end_time": "2025-12-23T12:30:41.934120+08:00",
+            "duration": null
+          },
+          {
+            "id": 3,
+            "execution": 4,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "SKIPPED",
+            "response_status": null,
+            "response_time": null,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:29:57.069445+08:00",
+            "end_time": "2025-12-23T12:29:57.069445+08:00",
+            "duration": null
+          },
+          {
+            "id": 2,
+            "execution": 3,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "PASSED",
+            "response_status": 200,
+            "response_time": 100,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:28:03.918070+08:00",
+            "end_time": "2025-12-23T12:28:03.918070+08:00",
+            "duration": 100
+          },
+          {
+            "id": 1,
+            "execution": 2,
+            "test_case": 3,
+            "test_case_name": "Get User List",
+            "test_case_method": "GET",
+            "test_case_url": "/api/v1/users/",
+            "status": "PASSED",
+            "response_status": 200,
+            "response_time": 100,
+            "response_size": null,
+            "request_url": null,
+            "request_method": null,
+            "request_headers": {},
+            "request_body": {},
+            "response_headers": {},
+            "response_body": {},
+            "assertion_results": [],
+            "error_message": null,
+            "start_time": "2025-12-23T12:27:42.944067+08:00",
+            "end_time": "2025-12-23T12:27:42.944067+08:00",
+            "duration": 100
+          }
+        ]
+      }
+    },
+    {
+      "category": "Dashboard",
+      "name": "环境报告",
+      "url": "dashboard/environment_reports/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.019077,
+      "response_data": {
+        "results": [
+          {
+            "environment_id": 7,
+            "environment_name": "Project 3 Env",
+            "project_id": 3,
+            "project_name": "Frontend Test Project",
+            "base_url": "https://httpbin.org",
+            "execution_id": 7,
+            "execution_name": "Project 3 Env - 全部用例执行",
+            "execution_status": "COMPLETED",
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 1,
+              "error": 0,
+              "pass_rate": 0.0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": "2025-12-23T04:31:42.060871Z"
+          },
+          {
+            "environment_id": 6,
+            "environment_name": "New Project Env",
+            "project_id": 2,
+            "project_name": "New Test Project",
+            "base_url": "https://httpbin.org",
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "environment_id": 5,
+            "environment_name": "Test Env 1",
+            "project_id": 1,
+            "project_name": "API测试项目",
+            "base_url": "https://httpbin.org",
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 3,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "environment_id": 4,
+            "environment_name": "主测试环境-开发",
+            "project_id": 7,
+            "project_name": "主测试项目",
+            "base_url": "https://api.example.com",
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "environment_id": 2,
+            "environment_name": "测试环境",
+            "project_id": 6,
+            "project_name": "测试项目",
+            "base_url": "https://httpbin.org",
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "environment_id": 1,
+            "environment_name": "Development Environment",
+            "project_id": 5,
+            "project_name": "API Integration Test Project",
+            "base_url": "http://localhost:8000",
+            "execution_id": 1,
+            "execution_name": "API Integration Test Execution",
+            "execution_status": "COMPLETED",
+            "stats": {
+              "total": 0,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": "2025-12-19T07:01:22.376100Z"
+          }
+        ],
+        "count": 6
+      }
+    },
+    {
+      "category": "Dashboard",
+      "name": "集合报告",
+      "url": "dashboard/collection_reports/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.01923,
+      "response_data": {
+        "results": [
+          {
+            "collection_id": 5,
+            "collection_name": "测试集合",
+            "project_id": 8,
+            "project_name": "测试编辑器项目",
+            "test_case_count": 61,
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 61,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "collection_id": 4,
+            "collection_name": "手工测试集合",
+            "project_id": 7,
+            "project_name": "主测试项目",
+            "test_case_count": 1,
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "collection_id": 3,
+            "collection_name": "Test APIs",
+            "project_id": 5,
+            "project_name": "API Integration Test Project",
+            "test_case_count": 1,
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          },
+          {
+            "collection_id": 2,
+            "collection_name": "User APIs",
+            "project_id": 3,
+            "project_name": "Frontend Test Project",
+            "test_case_count": 1,
+            "execution_id": 7,
+            "execution_name": "Project 3 Env - 全部用例执行",
+            "execution_status": "COMPLETED",
+            "stats": {
+              "total": 1,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 1,
+              "error": 0,
+              "pass_rate": 0.0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": "2025-12-23T04:31:42.060871Z"
+          },
+          {
+            "collection_id": 1,
+            "collection_name": "用户管理接口",
+            "project_id": 1,
+            "project_name": "API测试项目",
+            "test_case_count": 3,
+            "execution_id": null,
+            "execution_name": null,
+            "execution_status": null,
+            "stats": {
+              "total": 3,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "error": 0,
+              "pass_rate": 0
+            },
+            "avg_response_time": 0,
+            "last_execution_time": null
+          }
+        ],
+        "count": 5
+      }
+    },
+    {
+      "category": "Assertion",
+      "name": "测试用例断言列表",
+      "url": "test-cases/1/assertions/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.007258,
+      "response_data": {
+        "count": 0,
+        "next": null,
+        "previous": null,
+        "results": []
+      }
+    },
+    {
+      "category": "Extraction",
+      "name": "测试用例数据提取列表",
+      "url": "test-cases/1/extractions/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.00654,
+      "response_data": {
+        "count": 0,
+        "next": null,
+        "previous": null,
+        "results": []
+      }
+    },
+    {
+      "category": "HttpExecutor",
+      "name": "执行历史",
+      "url": "test-execute/history/",
+      "method": "GET",
+      "status_code": 200,
+      "success": true,
+      "response_time": 0.023911,
+      "response_data": {
+        "code": 200,
+        "message": "success",
+        "data": {
+          "count": 0,
+          "results": []
+        }
+      }
+    }
+  ]
+}

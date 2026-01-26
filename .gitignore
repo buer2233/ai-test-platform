@@ -1,0 +1,104 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+
+# Vue / Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+dist/
+dist-ssr/
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/projects/
+
+# Environment
+.env
+.env.local
+.env.*.local
+secrets/
+*.secret
+
+# Logs
+logs/
+*.log
+debug.log
+info.log
+
+# Test Coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Windows reserved device names
+nul
+con
+prn
+aux
+com1
+com2
+com3
+com4
+lpt1
+lpt2
+lpt3
+
+# Project Specific
+Django_project/ui_automation/browser-use-*/run/
+Django_project/ui_automation/browser-use-*/report/
+Django_project/ui_automation/browser-use-*/debug.log
+Django_project/ui_automation/browser-use-*/info.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+.cache/

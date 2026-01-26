@@ -1,0 +1,805 @@
+"""
+UI自动化测试 API 视图
+
+提供 Django REST Framework 视图，处理 API 请求。
+"""
+
+import os
+import asyncio
+import json
+import threading
+from datetime import datetime
+from rest_framework import viewsets, status, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q, Count
+from django.conf import settings
+from django.utils import timezone
+
+from .models import UiTestProject, UiTestCase, UiTestExecution, UiTestReport, UiScreenshot
+from .serializers import (
+    UiTestProjectSerializer,
+    UiTestProjectDetailSerializer,
+    UiTestCaseSerializer,
+    UiTestCaseListSerializer,
+    UiTestCaseDetailSerializer,
+    UiTestExecutionSerializer,
+    UiTestExecutionListSerializer,
+    UiTestExecutionDetailSerializer,
+    UiTestExecutionCreateSerializer,
+    UiTestReportSerializer,
+    UiScreenshotSerializer,
+)
+from .services import (
+    execute_test_case_cli,
+    create_progress_callback,
+    generate_report,
+    save_report,
+)
+from .services.websocket_service import WebSocketProgressService
+
+
+class UiTestProjectViewSet(viewsets.ModelViewSet):
+    """UI测试项目视图集"""
+
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['is_deleted']
+    search_fields = ['name', 'description']
+    ordering_fields = ['created_at', 'updated_at', 'name']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """获取查询集"""
+        queryset = UiTestProject.objects.filter(
+            created_by=self.request.user,
+            is_deleted=False
+        )
+        return queryset
+
+    def get_serializer_class(self):
+        """根据action返回不同的序列化器"""
+        if self.action == 'retrieve':
+            return UiTestProjectDetailSerializer
+        return UiTestProjectSerializer
+
+    def perform_create(self, serializer):
+        """创建时自动设置创建人"""
+        serializer.save(created_by=self.request.user)
+
+    def perform_destroy(self, instance):
+        """软删除"""
+        instance.is_deleted = True
+        instance.save()
+
+    @action(detail=True, methods=['get'])
+    def test_cases(self, request, pk=None):
+        """获取项目的所有测试用例"""
+        project = self.get_object()
+        test_cases = project.test_cases.filter(is_deleted=False)
+        serializer = UiTestCaseListSerializer(test_cases, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def executions(self, request, pk=None):
+        """获取项目的所有执行记录"""
+        project = self.get_object()
+        executions = project.executions.all()
+        serializer = UiTestExecutionListSerializer(executions, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def statistics(self, request, pk=None):
+        """获取项目统计信息"""
+        project = self.get_object()
+
+        # 统计测试用例
+        total_cases = project.test_cases.filter(is_deleted=False).count()
+        enabled_cases = project.test_cases.filter(is_deleted=False, is_enabled=True).count()
+
+        # 统计执行记录
+        executions = project.executions.all()
+        total_executions = executions.count()
+        passed_executions = executions.filter(status='passed').count()
+        failed_executions = executions.filter(status='failed').count()
+        error_executions = executions.filter(status='error').count()
+
+        # 计算通过率
+        pass_rate = 0
+        if total_executions > 0:
+            pass_rate = round((passed_executions / total_executions) * 100, 2)
+
+        return Response({
+            'test_cases': {
+                'total': total_cases,
+                'enabled': enabled_cases,
+                'disabled': total_cases - enabled_cases,
+            },
+            'executions': {
+                'total': total_executions,
+                'passed': passed_executions,
+                'failed': failed_executions,
+                'error': error_executions,
+                'pass_rate': pass_rate,
+            },
+        })
+
+
+class UiTestCaseViewSet(viewsets.ModelViewSet):
+    """UI测试用例视图集"""
+
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['project', 'priority', 'is_enabled', 'is_deleted']
+    search_fields = ['name', 'natural_language_task', 'expected_result']
+    ordering_fields = ['created_at', 'updated_at', 'priority', 'name']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """获取查询集"""
+        queryset = UiTestCase.objects.filter(
+            project__created_by=self.request.user,
+            is_deleted=False
+        ).select_related('project')
+        return queryset
+
+    def get_serializer_class(self):
+        """根据action返回不同的序列化器"""
+        if self.action == 'list':
+            return UiTestCaseListSerializer
+        elif self.action == 'retrieve':
+            return UiTestCaseDetailSerializer
+        return UiTestCaseSerializer
+
+    def create(self, request, *args, **kwargs):
+        """创建测试用例（处理字段映射）"""
+        # 将前端字段名映射到后端字段名
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+
+        # 字段别名映射
+        if 'test_task' in data:
+            data['natural_language_task'] = data.pop('test_task')
+        if 'is_active' in data:
+            data['is_enabled'] = data.pop('is_active')
+
+        serializer = self.get_serializer(data=data)
+        if not serializer.is_valid():
+            print(f"UiTestCase 创建验证失败: {serializer.errors}")
+            print(f"处理后的数据: {data}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_destroy(self, instance):
+        """软删除"""
+        instance.is_deleted = True
+        instance.save()
+
+    @action(detail=True, methods=['get'])
+    def executions(self, request, pk=None):
+        """获取用例的所有执行记录"""
+        test_case = self.get_object()
+        executions = test_case.executions.all()
+        serializer = UiTestExecutionListSerializer(executions, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def run(self, request, pk=None):
+        """
+        直接运行测试用例
+        自动创建执行记录并启动测试
+        """
+        test_case = self.get_object()
+
+        # 检查用例是否启用
+        if not test_case.is_enabled:
+            return Response(
+                {'error': '测试用例未启用'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 检查环境变量
+        if not os.environ.get('OPENAI_API_KEY'):
+            return Response(
+                {'error': 'OPENAI_API_KEY 环境变量未设置，请配置后再试'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        # 获取浏览器模式
+        browser_mode = request.data.get('browser_mode', test_case.project.default_browser_mode)
+
+        # 创建执行记录
+        execution = UiTestExecution.objects.create(
+            project=test_case.project,
+            test_case=test_case,
+            browser_mode=browser_mode,
+            status='running',
+            started_at=timezone.now(),
+            executed_by=request.user,
+        )
+
+        # 创建进度回调
+        progress_callback = create_progress_callback(execution.id)
+
+        # 在后台线程中执行测试（使用 CLI 调用）
+        def run_in_background():
+            try:
+                # 广播执行开始
+                WebSocketProgressService.broadcast_progress(
+                    execution_id=execution.id,
+                    message='开始执行测试',
+                    data={'step': 'start', 'task': test_case.natural_language_task[:100]}
+                )
+
+                # 使用 CLI 执行服务
+                result = execute_test_case_cli(
+                    execution_id=execution.id,
+                    task=test_case.natural_language_task,
+                    browser_mode=browser_mode,
+                    model='gpt-4o-mini',
+                    max_steps=50,
+                    progress_callback=progress_callback,
+                )
+
+                # 重新加载执行记录
+                execution.refresh_from_db()
+
+                # 更新执行状态
+                completed_at = timezone.now()
+                duration_seconds = int((completed_at - execution.started_at).total_seconds()) if execution.started_at else 0
+
+                # 判断最终状态
+                if result.get('success') and result.get('is_successful'):
+                    final_status = 'passed'
+                    status_message = '测试执行成功'
+                elif result.get('success'):
+                    final_status = 'failed'  # CLI 成功执行但测试失败
+                    status_message = result.get('final_result', '测试未达到预期结果')
+                else:
+                    final_status = 'error'  # CLI 执行失败
+                    status_message = result.get('error', '未知错误')
+
+                execution.status = final_status
+                execution.completed_at = completed_at
+                execution.duration_seconds = duration_seconds
+
+                # 保存结果
+                if result.get('success'):
+                    execution.final_result = json.dumps({
+                        'report_path': result.get('report_path'),
+                        'final_result': result.get('final_result'),
+                        'is_successful': result.get('is_successful', False),
+                        'total_steps': result.get('total_steps', 0),
+                    }, ensure_ascii=False)
+                else:
+                    execution.error_message = result.get('error', '未知错误')
+
+                execution.save()
+
+                # 广播状态变更
+                WebSocketProgressService.broadcast_status_change(
+                    execution_id=execution.id,
+                    status=final_status,
+                    extra_data={
+                        'message': status_message,
+                        'duration_seconds': duration_seconds,
+                        'report_path': result.get('report_path'),
+                    }
+                )
+
+                # 创建或更新测试报告
+                report_path = result.get('report_path')
+                if report_path:
+                    # 转换为绝对路径
+                    from pathlib import Path as PathLib
+                    path_obj = PathLib(report_path)
+                    if not path_obj.is_absolute():
+                        # 相对路径，基于 browser-use-0.11.2 目录
+                        base_dir = PathLib(__file__).parent / 'browser-use-0.11.2'
+                        absolute_path = base_dir / report_path
+                    else:
+                        absolute_path = path_obj
+
+                    absolute_path_str = str(absolute_path.resolve())
+
+                    # 检查是否已有报告
+                    report = execution.report if hasattr(execution, 'report') else None
+
+                    if not report:
+                        report = UiTestReport.objects.create(
+                            execution=execution,
+                            total_steps=result.get('total_steps', 0),
+                            completed_steps=result.get('total_steps', 0) if result.get('success') else 0,
+                            failed_steps=0 if result.get('success') else result.get('total_steps', 0),
+                            agent_history='',
+                            json_report_path=absolute_path_str,
+                            summary=f"测试{'成功' if result.get('success') and result.get('is_successful') else '失败'}",
+                        )
+                    else:
+                        # 更新现有报告的 JSON 路径
+                        report.json_report_path = absolute_path_str
+                        report.save()
+
+                    # 广播报告创建
+                    WebSocketProgressService.broadcast_progress(
+                        execution_id=execution.id,
+                        message='测试报告已生成',
+                        data={'step': 'report_created', 'report_path': absolute_path_str}
+                    )
+
+            except Exception as e:
+                # 记录详细错误
+                import traceback
+                error_details = traceback.format_exc()
+
+                execution.refresh_from_db()
+                execution.status = 'error'
+                execution.error_message = str(e)
+                execution.completed_at = timezone.now()
+                if execution.started_at:
+                    execution.duration_seconds = int((execution.completed_at - execution.started_at).total_seconds())
+                execution.save()
+
+                # 广播错误信息
+                WebSocketProgressService.broadcast_error(
+                    execution_id=execution.id,
+                    error_message=str(e),
+                    error_details={'traceback': error_details}
+                )
+
+                # 同时广播状态变更
+                WebSocketProgressService.broadcast_status_change(
+                    execution_id=execution.id,
+                    status='error',
+                    extra_data={'message': f'执行出错: {str(e)}'}
+                )
+
+        # 启动后台线程
+        thread = threading.Thread(target=run_in_background, daemon=True)
+        thread.start()
+
+        # 返回执行记录信息
+        serializer = UiTestExecutionSerializer(execution)
+        return Response({
+            'message': '测试执行已启动',
+            'execution': serializer.data,
+            'status': 'running',
+        }, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['post'])
+    def copy(self, request, pk=None):
+        """复制测试用例"""
+        test_case = self.get_object()
+
+        # 创建新用例，名称添加 "(副本)" 后缀
+        new_name = f"{test_case.name} (副本)"
+        # 检查是否已存在相同名称的副本
+        suffix = 1
+        original_name = new_name
+        while UiTestCase.objects.filter(
+            project=test_case.project,
+            name=new_name,
+            is_deleted=False
+        ).exists():
+            suffix += 1
+            new_name = f"{original_name} ({suffix})"
+
+        # 创建副本
+        new_test_case = UiTestCase.objects.create(
+            project=test_case.project,
+            name=new_name,
+            description=test_case.description,
+            natural_language_task=test_case.natural_language_task,
+            expected_result=test_case.expected_result,
+            tags=test_case.tags,
+            priority=test_case.priority,
+            browser_mode=test_case.browser_mode,
+            timeout=test_case.timeout,
+            retry_count=test_case.retry_count,
+            is_enabled=False,  # 副本默认禁用
+        )
+
+        serializer = UiTestCaseSerializer(new_test_case)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UiTestExecutionViewSet(viewsets.ModelViewSet):
+    """UI测试执行视图集"""
+
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['project', 'test_case', 'status', 'browser_mode']
+    search_fields = ['test_case__name', 'final_result', 'error_message']
+    ordering_fields = ['created_at', 'started_at', 'completed_at', 'duration_seconds']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """获取查询集"""
+        queryset = UiTestExecution.objects.filter(
+            project__created_by=self.request.user
+        ).select_related('project', 'test_case', 'executed_by')
+
+        # 日期范围筛选
+        created_after = self.request.query_params.get('created_after')
+        created_before = self.request.query_params.get('created_before')
+        if created_after:
+            queryset = queryset.filter(created_at__gte=created_after)
+        if created_before:
+            # 将结束日期加一天，包含当天的所有记录
+            from datetime import timedelta
+            end_date = datetime.strptime(created_before, '%Y-%m-%d') + timedelta(days=1)
+            queryset = queryset.filter(created_at__lt=end_date)
+
+        return queryset
+
+    def get_serializer_class(self):
+        """根据action返回不同的序列化器"""
+        if self.action == 'list':
+            return UiTestExecutionListSerializer
+        elif self.action == 'retrieve':
+            return UiTestExecutionDetailSerializer
+        elif self.action == 'create':
+            return UiTestExecutionCreateSerializer
+        return UiTestExecutionSerializer
+
+    def create(self, request, *args, **kwargs):
+        """创建执行记录"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # 返回详细信息
+        instance = serializer.instance
+        detail_serializer = UiTestExecutionSerializer(instance)
+        return Response(detail_serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def run(self, request, pk=None):
+        """
+        运行测试执行
+        通过 CLI 调用 run_aiTest.py 脚本执行测试
+        """
+        execution = self.get_object()
+
+        # 检查状态
+        if execution.status != 'pending':
+            return Response(
+                {'error': f'执行状态为 {execution.get_status_display()}，无法运行'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 检查环境变量
+        if not os.environ.get('OPENAI_API_KEY'):
+            return Response(
+                {'error': 'OPENAI_API_KEY 环境变量未设置，请配置后再试'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        # 更新状态为运行中
+        execution.status = 'running'
+        execution.started_at = timezone.now()
+        execution.save()
+
+        # 创建进度回调
+        progress_callback = create_progress_callback(execution.id)
+
+        # 在后台线程中执行测试（使用 CLI 调用）
+        def run_in_background():
+            try:
+                # 广播执行开始
+                WebSocketProgressService.broadcast_progress(
+                    execution_id=execution.id,
+                    message='开始执行测试',
+                    data={'step': 'start', 'task': execution.test_case.natural_language_task[:100]}
+                )
+
+                # 使用 CLI 执行服务
+                result = execute_test_case_cli(
+                    execution_id=execution.id,
+                    task=execution.test_case.natural_language_task,
+                    browser_mode=execution.browser_mode,
+                    model='gpt-4o-mini',
+                    max_steps=50,
+                    progress_callback=progress_callback,
+                )
+
+                # 重新加载执行记录
+                execution.refresh_from_db()
+
+                # 更新执行状态
+                completed_at = timezone.now()
+                duration_seconds = int((completed_at - execution.started_at).total_seconds()) if execution.started_at else 0
+
+                # 判断最终状态
+                if result.get('success') and result.get('is_successful'):
+                    final_status = 'passed'
+                    status_message = '测试执行成功'
+                elif result.get('success'):
+                    final_status = 'failed'  # CLI 成功执行但测试失败
+                    status_message = result.get('final_result', '测试未达到预期结果')
+                else:
+                    final_status = 'error'  # CLI 执行失败
+                    status_message = result.get('error', '未知错误')
+
+                execution.status = final_status
+                execution.completed_at = completed_at
+                execution.duration_seconds = duration_seconds
+
+                # 保存结果
+                if result.get('success'):
+                    execution.final_result = json.dumps({
+                        'report_path': result.get('report_path'),
+                        'final_result': result.get('final_result'),
+                        'is_successful': result.get('is_successful', False),
+                        'total_steps': result.get('total_steps', 0),
+                    }, ensure_ascii=False)
+                else:
+                    execution.error_message = result.get('error', '未知错误')
+
+                execution.save()
+
+                # 广播状态变更
+                WebSocketProgressService.broadcast_status_change(
+                    execution_id=execution.id,
+                    status=final_status,
+                    extra_data={
+                        'message': status_message,
+                        'duration_seconds': duration_seconds,
+                        'report_path': result.get('report_path'),
+                    }
+                )
+
+                # 创建或更新测试报告
+                report_path = result.get('report_path')
+                if report_path:
+                    # 转换为绝对路径
+                    from pathlib import Path as PathLib
+                    path_obj = PathLib(report_path)
+                    if not path_obj.is_absolute():
+                        # 相对路径，基于 browser-use-0.11.2 目录
+                        base_dir = PathLib(__file__).parent / 'browser-use-0.11.2'
+                        absolute_path = base_dir / report_path
+                    else:
+                        absolute_path = path_obj
+
+                    absolute_path_str = str(absolute_path.resolve())
+
+                    # 检查是否已有报告
+                    report = execution.report if hasattr(execution, 'report') else None
+
+                    if not report:
+                        report = UiTestReport.objects.create(
+                            execution=execution,
+                            total_steps=result.get('total_steps', 0),
+                            completed_steps=result.get('total_steps', 0) if result.get('success') else 0,
+                            failed_steps=0 if result.get('success') else result.get('total_steps', 0),
+                            agent_history='',
+                            json_report_path=absolute_path_str,
+                            summary=f"测试{'成功' if result.get('success') and result.get('is_successful') else '失败'}",
+                        )
+                    else:
+                        # 更新现有报告的 JSON 路径
+                        report.json_report_path = absolute_path_str
+                        report.save()
+
+                    # 广播报告创建
+                    WebSocketProgressService.broadcast_progress(
+                        execution_id=execution.id,
+                        message='测试报告已生成',
+                        data={'step': 'report_created', 'report_path': absolute_path_str}
+                    )
+
+            except Exception as e:
+                # 记录详细错误
+                import traceback
+                error_details = traceback.format_exc()
+
+                execution.refresh_from_db()
+                execution.status = 'error'
+                execution.error_message = str(e)
+                execution.completed_at = timezone.now()
+                if execution.started_at:
+                    execution.duration_seconds = int((execution.completed_at - execution.started_at).total_seconds())
+                execution.save()
+
+                # 广播错误信息
+                WebSocketProgressService.broadcast_error(
+                    execution_id=execution.id,
+                    error_message=str(e),
+                    error_details={'traceback': error_details}
+                )
+
+                # 同时广播状态变更
+                WebSocketProgressService.broadcast_status_change(
+                    execution_id=execution.id,
+                    status='error',
+                    extra_data={'message': f'执行出错: {str(e)}'}
+                )
+
+        # 启动后台线程
+        thread = threading.Thread(target=run_in_background, daemon=True)
+        thread.start()
+
+        # 立即返回响应
+        return Response({
+            'message': '测试执行已启动',
+            'execution_id': execution.id,
+            'status': 'running',
+        }, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        """取消测试执行"""
+        execution = self.get_object()
+
+        if execution.status not in ['pending', 'running']:
+            return Response(
+                {'error': f'执行状态为 {execution.get_status_display()}，无法取消'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        execution.status = 'cancelled'
+        execution.completed_at = execution.started_at
+        execution.save()
+
+        serializer = UiTestExecutionSerializer(execution)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def report(self, request, pk=None):
+        """获取测试报告"""
+        execution = self.get_object()
+
+        try:
+            report = execution.report
+            serializer = UiTestReportSerializer(report)
+            return Response(serializer.data)
+        except UiTestReport.DoesNotExist:
+            return Response(
+                {'error': '报告不存在'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=True, methods=['get'])
+    def screenshots(self, request, pk=None):
+        """获取执行截图列表"""
+        execution = self.get_object()
+        screenshots = execution.screenshots.all()
+        serializer = UiScreenshotSerializer(screenshots, many=True)
+        return Response(serializer.data)
+
+
+class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
+    """UI测试报告视图集（只读）"""
+
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['execution']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """获取查询集"""
+        queryset = UiTestReport.objects.filter(
+            execution__project__created_by=self.request.user
+        ).select_related('execution__project', 'execution__test_case')
+        return queryset
+
+    def get_serializer_class(self):
+        """返回序列化器"""
+        return UiTestReportSerializer
+
+    @action(detail=False, methods=['get'])
+    def file(self, request):
+        """获取 JSON 报告文件内容
+
+        参数:
+            path: 报告文件路径（绝对路径或相对于 browser-use-0.11.2 的路径）
+
+        返回:
+            JSON 报告内容
+        """
+        from pathlib import Path
+        import urllib.parse
+
+        report_path = request.query_params.get('path')
+        if not report_path:
+            return Response(
+                {'error': '请提供报告文件路径'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # URL 解码路径
+        report_path = urllib.parse.unquote(report_path)
+
+        # 安全检查：确保路径在 report 目录内
+        # browser-use-0.11.2 目录位于 ui_automation 目录下
+        base_report_dir = (Path(__file__).parent / 'browser-use-0.11.2' / 'report').resolve()
+
+        try:
+            file_path = Path(report_path).expanduser().resolve()
+        except Exception as e:
+            return Response(
+                {'error': f'无效的文件路径: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # 验证路径在允许的目录内（使用 parts 比较以避免路径分隔符问题）
+            # 对于绝对路径，检查它是否以 base_report_dir 开头
+            try:
+                file_path.relative_to(base_report_dir)
+            except ValueError:
+                # 如果直接相对路径检查失败，尝试检查路径前缀
+                try:
+                    file_path_str = str(file_path).lower()
+                    base_dir_str = str(base_report_dir).lower()
+                    if not file_path_str.startswith(base_dir_str):
+                        raise ValueError('Path outside allowed directory')
+                except Exception:
+                    return Response(
+                        {'error': f'非法的文件路径，报告必须在报告目录内'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+
+        except Exception as e:
+            return Response(
+                {'error': f'路径验证失败: {str(e)}'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not file_path.exists():
+            return Response(
+                {'error': f'报告文件不存在: {file_path.name}'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if not file_path.is_file():
+            return Response(
+                {'error': '路径不是文件'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return Response(data)
+        except json.JSONDecodeError as e:
+            return Response(
+                {'error': f'报告文件格式错误: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except UnicodeDecodeError:
+            return Response(
+                {'error': '报告文件编码错误（需要 UTF-8 编码）'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'读取报告文件失败: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class UiScreenshotViewSet(viewsets.ReadOnlyModelViewSet):
+    """UI测试截图视图集（只读）"""
+
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['execution']
+    ordering_fields = ['created_at', 'step_number']
+    ordering = ['execution', 'step_number']
+
+    def get_queryset(self):
+        """获取查询集"""
+        queryset = UiScreenshot.objects.filter(
+            execution__project__created_by=self.request.user
+        ).select_related('execution')
+        return queryset
+
+    def get_serializer_class(self):
+        """返回序列化器"""
+        return UiScreenshotSerializer

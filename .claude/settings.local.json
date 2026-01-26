@@ -1,0 +1,56 @@
+{
+  "env": {
+    "CLAUDE_CODE_DISABLE_TELEMETRY": "1"
+  },
+  "permissions": {
+    "allow": [
+      "SlashCommand(/init)",
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "LSP",
+      "Task",
+      "TodoWrite",
+      "AskUserQuestion",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "Skill",
+      "NotebookEdit",
+      "WebSearch",
+      "KillShell",
+      "TaskOutput",
+      "mcp__web_reader__webReader",
+      "mcp__4_5v_mcp__analyze_image",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_network_requests",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_fill_form",
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "mcp__plugin_playwright_playwright__browser_wait_for"
+    ],
+    "deny": [
+      "Bash(rm -rf:)",
+      "Bash(sudo:)",
+      "Bash(del:)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.env*)",
+      "Read(./secrets/**)",
+      "Read(./.env*)",
+      "Edit(~/.ssh/**)",
+      "Edit(~/.aws/**)",
+      "Edit(./secrets/**)",
+      "Edit(./.env*)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}
