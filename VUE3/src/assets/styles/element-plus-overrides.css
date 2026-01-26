@@ -1,0 +1,634 @@
+/**
+ * ============================================
+ * ELEMENT PLUS THEME OVERRIDES
+ * Minimal Tech Theme
+ * ============================================
+ */
+
+@import './design-tokens.css';
+
+/* ============================================
+   GLOBAL ELEMENT PLUS OVERRIDES
+   ============================================ */
+
+/* Reset default styles */
+.el-card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  color: var(--color-text-primary);
+}
+
+.el-card__header {
+  background-color: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding: var(--spacing-4) var(--spacing-6);
+  font-weight: var(--font-weight-semibold);
+}
+
+.el-card__body {
+  padding: var(--spacing-6);
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+.el-button {
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-fast) var(--ease-out);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  border: none;
+  color: var(--color-bg-primary);
+}
+
+.el-button--primary:hover {
+  background: linear-gradient(135deg, var(--color-accent-secondary), var(--color-accent-primary));
+  box-shadow: var(--shadow-glow-accent);
+  transform: translateY(-1px);
+}
+
+.el-button--success {
+  background: var(--color-success-primary);
+  border-color: var(--color-success-primary);
+  color: var(--color-bg-primary);
+}
+
+.el-button--success:hover {
+  background: var(--color-success-secondary);
+  border-color: var(--color-success-secondary);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+.el-button--danger {
+  background: var(--color-error-primary);
+  border-color: var(--color-error-primary);
+}
+
+.el-button--danger:hover {
+  background: var(--color-error-secondary);
+  border-color: var(--color-error-secondary);
+  box-shadow: var(--shadow-glow-error);
+}
+
+.el-button--warning {
+  background: var(--color-warning-primary);
+  border-color: var(--color-warning-primary);
+}
+
+.el-button--warning:hover {
+  background: var(--color-warning-secondary);
+  border-color: var(--color-warning-secondary);
+  box-shadow: var(--shadow-glow-warning);
+}
+
+.el-button--info {
+  background: var(--color-info-primary);
+  border-color: var(--color-info-primary);
+  color: var(--color-bg-primary);
+}
+
+.el-button--info:hover {
+  background: var(--color-info-secondary);
+  border-color: var(--color-info-secondary);
+  box-shadow: var(--shadow-glow-info);
+}
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+
+.el-input {
+  --el-input-bg-color: var(--color-bg-tertiary);
+  --el-input-text-color: var(--color-text-primary);
+  --el-input-border-color: var(--color-border-primary);
+  --el-input-hover-border-color: var(--color-accent-primary);
+  --el-input-focus-border-color: var(--color-accent-primary);
+  --el-input-placeholder-color: var(--color-text-tertiary);
+}
+
+.el-input__wrapper {
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius-md);
+  box-shadow: none;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.el-input__wrapper:hover {
+  border-color: var(--color-accent-primary);
+}
+
+.el-input__wrapper.is-focus {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 2px var(--color-accent-muted);
+}
+
+.el-input__inner {
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+}
+
+/* ============================================
+   FORM STYLES
+   ============================================ */
+
+.el-form-item__label {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.el-form-item__error {
+  color: var(--color-error-primary);
+  font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+
+.el-table {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.el-table__header-wrapper {
+  background-color: var(--color-bg-tertiary);
+}
+
+.el-table th.el-table__cell {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.el-table tr {
+  background-color: var(--color-bg-secondary);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--color-border-secondary);
+  color: var(--color-text-primary);
+}
+
+.el-table__row:hover {
+  background-color: var(--color-bg-elevated) !important;
+}
+
+.el-table__row.current-row {
+  background-color: var(--color-accent-muted) !important;
+}
+
+/* ============================================
+   DROPDOWN STYLES
+   ============================================ */
+
+.el-dropdown-menu {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-2);
+  box-shadow: var(--shadow-lg);
+}
+
+.el-dropdown-menu__item {
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-2) var(--spacing-3);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.el-dropdown-menu__item.is-divided {
+  margin-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border-secondary);
+}
+
+/* ============================================
+   DIALOG STYLES
+   ============================================ */
+
+.el-dialog {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-2xl);
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--color-border-primary);
+  padding: var(--spacing-6);
+}
+
+.el-dialog__title {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+}
+
+.el-dialog__body {
+  color: var(--color-text-secondary);
+  padding: var(--spacing-6);
+}
+
+.el-dialog__footer {
+  border-top: 1px solid var(--color-border-primary);
+  padding: var(--spacing-4) var(--spacing-6);
+}
+
+/* ============================================
+   MENU STYLES
+   ============================================ */
+
+.el-menu {
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border-primary);
+}
+
+.el-menu-item {
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.el-menu-item:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.el-menu-item.is-active {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-muted) 0%,
+    transparent 100%
+  );
+  color: var(--color-accent-primary);
+  border-left: 3px solid var(--color-accent-primary);
+}
+
+/* ============================================
+   TAG STYLES
+   ============================================ */
+
+.el-tag {
+  border-radius: var(--border-radius-full);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  border: none;
+}
+
+.el-tag--success {
+  background-color: var(--color-success-muted);
+  color: var(--color-success-primary);
+}
+
+.el-tag--warning {
+  background-color: var(--color-warning-muted);
+  color: var(--color-warning-primary);
+}
+
+.el-tag--danger {
+  background-color: var(--color-error-muted);
+  color: var(--color-error-primary);
+}
+
+.el-tag--info {
+  background-color: var(--color-info-muted);
+  color: var(--color-info-primary);
+}
+
+/* ============================================
+   ALERT STYLES
+   ============================================ */
+
+.el-alert {
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-primary);
+}
+
+.el-alert--success {
+  background-color: var(--color-success-muted);
+  border-color: var(--color-success-muted);
+}
+
+.el-alert--warning {
+  background-color: var(--color-warning-muted);
+  border-color: var(--color-warning-muted);
+}
+
+.el-alert--error {
+  background-color: var(--color-error-muted);
+  border-color: var(--color-error-muted);
+}
+
+.el-alert--info {
+  background-color: var(--color-info-muted);
+  border-color: var(--color-info-muted);
+}
+
+/* ============================================
+   BREADCRUMB STYLES
+   ============================================ */
+
+.el-breadcrumb__item {
+  font-size: var(--font-size-sm);
+}
+
+.el-breadcrumb__inner {
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.el-breadcrumb__inner:hover {
+  color: var(--color-accent-primary);
+}
+
+.el-breadcrumb__separator {
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================
+   ICON STYLES
+   ============================================ */
+
+.el-icon {
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   TABS STYLES
+   ============================================ */
+
+.el-tabs {
+  color: var(--color-text-primary);
+}
+
+.el-tabs__item {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.el-tabs__item:hover {
+  color: var(--color-text-primary);
+}
+
+.el-tabs__item.is-active {
+  color: var(--color-accent-primary);
+}
+
+.el-tabs__active-bar {
+  background-color: var(--color-accent-primary);
+}
+
+.el-tabs__nav-wrap::after {
+  background-color: var(--color-border-primary);
+}
+
+/* ============================================
+   PROGRESS STYLES
+   ============================================ */
+
+.el-progress-bar__inner {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-primary),
+    var(--color-info-primary)
+  );
+}
+
+/* ============================================
+   TOOLTIP STYLES
+   ============================================ */
+
+.el-tooltip__popper {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+}
+
+.el-tooltip__popper.is-dark {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   SELECT STYLES
+   ============================================ */
+
+.el-select {
+  --el-select-input-focus-border-color: var(--color-accent-primary);
+}
+
+.el-select__wrapper {
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius-md);
+}
+
+.el-select-dropdown {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+}
+
+.el-select-dropdown__item {
+  color: var(--color-text-secondary);
+}
+
+.el-select-dropdown__item:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.el-select-dropdown__item.is-selected {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-muted) 0%,
+    transparent 100%
+  );
+  color: var(--color-accent-primary);
+}
+
+/* ============================================
+   CHECKBOX & RADIO STYLES
+   ============================================ */
+
+.el-checkbox__label {
+  color: var(--color-text-secondary);
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+}
+
+.el-radio__label {
+  color: var(--color-text-secondary);
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+}
+
+/* ============================================
+   SWITCH STYLES
+   ============================================ */
+
+.el-switch.is-checked {
+  background-color: var(--color-accent-primary);
+}
+
+/* ============================================
+   LOADNG STYLES
+   ============================================ */
+
+.el-loading-mask {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.el-loading-spinner .circular {
+  stroke: var(--color-accent-primary);
+}
+
+/* ============================================
+   MESSAGE BOX STYLES
+   ============================================ */
+
+.el-message-box {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-2xl);
+}
+
+.el-message-box__title {
+  color: var(--color-text-primary);
+}
+
+.el-message-box__content {
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   MESSAGE STYLES
+   ============================================ */
+
+.el-message {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.el-message--success {
+  background-color: var(--color-success-muted);
+  border-color: var(--color-success-primary);
+}
+
+.el-message--warning {
+  background-color: var(--color-warning-muted);
+  border-color: var(--color-warning-primary);
+}
+
+.el-message--error {
+  background-color: var(--color-error-muted);
+  border-color: var(--color-error-primary);
+}
+
+.el-message--info {
+  background-color: var(--color-info-muted);
+  border-color: var(--color-info-primary);
+}
+
+/* ============================================
+   NOTIFICATION STYLES
+   ============================================ */
+
+.el-notification {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   DRAWER STYLES
+   ============================================ */
+
+.el-drawer {
+  background-color: var(--color-bg-secondary);
+}
+
+.el-drawer__header {
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding: var(--spacing-6);
+}
+
+/* ============================================
+   PAGINATION STYLES
+   ============================================ */
+
+.el-pagination {
+  color: var(--color-text-secondary);
+}
+
+.el-pagination button {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.el-pagination button:hover {
+  color: var(--color-accent-primary);
+}
+
+.el-pagination .el-pager li {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.el-pagination .el-pager li:hover {
+  color: var(--color-accent-primary);
+}
+
+.el-pagination .el-pager li.is-active {
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+}
+
+/* ============================================
+   EMPTY STYLES
+   ============================================ */
+
+.el-empty {
+  color: var(--color-text-tertiary);
+}
+
+.el-empty__description {
+  color: var(--color-text-tertiary);
+}

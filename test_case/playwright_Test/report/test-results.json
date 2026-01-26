@@ -1,0 +1,177 @@
+{
+  "config": {
+    "configFile": "D:\\AI\\AI-test-project\\VUE3\\playwright.config.ts",
+    "rootDir": "D:/AI/AI-test-project/test_case/playwright_Test",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "D:\\AI\\AI-test-project\\VUE3\\playwright-global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "../test_case/playwright_Test/report/html-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../test_case/playwright_Test/report/test-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/AI/AI-test-project/VUE3/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/AI/AI-test-project/test_case/playwright_Test",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\01-auth.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\01-auth.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\01-auth.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\01-auth.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m01-auth.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 认证功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\02-dashboard.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\02-dashboard.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\02-dashboard.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\02-dashboard.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m02-dashboard.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 仪表盘功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\03-project.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\03-project.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\03-project.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\03-project.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m03-project.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 项目管理功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\04-collection.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\04-collection.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\04-collection.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\04-collection.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m04-collection.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 集合管理功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\05-testcase.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\05-testcase.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\05-testcase.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\05-testcase.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m05-testcase.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 测试用例管理功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\06-environment.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\06-environment.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\06-environment.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\06-environment.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m06-environment.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 环境管理功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\07-http-executor.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\07-http-executor.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\07-http-executor.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\07-http-executor.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m07-http-executor.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * HTTP执行器功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\08-reports.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\08-reports.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\08-reports.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\08-reports.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m08-reports.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 测试报告功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\09-recycle-bin.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\09-recycle-bin.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\09-recycle-bin.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\09-recycle-bin.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m09-recycle-bin.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 回收站功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\10-execution-records.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- D:\\AI\\AI-test-project\\test_case\\playwright_Test\\10-execution-records.spec.ts\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\transform\\transform.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\common\\configLoader.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\playwright\\lib\\program.js\n- D:\\AI\\AI-test-project\\VUE3\\node_modules\\@playwright\\test\\cli.js\n    at Object.<anonymous> (D:\\AI\\AI-test-project\\test_case\\playwright_Test\\10-execution-records.spec.ts:1:1)",
+      "location": {
+        "file": "D:\\AI\\AI-test-project\\test_case\\playwright_Test\\10-execution-records.spec.ts",
+        "column": 1,
+        "line": 1
+      },
+      "snippet": "\u001b[90m   at \u001b[39m10-execution-records.spec.ts:1\n\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 1 |\u001b[39m \u001b[36mimport\u001b[39m { test\u001b[33m,\u001b[39m expect } \u001b[36mfrom\u001b[39m \u001b[32m'@playwright/test'\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m \u001b[90m/**\u001b[39m\n \u001b[90m 4 |\u001b[39m \u001b[90m * 执行记录功能测试用例\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: No tests found",
+      "stack": "Error: No tests found"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-01-16T07:20:30.480Z",
+    "duration": 250.68299999999988,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
