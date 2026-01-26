@@ -274,6 +274,40 @@ feat(api-automation): add test case execution feature
 - Create frontend component for test execution
 ```
 
+### 自动提交和推送规则
+
+**⚠️ 强制规则**：Claude Code 必须遵守以下 Git 工作流
+
+| 触发条件 | 操作 |
+|---------|------|
+| **每次修改文件** | 必须执行 `git commit` |
+| **修改文件超过 3 个** | 必须执行 `git push` |
+| **本地 commit 超过 3 个** | 必须执行 `git push` |
+
+**工作流程**：
+```
+1. 修改代码
+2. git add <修改的文件>
+3. git commit -m "类型: 描述"
+4. 检查触发条件：
+   - 修改文件数 > 3？→ git push
+   - 未推送 commit 数 > 3？→ git push
+```
+
+**Commit 消息规范**：
+```
+<类型>(<模块>): <简短描述>
+
+- 详细说明1
+- 详细说明2
+```
+
+**类型示例**：
+- `feat(api-automation): 新增测试用例批量执行功能`
+- `fix(ui-automation): 修复浏览器启动失败问题`
+- `docs(readme): 更新安装步骤说明`
+- `refactor(dashboard): 重构数据获取逻辑`
+
 ### 代码审查检查清单
 
 - [ ] 代码遵循项目风格指南
@@ -282,6 +316,7 @@ feat(api-automation): add test case execution feature
 - [ ] 安全考虑已处理
 - [ ] 性能影响已考虑
 - [ ] 错误处理已实现
+- [ ] Git 规则已遵守（commit + push）
 
 ## 常见开发流程
 
