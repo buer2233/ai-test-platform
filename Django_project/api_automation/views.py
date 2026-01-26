@@ -461,6 +461,42 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @action(detail=True, methods=['post'])
+    def run_test(self, request, pk=None):
+        """
+        执行单个测试用例
+
+        执行指定的测试用例并返回执行结果
+        """
+        from .services.batch_execution_service import BatchExecutionService
+
+        test_case = self.get_object()
+        environment_id = request.data.get('environment_id')
+
+        if not environment_id:
+            return Response(
+                {'error': '请选择执行环境'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            service = BatchExecutionService()
+            execution = service.execute_by_selection(
+                test_case_ids=[test_case.id],
+                environment_id=environment_id,
+                user_id=request.user.id,
+                execution_name=f"单用例执行: {test_case.name}",
+            )
+
+            serializer = ApiTestExecutionSerializer(execution)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {'error': f'执行失败: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Environment Management'])

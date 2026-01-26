@@ -21,7 +21,7 @@ from api_automation.services.assertion_engine import AssertionEngine
 from api_automation.services.extraction_engine import ExtractionEngine
 from api_automation.services.variable_pool_service import VariablePool
 from api_automation.services.result_storage_service import ResultStorageService
-from api_automation.services.websocket_service import WebSocketService
+from api_automation.services.websocket_service import WebSocketBroadcastService
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class BatchExecutionService:
 
     def __init__(self):
         self.variable_pool = None
-        self.websocket = WebSocketService()
+        self.websocket = WebSocketBroadcastService()
         self.executor = None
 
     def execute_by_collection(
