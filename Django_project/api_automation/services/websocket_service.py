@@ -394,6 +394,16 @@ class WebSocketBroadcastService:
         }
         return messages.get(status, f'状态变更为: {status}')
 
+    def broadcast_execution_update(self, execution_id: int, data: Dict[str, Any]):
+        """
+        广播执行更新（兼容方法）
+
+        这是 broadcast_execution_status 的别名，用于向后兼容
+        """
+        status = data.get('status', 'PENDING')
+        message = data.get('message')
+        return self.broadcast_execution_status(execution_id, status, message)
+
 
 # 全局单例实例
 websocket_service = WebSocketBroadcastService()
