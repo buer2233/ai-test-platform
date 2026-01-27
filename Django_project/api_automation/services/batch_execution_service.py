@@ -258,7 +258,7 @@ class BatchExecutionService:
             self.executor = HttpExecutor()
 
             # 通过WebSocket通知执行开始
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {'status': 'RUNNING', 'message': '开始执行批量测试'}
             )
@@ -292,7 +292,7 @@ class BatchExecutionService:
             execution.save()
 
             # 通过WebSocket通知执行完成
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {
                     'status': 'COMPLETED',
@@ -311,7 +311,7 @@ class BatchExecutionService:
             execution.end_time = timezone.now()
             execution.save()
 
-            self.websocket.broadcast_execution_update(
+            self.websocket.broadcast_execution_status(
                 execution.id,
                 {'status': 'FAILED', 'message': f'批量执行失败: {str(e)}'}
             )
@@ -338,7 +338,7 @@ class BatchExecutionService:
         start_time = timezone.now()
 
         # 通过WebSocket通知当前执行进度
-        self.websocket.broadcast_execution_update(
+        self.websocket.broadcast_execution_status(
             execution.id,
             {
                 'current_index': index,
