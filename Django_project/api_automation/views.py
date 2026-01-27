@@ -466,7 +466,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
         """
         执行单个测试用例
 
-        执行指定的测试用例并返回执行结果
+        执行指定ID的测试用例并返回执行结果
         """
         from .services.batch_execution_service import BatchExecutionService
 
@@ -485,7 +485,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
                 test_case_ids=[test_case.id],
                 environment_id=environment_id,
                 user_id=request.user.id,
-                execution_name=f"单用例执行: {test_case.name}",
+                execution_name=f"执行用例: {test_case.name}",
             )
 
             serializer = ApiTestExecutionSerializer(execution)
