@@ -78,18 +78,12 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - 前端服务地址固定：**http://localhost:3000/**（IP被占用时先kill再重启）
 - 后端服务地址固定：**http://127.0.0.1:8000/**（IP被占用时先kill再重启）
 - 后端代码改动后，如涉及模型变更需执行数据库迁移
-- **禁止使用Write工具覆盖整个文件**，如必须覆盖请先备份
-- 所有Python命令使用该路径下的Python执行:**D:\Python3.12\python.exe**,不要执行使用默认的Python命令
+- **已包含内容的文件,禁止使用Write工具覆盖整个文件**，如必须覆盖请先备份
 
 ## 重要文档/目录
 
 - **project_info.md** - 接口自动化的完整项目概述、技术架构、功能模块、开发进度
 - **ui_project_info.md** - 基于 **browser_use** 开源框架的 AI 驱动 UI 自动化测试平台，文件记录完整项目介绍、技术架构、功能模块、开发进度
-- **README.md** - 用户操作手册和快速开始指南
-- **/develop_document/** - 功能设计和实现文档
-- **/test_case/** - 测试用例和测试报告
-- **/test_case/playwright_Test** - UI自动化测试用例
-- **/test_case/api_test** - 接口自动化测试用例
 
 ## 开发流程
 
@@ -156,7 +150,6 @@ python manage.py createsuperuser
 
 ```bash
 cd VUE3
-
 # 安装依赖
 npm install
 
@@ -222,7 +215,6 @@ npm run type-check
 - 组件名使用 PascalCase
 - 明确定义 props 和 emits 类型
 - 新代码使用 TypeScript
-- 组件文件不超过300行
 - 使用 ESLint + Prettier 格式化
 - 实现适当的错误边界
 
@@ -245,36 +237,7 @@ npm run type-check
 - 适当实现API请求缓存
 - 通过 tree shaking 减小打包体积
 
-## Git 工作流
-
-### 分支策略
-
-- 主分支：`main`
-- 功能分支：`feature/description`
-- 修复分支：`bugfix/description`
-- 紧急修复：`hotfix/description`
-
-### 提交信息格式
-
-遵循 Conventional Commits：
-- `feat`：新功能
-- `fix`：Bug修复
-- `docs`：文档变更
-- `style`：代码风格变更
-- `refactor`：代码重构
-- `test`：测试添加或变更
-- `chore`：维护任务
-
-示例：
-```
-feat(api-automation): add test case execution feature
-
-- Implement test case executor service
-- Add API endpoint for running tests
-- Create frontend component for test execution
-```
-
-### 自动提交和推送规则
+## 自动提交和推送规则
 
 **⚠️ 强制规则**：Claude Code 必须遵守以下 Git 工作流
 
@@ -282,7 +245,7 @@ feat(api-automation): add test case execution feature
 |---------|------|
 | **每次 commit 前** | 必须先执行 `git pull` 更新代码 |
 | **每次修改文件** | 必须执行 `git commit` |
-| **修改文件超过 3 个** | 必须执行 `git push` |
+| **修改文件超过 5 个** | 必须执行 `git push` |
 | **本地 commit 超过 3 个** | 必须执行 `git push` |
 
 **工作流程**：
@@ -294,7 +257,7 @@ feat(api-automation): add test case execution feature
    └─ 有冲突 → 等待用户确认解决
 4. git commit -m "类型: 描述"
 5. 检查触发条件：
-   - 修改文件数 > 3？→ git push
+   - 修改文件数 > 5？→ git push
    - 未推送 commit 数 > 3？→ git push
 ```
 
@@ -318,66 +281,25 @@ feat(api-automation): add test case execution feature
 - `docs(readme): 更新安装步骤说明`
 - `refactor(dashboard): 重构数据获取逻辑`
 
-### 代码审查检查清单
-
-- [ ] 代码遵循项目风格指南
-- [ ] 测试已编写并通过
-- [ ] 文档已更新
-- [ ] 安全考虑已处理
-- [ ] 性能影响已考虑
-- [ ] 错误处理已实现
-- [ ] Git 规则已遵守（commit + push）
-
-## 常见开发流程
-
-### 添加新API端点
-
-1. 在 `Django_project/api_automation/models.py` 创建/更新模型
-2. 运行 `python manage.py makemigrations api_automation`
-3. 运行 `python manage.py migrate`
-4. 在 `Django_project/api_automation/serializers.py` 创建/更新序列化器
-5. 在 `Django_project/api_automation/views.py` 创建/更新视图
-6. 在 `Django_project/api_automation/urls.py` 添加URL
-7. 在 `VUE3/src/modules/api-automation/api/` 创建/更新API文件
-8. 在 `VUE3/src/modules/api-automation/types/` 创建/更新类型
-9. 添加/更新前端组件/视图
-10. 编写前后端测试
-11. 更新文档
-
-### 数据库迁移流程
+## 数据库迁移流程
 
 ```bash
 # 模型变更后
 python manage.py makemigrations api_automation
-
-# 查看生成的迁移文件
-
 # 应用迁移
 python manage.py migrate
-
 # 生产环境使用
 python manage.py migrate --settings=config.settings.production
 ```
 
-### 添加新前端组件
-
-1. 在适当的模块目录创建组件
-2. 使用 TypeScript，正确定义 prop/emit
-3. 遵循单一职责原则
-4. 复杂组件添加单元测试
-5. 如需要从模块 index 文件导出
-6. 更新文档
-
-### 重启服务
+## 重启服务
 
 **重启后端（端口 127.0.0.1:8000）**
 ```bash
 # 1. 查找占用端口的进程
 netstat -ano | findstr ":8000" | findstr "LISTENING"
-
 # 2. Kill进程（假设PID为1234）
 taskkill /F /PID 1234
-
 # 3. 重新启动
 cd Django_project
 python manage.py runserver 127.0.0.1:8000
@@ -387,21 +309,9 @@ python manage.py runserver 127.0.0.1:8000
 ```bash
 # 1. 查找占用端口的进程
 netstat -ano | findstr ":3000" | findstr "LISTENING"
-
 # 2. Kill进程（假设PID为5678）
 taskkill /F /PID 5678
-
 # 3. 重新启动
 cd VUE3
 npm run dev -- --host localhost --port 3000
 ```
-
-## 重要提醒
-
-1. **始终**使用适当的模块隔离 - 禁止跨模块导入
-2. **必须**遵循命名约定（所有API模块类使用Api前缀）
-3. **必需**为所有新功能编写测试（≥80%覆盖率）
-4. **强制**合并任何变更前进行代码审查
-5. **始终**考虑新代码的安全影响
-6. **必须**优化性能（数据库查询、打包体积）
-7. **必需**为API变更更新文档

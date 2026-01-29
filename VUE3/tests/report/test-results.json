@@ -10,9 +10,7 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 1
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "reporter": [
       [
@@ -42,9 +40,7 @@
         "outputDir": "D:/AI/AI-test-project/VUE3/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 1
-        },
+        "metadata": {},
         "id": "chromium",
         "name": "chromium",
         "testDir": "D:/AI/AI-test-project/VUE3/tests",
@@ -79,7 +75,7 @@
           "specs": [
             {
               "title": "应该显示登录页面",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -88,120 +84,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6104,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:17:24",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 24,
-                          "line": 17
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m   test(\u001b[32m'应该显示登录页面'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m     \u001b[90m// 验证页面标题\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/AI.*测试平台/\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// 验证登录表单元素存在 - 使用 first() 避免严格模式违规\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"text\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 24,
-                            "line": 17
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n\n\n  15 |   test('应该显示登录页面', async ({ page }) => {\n  16 |     // 验证页面标题\n> 17 |     await expect(page).toHaveTitle(/AI.*测试平台/);\n     |                        ^\n  18 |\n  19 |     // 验证登录表单元素存在 - 使用 first() 避免严格模式违规\n  20 |     await expect(page.locator('input[type=\"text\"]').first()).toBeVisible();\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:17:24"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:09:30.500Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 24,
-                        "line": 17
-                      }
-                    },
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6377,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:17:24",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 24,
-                          "line": 17
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m   test(\u001b[32m'应该显示登录页面'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m     \u001b[90m// 验证页面标题\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/AI.*测试平台/\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[90m// 验证登录表单元素存在 - 使用 first() 避免严格模式违规\u001b[39m\n \u001b[90m 20 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"text\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 24,
-                            "line": 17
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveTitle\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/AI.*测试平台/\u001b[39m\nReceived string:  \u001b[31m\"登录 - API自动化测试平台\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveTitle\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"登录 - API自动化测试平台\"\u001b[22m\n\n\n  15 |   test('应该显示登录页面', async ({ page }) => {\n  16 |     // 验证页面标题\n> 17 |     await expect(page).toHaveTitle(/AI.*测试平台/);\n     |                        ^\n  18 |\n  19 |     // 验证登录表单元素存在 - 使用 first() 避免严格模式违规\n  20 |     await expect(page.locator('input[type=\"text\"]').first()).toBeVisible();\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:17:24"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-16T08:09:38.530Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium-retry1\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium-retry1\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示登录页面-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 24,
-                        "line": 17
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-c3e6295e81393838abb0",
@@ -211,7 +95,7 @@
             },
             {
               "title": "应该显示注册 Tab",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -220,120 +104,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6170,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:29:58",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 58,
-                          "line": 29
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 27 |\u001b[39m   test(\u001b[32m'应该显示注册 Tab'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 28 |\u001b[39m     \u001b[90m// 验证注册 Tab 存在\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'tab'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 30 |\u001b[39m\n \u001b[90m 31 |\u001b[39m     \u001b[90m// 点击注册 Tab\u001b[39m\n \u001b[90m 32 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'tab'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 58,
-                            "line": 29
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n\n\n  27 |   test('应该显示注册 Tab', async ({ page }) => {\n  28 |     // 验证注册 Tab 存在\n> 29 |     await expect(page.getByRole('tab', { name: /注册/i })).toBeVisible();\n     |                                                          ^\n  30 |\n  31 |     // 点击注册 Tab\n  32 |     await page.getByRole('tab', { name: /注册/i }).click();\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:29:58"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:09:47.128Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 58,
-                        "line": 29
-                      }
-                    },
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6289,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:29:58",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 58,
-                          "line": 29
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 27 |\u001b[39m   test(\u001b[32m'应该显示注册 Tab'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 28 |\u001b[39m     \u001b[90m// 验证注册 Tab 存在\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'tab'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 30 |\u001b[39m\n \u001b[90m 31 |\u001b[39m     \u001b[90m// 点击注册 Tab\u001b[39m\n \u001b[90m 32 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'tab'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 58,
-                            "line": 29
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('tab', { name: /注册/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('tab', { name: /注册/i })\u001b[22m\n\n\n  27 |   test('应该显示注册 Tab', async ({ page }) => {\n  28 |     // 验证注册 Tab 存在\n> 29 |     await expect(page.getByRole('tab', { name: /注册/i })).toBeVisible();\n     |                                                          ^\n  30 |\n  31 |     // 点击注册 Tab\n  32 |     await page.getByRole('tab', { name: /注册/i }).click();\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:29:58"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-16T08:09:55.310Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium-retry1\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium-retry1\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该显示注册-Tab-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 58,
-                        "line": 29
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-602530b5f8e86f0b193e",
@@ -343,7 +115,7 @@
             },
             {
               "title": "应该在登录和注册之间切换",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -352,120 +124,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11276,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:48:23",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 23,
-                          "line": 48
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \u001b[90m// 切换到注册 - 点击Tab\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[36mconst\u001b[39m registerTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"tab\"]'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m registerTab\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m registerButtons \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m     \u001b[36mawait\u001b[39m expect(registerButtons\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 51 |\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 23,
-                            "line": 48
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n\n  46 |     // 切换到注册 - 点击Tab\n  47 |     const registerTab = page.locator('[role=\"tab\"]').filter({ hasText: /注册/i });\n> 48 |     await registerTab.click();\n     |                       ^\n  49 |     const registerButtons = page.locator('button').filter({ hasText: /注册/i });\n  50 |     await expect(registerButtons.first()).toBeVisible();\n  51 |\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:48:23"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:10:03.614Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 23,
-                        "line": 48
-                      }
-                    },
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11653,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:48:23",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 23,
-                          "line": 48
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \u001b[90m// 切换到注册 - 点击Tab\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[36mconst\u001b[39m registerTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"tab\"]'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m registerTab\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m registerButtons \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m     \u001b[36mawait\u001b[39m expect(registerButtons\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 51 |\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 23,
-                            "line": 48
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n\n  46 |     // 切换到注册 - 点击Tab\n  47 |     const registerTab = page.locator('[role=\"tab\"]').filter({ hasText: /注册/i });\n> 48 |     await registerTab.click();\n     |                       ^\n  49 |     const registerButtons = page.locator('button').filter({ hasText: /注册/i });\n  50 |     await expect(registerButtons.first()).toBeVisible();\n  51 |\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:48:23"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-16T08:10:16.874Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium-retry1\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium-retry1\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-应该在登录和注册之间切换-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 23,
-                        "line": 48
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-3463961023b58bbc1794",
@@ -484,26 +144,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3278,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未检测到错误提示，可能使用了其他错误显示方式\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:10:30.761Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-42e187537fa88f38f810",
@@ -513,7 +155,7 @@
             },
             {
               "title": "注册表单应该验证密码确认",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -522,120 +164,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 10999,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:85:23",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 23,
-                          "line": 85
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 83 |\u001b[39m     \u001b[90m// 切换到注册 Tab - 使用通用选择器\u001b[39m\n \u001b[90m 84 |\u001b[39m     \u001b[36mconst\u001b[39m registerTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"tab\"]'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m     \u001b[36mawait\u001b[39m registerTab\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m     \u001b[90m// 输入不一致的密码\u001b[39m\n \u001b[90m 88 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[placeholder*=\"用户名\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'testuser'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 23,
-                            "line": 85
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n\n  83 |     // 切换到注册 Tab - 使用通用选择器\n  84 |     const registerTab = page.locator('[role=\"tab\"]').filter({ hasText: /注册/i });\n> 85 |     await registerTab.click();\n     |                       ^\n  86 |\n  87 |     // 输入不一致的密码\n  88 |     await page.fill('input[placeholder*=\"用户名\"]', 'testuser');\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:85:23"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:10:34.371Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 23,
-                        "line": 85
-                      }
-                    },
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 11518,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:85:23",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                          "column": 23,
-                          "line": 85
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 83 |\u001b[39m     \u001b[90m// 切换到注册 Tab - 使用通用选择器\u001b[39m\n \u001b[90m 84 |\u001b[39m     \u001b[36mconst\u001b[39m registerTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'[role=\"tab\"]'\u001b[39m)\u001b[33m.\u001b[39mfilter({ hasText\u001b[33m:\u001b[39m \u001b[35m/注册/i\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m     \u001b[36mawait\u001b[39m registerTab\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m     \u001b[90m// 输入不一致的密码\u001b[39m\n \u001b[90m 88 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[placeholder*=\"用户名\"]'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'testuser'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                            "column": 23,
-                            "line": 85
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"tab\"]').filter({ hasText: /注册/i })\u001b[22m\n\n\n  83 |     // 切换到注册 Tab - 使用通用选择器\n  84 |     const registerTab = page.locator('[role=\"tab\"]').filter({ hasText: /注册/i });\n> 85 |     await registerTab.click();\n     |                       ^\n  86 |\n  87 |     // 输入不一致的密码\n  88 |     await page.fill('input[placeholder*=\"用户名\"]', 'testuser');\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts:85:23"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-16T08:10:46.922Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium-retry1\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium-retry1\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\01-auth-用户认证-注册表单应该验证密码确认-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\01-auth.spec.ts",
-                        "column": 23,
-                        "line": 85
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-411be3ad411571eb7488",
@@ -654,22 +184,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 8,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1140,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:00.598Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "791b3c4e0869e77b2651-6a769999e66e4c7df3ff",
@@ -696,7 +212,7 @@
           "specs": [
             {
               "title": "应该显示仪表盘页面",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -705,128 +221,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 8,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6626,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts:44:38",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                          "column": 38,
-                          "line": 44
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 42 |\u001b[39m     \u001b[90m// 验证仪表盘关键元素存在\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mconst\u001b[39m statsCards \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.stat-card, .el-card'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 44 |\u001b[39m     \u001b[36mawait\u001b[39m expect(statsCards\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 45 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 46 |\u001b[39m\n \u001b[90m 47 |\u001b[39m   test(\u001b[32m'应该显示统计卡片'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                            "column": 38,
-                            "line": 44
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n\n\n  42 |     // 验证仪表盘关键元素存在\n  43 |     const statsCards = page.locator('.stat-card, .el-card');\n> 44 |     await expect(statsCards.first()).toBeVisible({ timeout: 5000 });\n     |                                      ^\n  45 |   });\n  46 |\n  47 |   test('应该显示统计卡片', async ({ page }) => {\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts:44:38"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "页面标题: 登录 - API自动化测试平台\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:02.124Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                        "column": 38,
-                        "line": 44
-                      }
-                    },
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 12542,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts:44:38",
-                        "location": {
-                          "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                          "column": 38,
-                          "line": 44
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 42 |\u001b[39m     \u001b[90m// 验证仪表盘关键元素存在\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mconst\u001b[39m statsCards \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'.stat-card, .el-card'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 44 |\u001b[39m     \u001b[36mawait\u001b[39m expect(statsCards\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 45 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 46 |\u001b[39m\n \u001b[90m 47 |\u001b[39m   test(\u001b[32m'应该显示统计卡片'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                            "column": 38,
-                            "line": 44
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stat-card, .el-card').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stat-card, .el-card').first()\u001b[22m\n\n\n  42 |     // 验证仪表盘关键元素存在\n  43 |     const statsCards = page.locator('.stat-card, .el-card');\n> 44 |     await expect(statsCards.first()).toBeVisible({ timeout: 5000 });\n     |                                      ^\n  45 |   });\n  46 |\n  47 |   test('应该显示统计卡片', async ({ page }) => {\n    at D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts:44:38"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "页面标题: 登录 - API自动化测试平台\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-16T08:11:10.332Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium-retry1\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium-retry1\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "D:\\AI\\AI-test-project\\VUE3\\test-results\\02-dashboard-仪表盘功能-应该显示仪表盘页面-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\AI\\AI-test-project\\VUE3\\tests\\02-dashboard.spec.ts",
-                        "column": 38,
-                        "line": 44
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-13ce095eb040360e6737",
@@ -845,29 +241,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1678,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "找到 0 个统计卡片\n"
-                        },
-                        {
-                          "text": "⚠ 统计卡片数量可能不完整\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:25.020Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-1ef723e024e5004ab05c",
@@ -886,29 +261,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1545,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "找到 0 个图表容器\n"
-                        },
-                        {
-                          "text": "⚠ 未找到图表容器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:27.087Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-6cb4eaa353d43bcd433f",
@@ -927,26 +281,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1622,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境维度报告\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:28.651Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-4a3a3ba85b2075f66acc",
@@ -965,26 +301,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1699,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到集合维度报告\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:30.292Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-cf5943e2fe2e2c202a5a",
@@ -1003,26 +321,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1736,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到筛选控件\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:32.013Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-766260f1d123e20f285d",
@@ -1041,26 +341,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1637,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 没有找到可点击的统计卡片\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:33.771Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-ebb876008ccc3a3e9d33",
@@ -1079,26 +361,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1631,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到导航菜单\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:35.428Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-421728f30017489edbfc",
@@ -1117,26 +381,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1572,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到面包屑导航\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:37.084Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-3e3a3aeb0cdfe55f5871",
@@ -1155,26 +401,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1574,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到用户信息显示\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:38.687Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4d2f27bfb2b30c5eaf6b-147536653b4abe6d05d0",
@@ -1210,26 +438,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1464,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 项目列表页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:40.304Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-485c25bac9ac12e7b7d5",
@@ -1248,29 +458,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1411,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 项目列表表格存在\n"
-                        },
-                        {
-                          "text": "表格行数: 2\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:41.807Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-697ab35ddb9632450544",
@@ -1289,26 +478,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1408,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到新建项目按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:43.236Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-733c08358eeaa91ce3d6",
@@ -1327,26 +498,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1420,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到搜索框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:44.666Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-23824dcef762cc48b5cf",
@@ -1365,26 +518,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1382,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到分页组件\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:46.114Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-6e10d8ce98ece15987fe",
@@ -1403,26 +538,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1415,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到项目详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:47.520Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-26ddb3c97dc90013ab19",
@@ -1441,26 +558,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1535,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到表格操作按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:48.957Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-6fc8478da5ad453e8bf6",
@@ -1479,26 +578,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1689,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 项目详情页可访问\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:50.519Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-2f59d88c998d723eea88",
@@ -1517,26 +598,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1546,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到项目统计信息\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:52.243Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-1a6042cc3fdb4c78d08c",
@@ -1555,26 +618,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1384,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到返回按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:53.822Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "170e330b674cd4591580-7245ba2a5a141fff28f1",
@@ -1610,26 +655,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1424,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 集合列表页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:55.246Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-3ad53b2921bdcc11bb14",
@@ -1648,26 +675,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1412,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 集合表格存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:56.689Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-d7ce249e4b0dfdb0163e",
@@ -1686,26 +695,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1352,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到项目筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:58.120Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-9dbc4849d15e73220135",
@@ -1724,26 +715,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1459,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到新建集合按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:11:59.504Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-7f845759ac4e67ae318d",
@@ -1762,26 +735,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1517,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到集合详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:00.984Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-b0a608bda19fb51b8144",
@@ -1800,26 +755,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1506,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 集合详情显示测试用例列表\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:02.529Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-46fad75e909918a3e9f9",
@@ -1838,26 +775,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1470,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量添加用例按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:04.054Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-790e49e87396fee67154",
@@ -1876,26 +795,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1446,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量移除用例按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:05.545Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-0259287a7ce377c9509e",
@@ -1914,26 +815,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1445,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:07.016Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-af1589f8365eb41ef634",
@@ -1952,26 +835,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1522,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到克隆按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:08.480Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "2883089e8e657dbd46f7-9eac59fdcab16207f291",
@@ -2007,26 +872,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1455,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 测试用例列表页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:10.040Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-ff08902cc394fc1edd3c",
@@ -2045,26 +892,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1490,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 测试用例表格存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:11.528Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-c0c50cd292ea33ce3fd1",
@@ -2083,26 +912,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1429,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 筛选器可能不完整\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:13.043Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-f8e529dc7b5777ed4f68",
@@ -2121,26 +932,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1543,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到新建用例按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:14.493Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-eb9575faaff5d57687ff",
@@ -2159,26 +952,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1385,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到搜索框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:16.057Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-518ccc887457338336d0",
@@ -2197,26 +972,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1525,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到用例详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:17.476Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-5f1d382dfa30e09bccb5",
@@ -2235,26 +992,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1419,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 用例详情显示请求配置\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:19.031Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-7fc50b548811977898bd",
@@ -2273,26 +1012,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1832,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 断言配置区域存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:20.474Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-a3d45f96976879f63b48",
@@ -2311,26 +1032,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1722,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 数据提取区域存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:22.331Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-c0b46099164bcd79199e",
@@ -2349,26 +1052,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1695,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:24.072Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-545c145fba6ddeb54be2",
@@ -2387,26 +1072,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1582,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量执行按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:25.793Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-c0bb7932c3a35582e5dc",
@@ -2425,26 +1092,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1587,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到克隆按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:27.406Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "c9a48dd6ad2062f23822-864639e1b99442cf8193",
@@ -2480,26 +1129,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1597,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 环境管理页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:29.023Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-e08885681328895b7db5",
@@ -2518,26 +1149,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1468,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 环境列表表格存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:30.644Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-6d76ca7bd72d5d382944",
@@ -2556,26 +1169,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1391,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境统计卡片\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:32.146Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-5e1eb7e0f06b95c51fe8",
@@ -2594,26 +1189,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1456,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到新建环境按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:33.558Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-f8d3cff558639ffcede3",
@@ -2632,26 +1209,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1685,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到测试连接按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:35.039Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-e3cc0873e33af2f45948",
@@ -2670,26 +1229,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1603,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到导入导出按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:36.745Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-219309d48a92a69e21df",
@@ -2708,26 +1249,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1814,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量操作按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:38.374Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-22f7f2757ceb5f4733ae",
@@ -2746,26 +1269,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1696,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到搜索框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:40.207Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-5cc5057323222f81489c",
@@ -2784,26 +1289,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1493,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:41.923Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-3869ef20099827174b00",
@@ -2822,26 +1309,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1694,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 环境配置信息可能不完整\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:43.434Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-6f3d94b248bbd100db94",
@@ -2860,26 +1329,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1777,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到设为默认按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:45.145Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-70c197880790db851db1",
@@ -2898,26 +1349,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1690,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到克隆按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:46.940Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "338cf8a692bea67e83fe-6d4e70b07989b7cdbd95",
@@ -2953,26 +1386,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1640,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ HTTP执行器页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:48.666Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-6e5e138f5d15994f396f",
@@ -2991,26 +1406,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1645,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到请求方法选择器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:50.327Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-385dbdb19e243dbabc04",
@@ -3029,26 +1426,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1463,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到URL输入框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:52.003Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-d53da3c1810ce13ba170",
@@ -3067,26 +1446,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1363,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到请求头配置区域\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:53.483Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-707f40bc2c755d0bd9e2",
@@ -3105,26 +1466,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1530,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到请求体配置区域\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:54.863Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-6be3f264f0fc65b8c930",
@@ -3143,26 +1486,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1448,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到发送请求按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:56.417Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-b418af194ad53584f20f",
@@ -3181,26 +1506,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1455,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到响应区域\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:57.886Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-1fb9dabf5470014b1ce2",
@@ -3219,26 +1526,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1427,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到cURL导入按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:12:59.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-069af674b4f81d25eb58",
@@ -3257,26 +1546,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1521,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到保存为用例按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:00.813Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-693f29261b533b6f14cd",
@@ -3295,26 +1566,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1566,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 请求历史区域存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:02.351Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-4ee1cde8ab49cf876eb0",
@@ -3333,26 +1586,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1440,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境选择器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:03.930Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-6e0a83efbb93a2ec2a99",
@@ -3371,26 +1606,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1607,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到变量相关元素\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:05.386Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d93be45ebc7e7164f3ff-a8b69b64887b2118edb6",
@@ -3426,26 +1643,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1547,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 报告列表页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:07.018Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-d2dab57439c813d49ae8",
@@ -3464,26 +1663,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1503,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 报告列表表格存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:08.593Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-5f1d5afa6749850022d7",
@@ -3502,26 +1683,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1437,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:10.117Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-8569c0b97a0718b3614e",
@@ -3540,26 +1703,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2002,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到报告详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:11.578Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-4629fea1885e54571cb2",
@@ -3578,26 +1723,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4750,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行摘要\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:13.609Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-a77df47542988d9d4b99",
@@ -3616,26 +1743,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2001,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 报告详情显示测试结果列表\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:18.388Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-503752f09616d9dfd906",
@@ -3654,26 +1763,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1915,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到图表\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:20.413Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-7b5ae4956a733c1b3ea9",
@@ -3692,26 +1783,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1738,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到报告导出按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:22.346Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-42245fe1ffbaf1891b92",
@@ -3730,29 +1803,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1740,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "  ✓ 支持 JSON 格式\n"
-                        },
-                        {
-                          "text": "✓ 共支持 1 种导出格式\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:24.102Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-185b2ff4d280a8a4b8cd",
@@ -3771,26 +1823,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1576,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到搜索框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:25.862Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-c2c3262d4930137c553e",
@@ -3809,26 +1843,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1623,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到时间范围筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:27.467Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-d733a0c7e7f6a3a75dff",
@@ -3847,26 +1863,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1497,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量操作按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:29.113Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "d5a7b5e479d09410b3ec-37c8b8394f25383bff68",
@@ -3902,26 +1900,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1468,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 回收站页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:30.645Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-a05efc363a4a2a63695d",
@@ -3940,26 +1920,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1524,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到回收站统计卡片\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:32.135Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-f16566baad32604b1767",
@@ -3978,26 +1940,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1562,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 回收站表格存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:33.682Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-153f78be69544b40ecfb",
@@ -4016,26 +1960,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1619,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到类型筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:35.272Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-dace2c069ac7e7c06eab",
@@ -4054,26 +1980,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1424,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到搜索框\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:36.917Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-777113158a911d9bde72",
@@ -4092,26 +2000,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1530,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到恢复按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:38.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-1622f91394af0b7fb2ca",
@@ -4130,26 +2020,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1613,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量恢复按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:39.921Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-35bfd8b3043b1c7c314f",
@@ -4168,26 +2040,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1544,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到彻底删除按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:41.558Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-a921dddae14062bfd081",
@@ -4206,26 +2060,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1595,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到批量彻底删除按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:43.126Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-e6542b082dd186465986",
@@ -4244,26 +2080,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1571,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到删除时间显示\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:44.757Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-0686d9229f78b5d6b116",
@@ -4282,26 +2100,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1524,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到数据类型标签\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:46.351Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-56bc3490935fb95a775d",
@@ -4320,26 +2120,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1574,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到分页组件\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:47.894Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-5eb1275791b27b7732a9",
@@ -4358,26 +2140,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1408,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到选择功能\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:49.493Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "891a6516e0f28a43d66d-e7a2b216dc417f6d8b41",
@@ -4413,26 +2177,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1467,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 执行记录页面加载成功\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:50.931Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-080247c6e7f3bb4cc328",
@@ -4451,26 +2197,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1527,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 执行记录列表存在\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:52.420Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-4d8ee6d713e56085a319",
@@ -4489,26 +2217,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1393,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行状态显示\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:53.978Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-3bd5c68df50d3013cdd5",
@@ -4527,26 +2237,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1412,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行详情链接\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:55.387Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-1584f214d831f68b9d50",
@@ -4565,26 +2257,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1433,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "✓ 执行详情显示用例结果\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:56.811Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-31e4690b4c5ddf246d5f",
@@ -4603,26 +2277,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1420,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到进度条\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:58.262Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-7bd82d8cf399be46f6fb",
@@ -4641,26 +2297,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1446,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到取消执行按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:13:59.699Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-53a751802cf85e8acd53",
@@ -4679,26 +2317,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1458,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到重新执行按钮\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:14:01.168Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-3575164b9f2c308a8904",
@@ -4717,26 +2337,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1438,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到执行时间显示\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:14:02.645Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-6234a1a267d059b548ab",
@@ -4755,26 +2357,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1450,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到环境筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:14:04.108Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-3ead6dffc77eb9f1d82c",
@@ -4793,26 +2377,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1465,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到状态筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:14:05.582Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-c6c574300c3550290b6a",
@@ -4831,26 +2397,8 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1509,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠ 未找到时间范围筛选器\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-16T08:14:07.070Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "4c509ab0786c6e09cded-68e392235905e4ab201a",
@@ -4865,11 +2413,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-16T08:09:29.000Z",
-    "duration": 280017.87,
-    "expected": 104,
-    "skipped": 0,
-    "unexpected": 5,
+    "startTime": "2026-01-29T02:06:56.753Z",
+    "duration": 246.683,
+    "expected": 0,
+    "skipped": 109,
+    "unexpected": 0,
     "flaky": 0
   }
 }
