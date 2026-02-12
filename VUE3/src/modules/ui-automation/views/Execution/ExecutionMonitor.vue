@@ -20,7 +20,7 @@
           取消执行
         </el-button>
         <el-button
-          v-if="executionStore.currentExecution?.status === 'completed'"
+          v-if="executionStore.currentExecution?.status === 'passed' || executionStore.currentExecution?.status === 'failed' || executionStore.currentExecution?.status === 'error'"
           type="success"
           @click="handleViewReport"
         >
@@ -284,7 +284,7 @@ const connectWebSocket = () => {
       }
 
       // 更新执行记录
-      if (data.data.status === 'completed' || data.data.status === 'failed') {
+      if (data.data.status === 'passed' || data.data.status === 'failed' || data.data.status === 'error') {
         refreshData()
         disconnectWebSocket()
       }

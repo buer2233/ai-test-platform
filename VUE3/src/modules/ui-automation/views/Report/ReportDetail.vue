@@ -237,6 +237,8 @@ import {
 } from '@element-plus/icons-vue'
 import type { BrowserUseReport, AgentHistoryStep, Action } from '../../types'
 import { http } from '@/shared/utils/http'
+import { uiReportApi } from '../../api/report'
+import type { UiTestReportSummary } from '../../types/report'
 
 const route = useRoute()
 const router = useRouter()
@@ -244,27 +246,27 @@ const router = useRouter()
 const reportId = Number(route.params.id)
 const loading = ref(false)
 const browserUseReport = ref<BrowserUseReport | null>(null)
+const reportSummary = ref<UiTestReportSummary | null>(null)
 const showJson = ref(false)
 const stepFilter = ref<'all' | 'failed' | 'success'>('all')
 const expandedSteps = ref<Record<number, boolean>>({})
 const allExpanded = ref(false)
 
-// 获取报告路径
+// 获取报告路径（优先 query，回退 summary）
 const reportPath = computed(() => {
-  // 从执行记录获取报告路径
-  // 这里需要通过 API 获取执行记录的 report_path 字段
-  return route.query.report as string || ''
+  return (route.query.report as string) || reportSummary.value?.json_report_path || ''
 })
 
 // 加载 JSON 报告
 const loadReport = async () => {
-  if (!reportPath.value) {
-    ElMessage.warning('未找到报告文件路径')
-    return
-  }
-
   loading.value = true
   try {
+    reportSummary.value = await uiReportApi.getReportSummary(reportId)
+    if (!reportPath.value) {
+      ElMessage.warning('未找到报告文件路径')
+      return
+    }
+
     // 使用 http 工具（自动携带认证信息）
     const data = await http.get<BrowserUseReport>(
       `/v1/ui-automation/reports/file`,
@@ -284,16 +286,24 @@ const loadReport = async () => {
 }
 
 // 总步骤数
-const totalSteps = computed(() => browserUseReport.value?.history?.length || 0)
+const totalSteps = computed(() => {
+  if (browserUseReport.value?.history?.length) return browserUseReport.value.history.length
+  return reportSummary.value?.metrics.total_steps || 0
+})
 
 // 截图数量
 const screenshotCount = computed(() => {
-  if (!browserUseReport.value?.history) return 0
-  return browserUseReport.value.history.filter(step => step.state.screenshot_path).length
+  if (browserUseReport.value?.history) {
+    return browserUseReport.value.history.filter(step => step.state.screenshot_path).length
+  }
+  return reportSummary.value?.metrics.screenshot_count || 0
 })
 
 // 是否成功
 const isSuccess = computed(() => {
+  if (reportSummary.value) {
+    return reportSummary.value.status === 'passed'
+  }
   if (!browserUseReport.value?.history) return false
   const lastStep = browserUseReport.value.history[browserUseReport.value.history.length - 1]
   return lastStep?.result?.[0]?.success ?? false
@@ -301,6 +311,7 @@ const isSuccess = computed(() => {
 
 // 最终结果
 const finalResult = computed(() => {
+  if (reportSummary.value?.final_result) return reportSummary.value.final_result
   if (!browserUseReport.value?.history) return ''
   const lastStep = browserUseReport.value.history[browserUseReport.value.history.length - 1]
   return lastStep?.result?.[0]?.extracted_content || ''

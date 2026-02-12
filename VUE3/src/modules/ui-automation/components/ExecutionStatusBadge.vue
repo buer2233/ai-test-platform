@@ -12,7 +12,6 @@ import { computed } from 'vue'
 import {
   Clock,
   Loading,
-  SuccessFilled,
   CircleCloseFilled,
   CircleCheck
 } from '@element-plus/icons-vue'
@@ -31,8 +30,9 @@ const statusType = computed(() => {
   const types: Record<ExecutionStatus, any> = {
     pending: 'info',
     running: 'warning',
-    completed: 'success',
+    passed: 'success',
     failed: 'danger',
+    error: 'danger',
     cancelled: 'info'
   }
   return props.status ? types[props.status] : 'info'
@@ -42,8 +42,9 @@ const statusText = computed(() => {
   const texts: Record<ExecutionStatus, string> = {
     pending: '待执行',
     running: '执行中',
-    completed: '已完成',
+    passed: '通过',
     failed: '失败',
+    error: '错误',
     cancelled: '已取消'
   }
   return props.status ? texts[props.status] : '未知'
@@ -53,8 +54,9 @@ const statusIcon = computed(() => {
   const icons: Record<ExecutionStatus, any> = {
     pending: Clock,
     running: Loading,
-    completed: CircleCheck,
+    passed: CircleCheck,
     failed: CircleCloseFilled,
+    error: CircleCloseFilled,
     cancelled: CircleCloseFilled
   }
   return props.status ? icons[props.status] : null

@@ -30,8 +30,9 @@
           <el-select v-model="filterForm.status" placeholder="全部" clearable @change="handleSearch">
             <el-option label="待执行" value="pending" />
             <el-option label="执行中" value="running" />
-            <el-option label="已完成" value="completed" />
+            <el-option label="通过" value="passed" />
             <el-option label="失败" value="failed" />
+            <el-option label="错误" value="error" />
             <el-option label="已取消" value="cancelled" />
           </el-select>
         </el-form-item>
@@ -108,7 +109,7 @@
               详情
             </el-button>
             <el-button
-              v-if="row.status === 'completed' || row.status === 'failed'"
+              v-if="row.status === 'passed' || row.status === 'failed' || row.status === 'error'"
               link
               type="success"
               @click.stop="handleViewReport(row)"
@@ -117,7 +118,7 @@
               报告
             </el-button>
             <el-button
-              v-if="row.status === 'completed' || row.status === 'failed'"
+              v-if="row.status === 'passed' || row.status === 'failed' || row.status === 'error'"
               link
               type="info"
               @click.stop="handleExportReport(row)"
@@ -186,8 +187,9 @@ const getStatusType = (status: ExecutionStatus) => {
   const types: Record<ExecutionStatus, any> = {
     pending: 'info',
     running: 'warning',
-    completed: 'success',
+    passed: 'success',
     failed: 'danger',
+    error: 'danger',
     cancelled: 'info'
   }
   return types[status] || 'info'
@@ -198,8 +200,9 @@ const getStatusText = (status: ExecutionStatus) => {
   const texts: Record<ExecutionStatus, string> = {
     pending: '待执行',
     running: '执行中',
-    completed: '已完成',
+    passed: '通过',
     failed: '失败',
+    error: '错误',
     cancelled: '已取消'
   }
   return texts[status] || status

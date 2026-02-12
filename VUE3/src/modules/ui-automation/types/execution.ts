@@ -2,7 +2,7 @@
  * UI自动化测试执行类型定义
  */
 
-export type ExecutionStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'
+export type ExecutionStatus = 'pending' | 'running' | 'passed' | 'failed' | 'error' | 'cancelled'
 
 export interface UiTestExecution {
   id: number
@@ -51,7 +51,8 @@ export interface ExecutionSummary {
   total: number
   pending: number
   running: number
-  completed: number
+  passed: number
   failed: number
+  error: number
   cancelled: number
 }

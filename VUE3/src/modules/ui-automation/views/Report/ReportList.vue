@@ -61,7 +61,7 @@
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status === 'passed' ? 'success' : 'danger'" size="small">
-              {{ row.status === 'passed' ? '通过' : '失败' }}
+              {{ row.status === 'passed' ? '通过' : row.status === 'failed' ? '失败' : '错误' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -80,18 +80,11 @@
             {{ formatDate(row.completed_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="handleView(row)">
               <el-icon><View /></el-icon>
               查看
-            </el-button>
-            <el-button link type="success" @click.stop="handleExport(row)">
-              <el-icon><Download /></el-icon>
-              导出
-            </el-button>
-            <el-button link type="danger" @click.stop="handleDelete(row)">
-              <el-icon><Delete /></el-icon>
             </el-button>
           </template>
         </el-table-column>
@@ -150,10 +143,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { View, Download, Delete } from '@element-plus/icons-vue'
+import { View } from '@element-plus/icons-vue'
 import { useUiReportStore } from '../../stores/report'
 import { useUiProjectStore } from '../../stores/project'
 import type { UiTestReport } from '../../types/report'
@@ -217,39 +209,6 @@ const handleRowClick = (row: UiTestReport) => {
 // 查看报告
 const handleView = (row: UiTestReport) => {
   router.push(`/ui-automation/reports/${row.id}`)
-}
-
-// 导出报告
-const handleExport = async (row: UiTestReport) => {
-  try {
-    const result = await reportStore.exportReport(row.id)
-    if (result.download_url) {
-      window.open(result.download_url, '_blank')
-      ElMessage.success('导出成功')
-    }
-  } catch {
-    // Error already handled
-  }
-}
-
-// 删除
-const handleDelete = async (row: UiTestReport) => {
-  try {
-    await ElMessageBox.confirm(
-      `确定要删除报告 #${row.id} 吗？`,
-      '删除确认',
-      {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }
-    )
-    await reportStore.deleteReport(row.id)
-    ElMessage.success('删除成功')
-    fetchReports()
-  } catch {
-    // 用户取消
-  }
 }
 
 onMounted(async () => {
