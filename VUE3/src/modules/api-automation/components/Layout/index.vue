@@ -1,9 +1,9 @@
 <template>
   <div class="layout-container">
     <!-- Sidebar -->
-    <aside :class="['layout-sidebar', { 'is-collapsed': isCollapse }]">
+    <aside data-testid="main-sidebar" :class="['layout-sidebar', { 'is-collapsed': isCollapse }]">
       <!-- Logo Section with Module Switcher -->
-      <div class="sidebar-logo" @click="toggleModuleDropdown">
+      <div class="sidebar-logo" data-testid="module-switcher" @click="toggleModuleDropdown">
         <div class="logo-icon" :class="{ 'is-ui': currentPlatform === 'ui' }">
           <svg v-if="currentPlatform === 'api'" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M32 8L56 20V44L32 56L8 44V20L32 8Z" stroke="url(#sidebar-logo-gradient)" stroke-width="2" fill="none"/>
@@ -134,7 +134,7 @@
     <!-- Main Content Area -->
     <div class="layout-main">
       <!-- Header -->
-      <header class="layout-header">
+      <header class="layout-header" data-testid="main-header">
         <div class="header-left">
           <button class="header-btn collapse-btn" @click="toggleCollapse">
             <el-icon>
@@ -780,3 +780,4 @@ onUnmounted(() => {
   }
 }
 </style>
+
