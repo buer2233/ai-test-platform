@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" data-testid="login-root">
     <!-- Background Effects -->
     <div class="login-bg-grid"></div>
     <div class="login-bg-gradient"></div>
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Auth Card -->
-    <div class="auth-card animate-scale-in">
+    <div class="auth-card animate-scale-in" data-testid="auth-card">
       <!-- Header -->
       <div class="auth-header">
         <div class="logo-icon">
@@ -34,13 +34,13 @@
       <!-- Toggle Tabs -->
       <div class="auth-tabs">
         <button
-          :class="['tab-btn', { active: mode === 'login' }]"
+          data-testid="login-tab" :class="['tab-btn', { active: mode === 'login' }]"
           @click="mode = 'login'"
         >
           登录
         </button>
         <button
-          :class="['tab-btn', { active: mode === 'register' }]"
+          data-testid="register-tab" :class="['tab-btn', { active: mode === 'register' }]"
           @click="mode = 'register'"
         >
           注册
@@ -108,7 +108,7 @@
           <el-button
             type="primary"
             size="large"
-            class="submit-btn"
+            class="submit-btn" data-testid="login-submit"
             :loading="loading"
             @click="handleLogin"
           >
@@ -450,7 +450,7 @@ onMounted(async () => {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background-color: var(--color-bg-primary);
+  background: radial-gradient(circle at 20% -10%, rgba(153, 186, 255, 0.45), transparent 42%), linear-gradient(180deg, #f8faff 0%, #eef3fc 100%);
 }
 
 /* BACKGROUND EFFECTS */
@@ -598,9 +598,9 @@ onMounted(async () => {
   position: relative;
   width: 420px;
   padding: var(--spacing-10);
-  background: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,251,255,0.92) 100%);
   border: 1px solid var(--color-border-primary);
-  border-radius: var(--border-radius-xl);
+  border-radius: var(--border-radius-2xl);
   backdrop-filter: blur(20px);
   box-shadow:
     0 0 0 1px rgba(0, 122, 255, 0.08),
@@ -904,3 +904,4 @@ onMounted(async () => {
   }
 }
 </style>
+

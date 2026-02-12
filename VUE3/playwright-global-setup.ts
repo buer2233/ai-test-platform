@@ -8,8 +8,9 @@ async function globalSetup(config: FullConfig) {
   console.log('========================================');
   console.log('开始执行 Playwright UI 自动化测试');
   console.log('测试平台: AI 自动化测试平台');
-  console.log('测试地址: http://localhost:3000');
+  console.log('测试地址: http://localhost:5173');
   console.log('========================================');
 }
 
 export default globalSetup;
+
