@@ -285,7 +285,13 @@ class UiTestReportSerializer(serializers.ModelSerializer):
     """UI测试报告序列化器"""
 
     execution_id = serializers.IntegerField(source='execution.id', read_only=True)
+    project = serializers.IntegerField(source='execution.project.id', read_only=True)
+    project_name = serializers.CharField(source='execution.project.name', read_only=True)
     test_case_name = serializers.CharField(source='execution.test_case.name', read_only=True)
+    status = serializers.CharField(source='execution.status', read_only=True)
+    duration_seconds = serializers.IntegerField(source='execution.duration_seconds', read_only=True, allow_null=True)
+    started_at = serializers.DateTimeField(source='execution.started_at', read_only=True, allow_null=True)
+    completed_at = serializers.DateTimeField(source='execution.completed_at', read_only=True, allow_null=True)
     agent_history = AgentHistoryField(required=False)
     screenshot_paths = TagsField(required=False)
 
@@ -293,9 +299,15 @@ class UiTestReportSerializer(serializers.ModelSerializer):
         model = UiTestReport
         fields = [
             'id',
+            'project',
+            'project_name',
             'execution',
             'execution_id',
             'test_case_name',
+            'status',
+            'duration_seconds',
+            'started_at',
+            'completed_at',
             'agent_history',
             'total_steps',
             'completed_steps',

@@ -1,5 +1,5 @@
 import { http } from '../../../shared/utils/http'
-import type { UiTestReport } from '../types/report'
+import type { UiTestReport, UiTestReportSummary } from '../types/report'
 
 const API_URL = '/v1/ui-automation'
 
@@ -12,6 +12,11 @@ export const uiReportApi = {
   // 获取单个报告
   getReport(id: number) {
     return http.get<UiTestReport>(`${API_URL}/reports/${id}/`)
+  },
+
+  // 获取报告汇总（含报告文件统计）
+  getReportSummary(id: number) {
+    return http.get<UiTestReportSummary>(`${API_URL}/reports/${id}/summary/`)
   },
 
   // 删除报告

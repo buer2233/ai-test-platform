@@ -46,12 +46,15 @@ export const useUiExecutionStore = defineStore('uiExecution', {
       const distribution = {
         pending: 0,
         running: 0,
-        completed: 0,
+        passed: 0,
         failed: 0,
+        error: 0,
         cancelled: 0
       }
       state.executions.forEach(exec => {
-        distribution[exec.status]++
+        if (exec.status in distribution) {
+          distribution[exec.status as keyof typeof distribution]++
+        }
       })
       return distribution
     }

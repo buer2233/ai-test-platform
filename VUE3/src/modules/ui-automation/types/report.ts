@@ -179,15 +179,39 @@ export interface UiTestReport {
   execution: number
   execution_id?: number
   test_case_name?: string
-  status: 'passed' | 'failed'
-  duration_seconds: number
-  started_at: string
-  completed_at: string
-  agent_history: string
-  screenshots: string
-  error_message: string | null
-  html_report_path: string | null
+  status: 'passed' | 'failed' | 'error' | 'pending' | 'running' | 'cancelled'
+  duration_seconds: number | null
+  started_at: string | null
+  completed_at: string | null
+  agent_history: unknown
+  screenshot_paths?: unknown
+  error_message?: string | null
+  html_report_path?: string | null
+  json_report_path?: string | null
   created_at: string
+}
+
+export interface UiTestReportSummary {
+  id: number
+  execution_id: number
+  project_id: number
+  project_name: string
+  test_case_name: string
+  browser_mode: 'headless' | 'headed'
+  status: 'passed' | 'failed' | 'error' | 'pending' | 'running' | 'cancelled'
+  started_at: string | null
+  completed_at: string | null
+  duration_seconds: number | null
+  json_report_path: string | null
+  summary: string
+  final_result: string
+  error_message: string
+  metrics: {
+    total_steps: number
+    failed_steps: number
+    success_steps: number
+    screenshot_count: number
+  }
 }
 
 export interface ReportStep {

@@ -692,6 +692,124 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
         """返回序列化器"""
         return UiTestReportSerializer
 
+    def _resolve_and_validate_report_path(self, report_path: str):
+        """解析并校验报告路径，仅允许 report 目录内文件。"""
+        from pathlib import Path
+        import urllib.parse
+
+        if not report_path:
+            return None, Response(
+                {'error': '请提供报告文件路径'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        decoded_path = urllib.parse.unquote(report_path)
+        base_report_dir = (Path(__file__).parent / 'browser-use-0.11.2' / 'report').resolve()
+
+        try:
+            file_path = Path(decoded_path).expanduser().resolve()
+        except Exception as e:
+            return None, Response(
+                {'error': f'无效的文件路径: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            file_path.relative_to(base_report_dir)
+        except ValueError:
+            file_path_str = str(file_path).lower()
+            base_dir_str = str(base_report_dir).lower()
+            if not file_path_str.startswith(base_dir_str):
+                return None, Response(
+                    {'error': '非法的文件路径，报告必须在报告目录内'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        if not file_path.exists():
+            return None, Response(
+                {'error': f'报告文件不存在: {file_path.name}'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if not file_path.is_file():
+            return None, Response(
+                {'error': '路径不是文件'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return file_path, None
+
+    @action(detail=True, methods=['get'])
+    def summary(self, request, pk=None):
+        """获取报告汇总信息（含 JSON 报告统计）。"""
+        report = self.get_object()
+        execution = report.execution
+
+        metrics = {
+            'total_steps': 0,
+            'failed_steps': 0,
+            'success_steps': 0,
+            'screenshot_count': 0,
+        }
+        last_result_text = ''
+
+        if report.json_report_path:
+            file_path, error_response = self._resolve_and_validate_report_path(report.json_report_path)
+            if error_response is None and file_path is not None:
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+
+                    history = data.get('history', []) if isinstance(data, dict) else []
+                    metrics['total_steps'] = len(history)
+
+                    failed_steps = 0
+                    screenshot_count = 0
+                    for step in history:
+                        step_results = step.get('result', []) if isinstance(step, dict) else []
+                        if any(item.get('error') for item in step_results if isinstance(item, dict)):
+                            failed_steps += 1
+                        state = step.get('state', {}) if isinstance(step, dict) else {}
+                        if isinstance(state, dict) and state.get('screenshot_path'):
+                            screenshot_count += 1
+
+                    metrics['failed_steps'] = failed_steps
+                    metrics['success_steps'] = max(metrics['total_steps'] - failed_steps, 0)
+                    metrics['screenshot_count'] = screenshot_count
+
+                    if history:
+                        last_step = history[-1]
+                        step_results = last_step.get('result', []) if isinstance(last_step, dict) else []
+                        if step_results and isinstance(step_results[0], dict):
+                            last_result_text = step_results[0].get('extracted_content', '') or ''
+                except Exception:
+                    # 解析失败时回退到数据库中的统计，不阻断响应
+                    pass
+
+        if metrics['total_steps'] == 0:
+            metrics['total_steps'] = report.total_steps or 0
+            metrics['failed_steps'] = report.failed_steps or 0
+            metrics['success_steps'] = max((report.completed_steps or 0) - (report.failed_steps or 0), 0)
+            metrics['screenshot_count'] = len(json.loads(report.screenshot_paths or '[]'))
+
+        return Response({
+            'id': report.id,
+            'execution_id': execution.id,
+            'project_id': execution.project_id,
+            'project_name': execution.project.name,
+            'test_case_name': execution.test_case.name,
+            'browser_mode': execution.browser_mode,
+            'status': execution.status,
+            'started_at': execution.started_at,
+            'completed_at': execution.completed_at,
+            'duration_seconds': execution.duration_seconds,
+            'json_report_path': report.json_report_path,
+            'summary': report.summary,
+            'final_result': last_result_text,
+            'error_message': execution.error_message,
+            'metrics': metrics,
+        })
+
     @action(detail=False, methods=['get'])
     def file(self, request):
         """获取 JSON 报告文件内容
@@ -702,66 +820,10 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
         返回:
             JSON 报告内容
         """
-        from pathlib import Path
-        import urllib.parse
-
         report_path = request.query_params.get('path')
-        if not report_path:
-            return Response(
-                {'error': '请提供报告文件路径'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # URL 解码路径
-        report_path = urllib.parse.unquote(report_path)
-
-        # 安全检查：确保路径在 report 目录内
-        # browser-use-0.11.2 目录位于 ui_automation 目录下
-        base_report_dir = (Path(__file__).parent / 'browser-use-0.11.2' / 'report').resolve()
-
-        try:
-            file_path = Path(report_path).expanduser().resolve()
-        except Exception as e:
-            return Response(
-                {'error': f'无效的文件路径: {str(e)}'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            # 验证路径在允许的目录内（使用 parts 比较以避免路径分隔符问题）
-            # 对于绝对路径，检查它是否以 base_report_dir 开头
-            try:
-                file_path.relative_to(base_report_dir)
-            except ValueError:
-                # 如果直接相对路径检查失败，尝试检查路径前缀
-                try:
-                    file_path_str = str(file_path).lower()
-                    base_dir_str = str(base_report_dir).lower()
-                    if not file_path_str.startswith(base_dir_str):
-                        raise ValueError('Path outside allowed directory')
-                except Exception:
-                    return Response(
-                        {'error': f'非法的文件路径，报告必须在报告目录内'},
-                        status=status.HTTP_403_FORBIDDEN
-                    )
-
-        except Exception as e:
-            return Response(
-                {'error': f'路径验证失败: {str(e)}'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        if not file_path.exists():
-            return Response(
-                {'error': f'报告文件不存在: {file_path.name}'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        if not file_path.is_file():
-            return Response(
-                {'error': '路径不是文件'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        file_path, error_response = self._resolve_and_validate_report_path(report_path)
+        if error_response is not None:
+            return error_response
 
         try:
             with open(file_path, 'r', encoding='utf-8') as f:

@@ -191,8 +191,9 @@ const getStatusType = (status: ExecutionStatus) => {
   const types: Record<ExecutionStatus, any> = {
     pending: 'info',
     running: 'warning',
-    completed: 'success',
+    passed: 'success',
     failed: 'danger',
+    error: 'danger',
     cancelled: 'info'
   }
   return types[status] || 'info'
@@ -203,8 +204,9 @@ const getStatusText = (status: ExecutionStatus) => {
   const texts: Record<ExecutionStatus, string> = {
     pending: '待执行',
     running: '执行中',
-    completed: '已完成',
+    passed: '通过',
     failed: '失败',
+    error: '错误',
     cancelled: '已取消'
   }
   return texts[status] || status
