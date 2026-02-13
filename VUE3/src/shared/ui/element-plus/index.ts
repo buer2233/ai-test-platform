@@ -25,10 +25,10 @@ type RuleValidator = (
 export type FormRules = Record<string, Array<Record<string, any> & { validator?: RuleValidator }>>
 
 export interface FormInstance {
-  validate: () => Promise<void>
-  validateField: (prop: string) => Promise<void>
-  resetFields: () => void
-  clearValidate: () => void
+  validate: (callback?: (valid: boolean, fields?: Record<string, string>) => void) => Promise<boolean>
+  validateField: (prop: string | string[], callback?: (errorMessage?: string) => void) => Promise<boolean>
+  resetFields: (props?: string | string[]) => void
+  clearValidate: (props?: string | string[]) => void
 }
 
 function toKebab(input: string): string {
@@ -125,21 +125,33 @@ function pushToast(type: string, message: string, duration = 2500) {
 
 type MessageParams = string | { message: string; type?: string; duration?: number }
 
+interface MessageHandler {
+  close: () => void
+}
+
+function createNoopMessageHandler(): MessageHandler {
+  return { close: () => undefined }
+}
+
 function createMessage(typeFallback: string) {
-  return (params: MessageParams) => {
+  return (...args: any[]): MessageHandler => {
+    const params = args[0] as MessageParams | undefined
     if (typeof params === 'string') {
-      return pushToast(typeFallback, params)
+      return pushToast(typeFallback, params) || createNoopMessageHandler()
     }
-    return pushToast(params.type || typeFallback, params.message, params.duration)
+    if (params && typeof params === 'object') {
+      return pushToast(params.type || typeFallback, params.message, params.duration) || createNoopMessageHandler()
+    }
+    return createNoopMessageHandler()
   }
 }
 
 interface MessageApi {
-  (params: MessageParams): { close: () => void } | void
-  success: (params: MessageParams) => { close: () => void } | void
-  warning: (params: MessageParams) => { close: () => void } | void
-  info: (params: MessageParams) => { close: () => void } | void
-  error: (params: MessageParams) => { close: () => void } | void
+  (params?: MessageParams, ...args: any[]): MessageHandler
+  success: (params?: MessageParams, ...args: any[]) => MessageHandler
+  warning: (params?: MessageParams, ...args: any[]) => MessageHandler
+  info: (params?: MessageParams, ...args: any[]) => MessageHandler
+  error: (params?: MessageParams, ...args: any[]) => MessageHandler
 }
 
 export const ElMessage: MessageApi = Object.assign(createMessage('info'), {
@@ -157,7 +169,7 @@ export const ElNotification = {
 }
 
 export const ElMessageBox = {
-  confirm(message: string, title = '提示') {
+  confirm(message: string, title = '提示', _options?: Record<string, any>) {
     return new Promise<'confirm'>((resolve, reject) => {
       const ok = window.confirm(`${title}\n\n${message}`)
       if (ok) {
@@ -167,17 +179,17 @@ export const ElMessageBox = {
       }
     })
   },
-  alert(message: string, title = '提示') {
+  alert(message: string, title = '提示', _options?: Record<string, any>) {
     window.alert(`${title}\n\n${message}`)
     return Promise.resolve('confirm')
   },
-  prompt(message: string, title = '提示', options?: { inputValue?: string }) {
-    return new Promise<{ value: string }>((resolve, reject) => {
+  prompt(message: string, title = '提示', options?: Record<string, any>) {
+    return new Promise<{ value: string; action: 'confirm' }>((resolve, reject) => {
       const value = window.prompt(`${title}\n\n${message}`, options?.inputValue || '')
       if (value === null) {
         reject(new Error('cancel'))
       } else {
-        resolve({ value })
+        resolve({ value, action: 'confirm' })
       }
     })
   }
@@ -270,28 +282,57 @@ const ElForm = defineComponent({
   setup(props, { slots, emit, expose, attrs }) {
     const initial = ref<Record<string, any>>({ ...props.model })
 
-    const validateField = async (prop: string) => {
-      const rules = props.rules?.[prop] || []
-      for (const rule of rules) {
-        await runRule(rule, props.model[prop])
+    const validateField: FormInstance['validateField'] = async (prop, callback) => {
+      const fields = Array.isArray(prop) ? prop : [prop]
+      try {
+        for (const field of fields) {
+          const rules = props.rules?.[field] || []
+          for (const rule of rules) {
+            await runRule(rule, props.model[field])
+          }
+        }
+        callback?.()
+        return true
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '验证失败'
+        callback?.(message)
+        throw error
       }
     }
 
-    const validate = async () => {
+    const validate: FormInstance['validate'] = async (callback) => {
       const keys = Object.keys(props.rules || {})
+      const fields: Record<string, string> = {}
+      let valid = true
+
       for (const key of keys) {
-        await validateField(key)
+        try {
+          await validateField(key)
+        } catch (error) {
+          valid = false
+          fields[key] = error instanceof Error ? error.message : '验证失败'
+        }
       }
+
+      callback?.(valid, valid ? undefined : fields)
+      return valid
     }
 
-    const resetFields = () => {
-      Object.keys(props.model || {}).forEach((key) => {
+    const resetFields: FormInstance['resetFields'] = (propsToReset) => {
+      const fields =
+        typeof propsToReset === 'string'
+          ? [propsToReset]
+          : Array.isArray(propsToReset)
+            ? propsToReset
+            : Object.keys(props.model || {})
+
+      fields.forEach((key) => {
         const value = initial.value[key]
         props.model[key] = Array.isArray(value) ? [...value] : (value ?? '')
       })
     }
 
-    const clearValidate = () => undefined
+    const clearValidate: FormInstance['clearValidate'] = () => undefined
 
     provide(FormContextKey, { model: props.model, rules: props.rules })
 

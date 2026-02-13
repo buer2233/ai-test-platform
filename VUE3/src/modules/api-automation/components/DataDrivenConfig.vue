@@ -155,7 +155,7 @@
             v-model="jsonContent"
             type="textarea"
             :rows="8"
-            placeholder="请输入JSON数据，格式如：[{\"key1\": \"value1\"}, {\"key2\": \"value2\"}]"
+            placeholder="请输入JSON数据，例如：[{key1:value1},{key2:value2}]"
             @change="onJsonDataChange"
           />
         </el-form-item>

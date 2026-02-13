@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { UiTestExecution, ExecutionStatus } from '../../types/execution'
+import type { UiTestExecution, ExecutionStatus } from '../../../types/execution'
 import { uiExecutionApi } from '../../../api/execution'
 
 interface Props {

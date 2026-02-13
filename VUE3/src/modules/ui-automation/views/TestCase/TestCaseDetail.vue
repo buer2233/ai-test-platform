@@ -123,7 +123,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft, VideoPlay } from '@element-plus/icons-vue'
 import { useUiTestCaseStore } from '../../stores/testCase'
-import { uiTestCaseApi } from '../../api/testcase'
+import { uiTestCaseApi } from '../../api/testCase'
 import type { ExecutionStatus, UiTestExecution } from '../../types/execution'
 
 const route = useRoute()
@@ -223,7 +223,7 @@ const formatDate = (dateStr?: string) => {
 const loadExecutionHistory = async () => {
   loadingHistory.value = true
   try {
-    const result = await testCaseStore.testCase?.id
+    const result = await testCaseStore.currentTestCase?.id
       ? await (await fetch(`/api/v1/ui-automation/test-cases/${testCaseId}/executions/`)).json()
       : { results: [] }
     executions.value = result.results?.slice(0, 5) || []
