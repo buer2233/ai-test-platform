@@ -311,7 +311,7 @@
           <el-card class="chart-card">
             <template #header>
               <div class="card-header">
-                <span><el-icon><BoxPlot /></el-icon> 响应时间分布(箱线图)</span>
+                <span><el-icon><Histogram /></el-icon> 响应时间分布(箱线图)</span>
               </div>
             </template>
             <div ref="boxPlotChartRef" class="chart-container" style="height: 320px"></div>
@@ -510,7 +510,7 @@ import {
   DataAnalysis, Grid, PieChart, List, Refresh, VideoPlay, VideoPause,
   ArrowDown, Download, Picture, Document, Tickets, Search,
   RefreshLeft, Odometer, Timer, TrendCharts, Coin, Warning,
-  Calendar, Aim, BoxPlot, FullScreen, ArrowRight, CircleCheck,
+  Calendar, Aim, Histogram, FullScreen, ArrowRight, CircleCheck,
   CircleClose, DocumentCopy, Upload
 } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'

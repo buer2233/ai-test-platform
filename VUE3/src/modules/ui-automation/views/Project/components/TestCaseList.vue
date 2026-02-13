@@ -71,7 +71,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus, Search, VideoPlay, Edit, Delete } from '@element-plus/icons-vue'
-import type { UiTestCase } from '../../types/testCase'
+import type { UiTestCase } from '../../../types/testCase'
 import { uiTestCaseApi } from '../../../api/testCase'
 
 interface Props {

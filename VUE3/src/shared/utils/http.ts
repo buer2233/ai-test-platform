@@ -55,7 +55,7 @@ http.interceptors.response.use(
         // 兼容旧格式
         switch (error.response.status) {
           case 400:
-            message = data?.detail || error.response.data?.message || '请求参数错误'
+            message = (data as any)?.detail || error.response.data?.message || '请求参数错误'
             break
           case 401:
             message = '未授权，请重新登录'
@@ -94,26 +94,26 @@ http.interceptors.response.use(
 
 // 扩展axios方法，使其支持params参数
 const extendedHttp = {
-  get<T = unknown>(url: string, params?: unknown): Promise<T> {
-    return http.get(url, { params })
+  get<T = any>(url: string, params?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return http.get(url, { ...(config || {}), params })
   },
 
-  post<T = unknown>(url: string, data?: unknown): Promise<T> {
-    return http.post(url, data)
+  post<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return http.post(url, data, config)
   },
 
-  patch<T = unknown>(url: string, data?: unknown): Promise<T> {
-    return http.patch(url, data)
+  patch<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return http.patch(url, data, config)
   },
 
-  put<T = unknown>(url: string, data?: unknown): Promise<T> {
-    return http.put(url, data)
+  put<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return http.put(url, data, config)
   },
 
-  delete<T = unknown>(url: string): Promise<T> {
-    return http.delete(url)
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return http.delete(url, config)
   }
 }
 
 export { extendedHttp as http }
-export type { AxiosRequestConfig, AxiosResponse, ErrorResponse }
+export type { AxiosRequestConfig, AxiosResponse }

@@ -44,12 +44,6 @@ export interface UiTestCaseUpdate {
   is_active?: boolean
 }
 
-export interface AgentStep {
-  action: string
-  timestamp: string
-  details?: Record<string, unknown>
-}
-
 export interface AgentHistory {
   timestamp: string
   action: string
