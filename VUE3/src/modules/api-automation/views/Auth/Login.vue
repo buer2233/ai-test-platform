@@ -21,8 +21,8 @@
             <circle cx="32" cy="32" r="4" fill="url(#logo-gradient)"/>
             <defs>
               <linearGradient id="logo-gradient" x1="8" y1="8" x2="56" y2="56">
-                <stop stop-color="#00FF94"/>
-                <stop offset="1" stop-color="#00D9FF"/>
+                <stop stop-color="#4F7FFF"/>
+                <stop offset="1" stop-color="#7CA0FF"/>
               </linearGradient>
             </defs>
           </svg>
@@ -50,7 +50,7 @@
 
       <!-- Login Form -->
       <el-form
-        v-show="mode === 'login'"
+        v-if="mode === 'login'"
         ref="loginFormRef"
         :model="loginForm"
         :rules="loginRules"
@@ -127,7 +127,7 @@
 
       <!-- Register Form -->
       <el-form
-        v-show="mode === 'register'"
+        v-else
         ref="registerFormRef"
         :model="registerForm"
         :rules="registerRules"
@@ -450,7 +450,10 @@ onMounted(async () => {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at 20% -10%, rgba(153, 186, 255, 0.45), transparent 42%), linear-gradient(180deg, #f8faff 0%, #eef3fc 100%);
+  background:
+    radial-gradient(circle at 18% -8%, rgba(116, 156, 255, 0.36), transparent 40%),
+    radial-gradient(circle at 90% 102%, rgba(170, 196, 255, 0.26), transparent 36%),
+    linear-gradient(180deg, #f7f9fd 0%, #eef2f8 100%);
 }
 
 /* BACKGROUND EFFECTS */
@@ -492,6 +495,7 @@ onMounted(async () => {
   overflow: hidden;
   z-index: 3;
   pointer-events: none;
+  display: none;
 }
 
 .login-bg-scanline::after {
@@ -525,6 +529,7 @@ onMounted(async () => {
   bottom: 0;
   z-index: 4;
   pointer-events: none;
+  display: none;
 }
 
 .particle {
@@ -563,6 +568,7 @@ onMounted(async () => {
   opacity: 0.2;
   z-index: 5;
   pointer-events: none;
+  display: none;
 }
 
 .corner-tl {
@@ -596,15 +602,15 @@ onMounted(async () => {
 /* AUTH CARD */
 .auth-card {
   position: relative;
-  width: 420px;
+  width: 450px;
   padding: var(--spacing-10);
-  background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,251,255,0.92) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(249, 251, 255, 0.94) 100%);
   border: 1px solid var(--color-border-primary);
   border-radius: var(--border-radius-2xl);
   backdrop-filter: blur(20px);
   box-shadow:
-    0 0 0 1px rgba(0, 122, 255, 0.08),
-    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(79, 127, 255, 0.08),
+    0 14px 36px rgba(45, 68, 111, 0.14),
     0 0 0 1px var(--color-border-secondary);
   z-index: 10;
 }
@@ -675,7 +681,7 @@ onMounted(async () => {
 .auth-tabs {
   position: relative;
   display: flex;
-  background: var(--color-bg-tertiary);
+  background: #ecf1fa;
   border-radius: var(--border-radius-md);
   padding: 4px;
   margin-bottom: var(--spacing-8);
@@ -785,11 +791,7 @@ onMounted(async () => {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--letter-spacing-wide);
-  background: linear-gradient(
-    135deg,
-    var(--color-accent-primary) 0%,
-    var(--color-info-primary) 100%
-  );
+  background: linear-gradient(135deg, #4f7fff 0%, #6f96ff 100%);
   border: none;
   color: var(--color-bg-primary);
   position: relative;
@@ -818,7 +820,7 @@ onMounted(async () => {
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--color-accent-glow);
+  box-shadow: 0 10px 30px rgba(79, 127, 255, 0.3);
 }
 
 /* FORM FOOTER */
@@ -904,4 +906,5 @@ onMounted(async () => {
   }
 }
 </style>
+
 

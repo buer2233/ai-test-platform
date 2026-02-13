@@ -13,7 +13,8 @@ export default defineConfig({
       '@shared': resolve(__dirname, 'src/shared'),
       '@core': resolve(__dirname, 'src/core'),
       '@api-automation': resolve(__dirname, 'src/modules/api-automation'),
-      '@ui-automation': resolve(__dirname, 'src/modules/ui-automation')
+      '@ui-automation': resolve(__dirname, 'src/modules/ui-automation'),
+      'element-plus': resolve(__dirname, 'src/shared/ui/element-plus/index.ts')
     }
   },
   server: {

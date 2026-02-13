@@ -16,7 +16,8 @@
       "@shared/*": ["./src/shared/*"],
       "@core/*": ["./src/core/*"],
       "@api-automation/*": ["./src/modules/api-automation/*"],
-      "@ui-automation/*": ["./src/modules/ui-automation/*"]
+      "@ui-automation/*": ["./src/modules/ui-automation/*"],
+      "element-plus": ["./src/shared/ui/element-plus/index.ts"]
     }
   }
 }

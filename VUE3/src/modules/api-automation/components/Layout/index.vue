@@ -11,8 +11,8 @@
             <circle cx="32" cy="32" r="4" fill="url(#sidebar-logo-gradient)"/>
             <defs>
               <linearGradient id="sidebar-logo-gradient" x1="8" y1="8" x2="56" y2="56">
-                <stop stop-color="#00FF94"/>
-                <stop offset="1" stop-color="#00D9FF"/>
+                <stop stop-color="#4F7FFF"/>
+                <stop offset="1" stop-color="#7CA0FF"/>
               </linearGradient>
             </defs>
           </svg>
@@ -22,8 +22,8 @@
             <circle cx="32" cy="32" r="14" stroke="url(#ui-logo-gradient)" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.6"/>
             <defs>
               <linearGradient id="ui-logo-gradient" x1="8" y1="8" x2="56" y2="56">
-                <stop stop-color="#A855F7"/>
-                <stop offset="1" stop-color="#EC4899"/>
+                <stop stop-color="#4F7FFF"/>
+                <stop offset="1" stop-color="#7CA0FF"/>
               </linearGradient>
             </defs>
           </svg>
@@ -394,7 +394,7 @@ onUnmounted(() => {
 }
 
 .logo-icon.is-ui svg {
-  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));
+  filter: drop-shadow(0 0 8px rgba(79, 127, 255, 0.35));
 }
 
 .logo-text {
@@ -479,11 +479,11 @@ onUnmounted(() => {
 }
 
 .module-item-icon.ui-icon svg {
-  color: #A855F7;
+  color: #4F7FFF;
 }
 
 .module-item-icon.api-icon svg {
-  color: #00FF94;
+  color: #4F7FFF;
 }
 
 .module-item-info {
@@ -599,11 +599,11 @@ onUnmounted(() => {
 @keyframes status-pulse {
   0%, 100% {
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(0, 255, 148, 0.4);
+    box-shadow: 0 0 0 0 rgba(79, 127, 255, 0.35);
   }
   50% {
     opacity: 0.7;
-    box-shadow: 0 0 0 6px rgba(0, 255, 148, 0);
+    box-shadow: 0 0 0 6px rgba(79, 127, 255, 0);
   }
 }
 
@@ -780,4 +780,5 @@ onUnmounted(() => {
   }
 }
 </style>
+
 

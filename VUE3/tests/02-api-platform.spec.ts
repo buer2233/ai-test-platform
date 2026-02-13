@@ -1,24 +1,31 @@
 import { test, expect, loginByUi } from './fixtures'
 
-test.describe('API 平台主流程', () => {
-  test.beforeEach(async ({ mockApi }) => {
+test.describe('API 自动化模块导航', () => {
+  test('可在核心菜单中切换页面', async ({ page, mockApi }) => {
     await mockApi({ authed: true })
-  })
-
-  test('登录后进入仪表盘并展示核心模块', async ({ page }) => {
     await loginByUi(page)
+
     await expect(page).toHaveURL(/\/dashboard$/)
-    await expect(page.getByText('测试报告仪表盘')).toBeVisible()
 
-    await expect(page.getByRole('menuitem', { name: /项目管理/ })).toBeVisible()
-    await expect(page.getByRole('menuitem', { name: /集合管理/ })).toBeVisible()
-    await expect(page.getByRole('menuitem', { name: /HTTP 执行器/ })).toBeVisible()
-  })
-
-  test('可从侧栏进入项目管理页', async ({ page }) => {
-    await loginByUi(page)
-    await page.getByRole('menuitem', { name: /项目管理/ }).click()
+    await page.getByRole('menuitem', { name: '项目管理' }).click()
     await expect(page).toHaveURL(/\/projects$/)
-    await expect(page.getByRole('heading', { name: '项目管理' })).toBeVisible()
+
+    await page.getByRole('menuitem', { name: '集合管理' }).click()
+    await expect(page).toHaveURL(/\/collections$/)
+
+    await page.getByRole('menuitem', { name: '测试用例' }).click()
+    await expect(page).toHaveURL(/\/test-cases$/)
+
+    await page.getByRole('menuitem', { name: '环境管理' }).click()
+    await expect(page).toHaveURL(/\/environments$/)
+
+    await page.getByRole('menuitem', { name: 'HTTP 执行器' }).click()
+    await expect(page).toHaveURL(/\/http-executor$/)
+
+    await page.getByRole('menuitem', { name: '测试报告' }).click()
+    await expect(page).toHaveURL(/\/reports$/)
+
+    await page.getByRole('menuitem', { name: '回收站' }).click()
+    await expect(page).toHaveURL(/\/recycle-bin$/)
   })
 })
