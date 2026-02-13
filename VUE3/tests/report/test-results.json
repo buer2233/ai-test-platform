@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -40,7 +42,9 @@
         "outputDir": "D:/AI/AI-test-project/VUE3/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "D:/AI/AI-test-project/VUE3/tests",
@@ -57,24 +61,29 @@
     "updateSourceMethod": "patch",
     "version": "1.57.0",
     "workers": 1,
-    "webServer": null
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 3000",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
   },
   "suites": [
     {
-      "title": "01-auth.spec.ts",
-      "file": "01-auth.spec.ts",
+      "title": "01-auth-shell.spec.ts",
+      "file": "01-auth-shell.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "用户认证",
-          "file": "01-auth.spec.ts",
-          "line": 8,
+          "title": "认证与基础壳层",
+          "file": "01-auth-shell.spec.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "应该显示登录页面",
+              "title": "未登录访问受保护页面跳转登录页",
               "ok": true,
               "tags": [],
               "tests": [
@@ -84,2326 +93,282 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3952,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:44:38.207Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "791b3c4e0869e77b2651-c3e6295e81393838abb0",
-              "file": "01-auth.spec.ts",
+              "id": "4f77c5544b3c80c1fd63-84fad0eb5cb151fb38ea",
+              "file": "01-auth-shell.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "登录页可在登录/注册视图切换",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3719,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:44:42.645Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f77c5544b3c80c1fd63-f4bfa72e1e8b90b10fe3",
+              "file": "01-auth-shell.spec.ts",
+              "line": 11,
+              "column": 7
+            },
+            {
+              "title": "登录成功后进入平台主界面",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5965,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:44:46.394Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4f77c5544b3c80c1fd63-09ad9b9afcd008f26a53",
+              "file": "01-auth-shell.spec.ts",
+              "line": 22,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "02-api-platform.spec.ts",
+      "file": "02-api-platform.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API 自动化模块导航",
+          "file": "02-api-platform.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "可在核心菜单中切换页面",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5313,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:44:52.396Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d775cf86f5ed51202fc1-c58fac6d183e6518c0b6",
+              "file": "02-api-platform.spec.ts",
+              "line": 4,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "03-ui-platform.spec.ts",
+      "file": "03-ui-platform.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UI 自动化模块导航",
+          "file": "03-ui-platform.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "可切换到 UI 自动化并访问关键页面",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4210,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:44:57.728Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a67cfc05515cbcecf3d0-c75b612809dd895e2b7b",
+              "file": "03-ui-platform.spec.ts",
+              "line": 4,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "04-visual-regression.spec.ts",
+      "file": "04-visual-regression.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "视觉与响应式",
+          "file": "04-visual-regression.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "登录页在移动端保持布局稳定",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3461,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:45:01.957Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3b93111fffd20ceb9db6-c132badfac253f84cf4e",
+              "file": "04-visual-regression.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "主框架具有侧边栏与卡片化背景",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3732,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-13T03:45:05.428Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3b93111fffd20ceb9db6-c17170fd0cd00c656376",
+              "file": "04-visual-regression.spec.ts",
               "line": 15,
-              "column": 7
-            },
-            {
-              "title": "应该显示注册 Tab",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "791b3c4e0869e77b2651-602530b5f8e86f0b193e",
-              "file": "01-auth.spec.ts",
-              "line": 27,
-              "column": 7
-            },
-            {
-              "title": "应该在登录和注册之间切换",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "791b3c4e0869e77b2651-3463961023b58bbc1794",
-              "file": "01-auth.spec.ts",
-              "line": 41,
-              "column": 7
-            },
-            {
-              "title": "应该显示登录失败的错误提示",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "791b3c4e0869e77b2651-42e187537fa88f38f810",
-              "file": "01-auth.spec.ts",
-              "line": 58,
-              "column": 7
-            },
-            {
-              "title": "注册表单应该验证密码确认",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "791b3c4e0869e77b2651-411be3ad411571eb7488",
-              "file": "01-auth.spec.ts",
-              "line": 82,
-              "column": 7
-            },
-            {
-              "title": "应该支持 Tab 键切换焦点",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "791b3c4e0869e77b2651-6a769999e66e4c7df3ff",
-              "file": "01-auth.spec.ts",
-              "line": 106,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "02-dashboard.spec.ts",
-      "file": "02-dashboard.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "仪表盘功能",
-          "file": "02-dashboard.spec.ts",
-          "line": 29,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示仪表盘页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-13ce095eb040360e6737",
-              "file": "02-dashboard.spec.ts",
-              "line": 31,
-              "column": 7
-            },
-            {
-              "title": "应该显示统计卡片",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-1ef723e024e5004ab05c",
-              "file": "02-dashboard.spec.ts",
-              "line": 47,
-              "column": 7
-            },
-            {
-              "title": "应该显示图表容器",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-6cb4eaa353d43bcd433f",
-              "file": "02-dashboard.spec.ts",
-              "line": 65,
-              "column": 7
-            },
-            {
-              "title": "应该显示环境维度报告",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-4a3a3ba85b2075f66acc",
-              "file": "02-dashboard.spec.ts",
-              "line": 82,
-              "column": 7
-            },
-            {
-              "title": "应该显示集合维度报告",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-cf5943e2fe2e2c202a5a",
-              "file": "02-dashboard.spec.ts",
-              "line": 96,
-              "column": 7
-            },
-            {
-              "title": "应该支持筛选功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-766260f1d123e20f285d",
-              "file": "02-dashboard.spec.ts",
-              "line": 110,
-              "column": 7
-            },
-            {
-              "title": "统计卡片应该可以点击",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-ebb876008ccc3a3e9d33",
-              "file": "02-dashboard.spec.ts",
-              "line": 133,
-              "column": 7
-            },
-            {
-              "title": "应该有导航菜单",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-421728f30017489edbfc",
-              "file": "02-dashboard.spec.ts",
-              "line": 155,
-              "column": 7
-            },
-            {
-              "title": "应该显示面包屑导航",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-3e3a3aeb0cdfe55f5871",
-              "file": "02-dashboard.spec.ts",
-              "line": 169,
-              "column": 7
-            },
-            {
-              "title": "应该有用户信息显示",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4d2f27bfb2b30c5eaf6b-147536653b4abe6d05d0",
-              "file": "02-dashboard.spec.ts",
-              "line": 183,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "03-project.spec.ts",
-      "file": "03-project.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "项目管理",
-          "file": "03-project.spec.ts",
-          "line": 24,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示项目列表页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-485c25bac9ac12e7b7d5",
-              "file": "03-project.spec.ts",
-              "line": 26,
-              "column": 7
-            },
-            {
-              "title": "应该显示项目列表表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-697ab35ddb9632450544",
-              "file": "03-project.spec.ts",
-              "line": 38,
-              "column": 7
-            },
-            {
-              "title": "应该有新建项目按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-733c08358eeaa91ce3d6",
-              "file": "03-project.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "应该支持搜索功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-23824dcef762cc48b5cf",
-              "file": "03-project.spec.ts",
-              "line": 71,
-              "column": 7
-            },
-            {
-              "title": "应该支持分页功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-6e10d8ce98ece15987fe",
-              "file": "03-project.spec.ts",
-              "line": 90,
-              "column": 7
-            },
-            {
-              "title": "应该能打开项目详情",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-26ddb3c97dc90013ab19",
-              "file": "03-project.spec.ts",
-              "line": 104,
-              "column": 7
-            },
-            {
-              "title": "应该有表格操作按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-6fc8478da5ad453e8bf6",
-              "file": "03-project.spec.ts",
-              "line": 130,
-              "column": 7
-            },
-            {
-              "title": "应该能访问项目详情页",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-2f59d88c998d723eea88",
-              "file": "03-project.spec.ts",
-              "line": 145,
-              "column": 7
-            },
-            {
-              "title": "应该显示项目统计信息",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-1a6042cc3fdb4c78d08c",
-              "file": "03-project.spec.ts",
-              "line": 159,
-              "column": 7
-            },
-            {
-              "title": "应该有返回按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "170e330b674cd4591580-7245ba2a5a141fff28f1",
-              "file": "03-project.spec.ts",
-              "line": 173,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "04-collection.spec.ts",
-      "file": "04-collection.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "集合管理",
-          "file": "04-collection.spec.ts",
-          "line": 22,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示集合列表页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-3ad53b2921bdcc11bb14",
-              "file": "04-collection.spec.ts",
-              "line": 24,
-              "column": 7
-            },
-            {
-              "title": "应该显示集合表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-d7ce249e4b0dfdb0163e",
-              "file": "04-collection.spec.ts",
-              "line": 35,
-              "column": 7
-            },
-            {
-              "title": "应该支持按项目筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-9dbc4849d15e73220135",
-              "file": "04-collection.spec.ts",
-              "line": 49,
-              "column": 7
-            },
-            {
-              "title": "应该有新建集合按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-7f845759ac4e67ae318d",
-              "file": "04-collection.spec.ts",
-              "line": 72,
-              "column": 7
-            },
-            {
-              "title": "应该能打开集合详情",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-b0a608bda19fb51b8144",
-              "file": "04-collection.spec.ts",
-              "line": 86,
-              "column": 7
-            },
-            {
-              "title": "集合详情应该显示测试用例列表",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-46fad75e909918a3e9f9",
-              "file": "04-collection.spec.ts",
-              "line": 111,
-              "column": 7
-            },
-            {
-              "title": "应该支持批量添加用例",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-790e49e87396fee67154",
-              "file": "04-collection.spec.ts",
-              "line": 126,
-              "column": 7
-            },
-            {
-              "title": "应该支持批量移除用例",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-0259287a7ce377c9509e",
-              "file": "04-collection.spec.ts",
-              "line": 140,
-              "column": 7
-            },
-            {
-              "title": "应该支持集合执行功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-af1589f8365eb41ef634",
-              "file": "04-collection.spec.ts",
-              "line": 154,
-              "column": 7
-            },
-            {
-              "title": "应该支持克隆集合",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2883089e8e657dbd46f7-9eac59fdcab16207f291",
-              "file": "04-collection.spec.ts",
-              "line": 168,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "05-testcase.spec.ts",
-      "file": "05-testcase.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "测试用例管理",
-          "file": "05-testcase.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示测试用例列表页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-ff08902cc394fc1edd3c",
-              "file": "05-testcase.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "应该显示测试用例表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-c0c50cd292ea33ce3fd1",
-              "file": "05-testcase.spec.ts",
-              "line": 33,
-              "column": 7
-            },
-            {
-              "title": "应该支持按项目和集合筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-f8e529dc7b5777ed4f68",
-              "file": "05-testcase.spec.ts",
-              "line": 47,
-              "column": 7
-            },
-            {
-              "title": "应该有新建用例按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-eb9575faaff5d57687ff",
-              "file": "05-testcase.spec.ts",
-              "line": 62,
-              "column": 7
-            },
-            {
-              "title": "应该支持搜索功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-518ccc887457338336d0",
-              "file": "05-testcase.spec.ts",
-              "line": 76,
-              "column": 7
-            },
-            {
-              "title": "应该能打开用例详情页",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-5f1d382dfa30e09bccb5",
-              "file": "05-testcase.spec.ts",
-              "line": 95,
-              "column": 7
-            },
-            {
-              "title": "用例详情应该显示请求配置",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-7fc50b548811977898bd",
-              "file": "05-testcase.spec.ts",
-              "line": 120,
-              "column": 7
-            },
-            {
-              "title": "用例详情应该显示断言配置区域",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-a3d45f96976879f63b48",
-              "file": "05-testcase.spec.ts",
-              "line": 138,
-              "column": 7
-            },
-            {
-              "title": "用例详情应该显示数据提取区域",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-c0b46099164bcd79199e",
-              "file": "05-testcase.spec.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "应该支持执行单个用例",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-545c145fba6ddeb54be2",
-              "file": "05-testcase.spec.ts",
-              "line": 166,
-              "column": 7
-            },
-            {
-              "title": "应该支持批量执行用例",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-c0bb7932c3a35582e5dc",
-              "file": "05-testcase.spec.ts",
-              "line": 180,
-              "column": 7
-            },
-            {
-              "title": "应该支持克隆用例",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c9a48dd6ad2062f23822-864639e1b99442cf8193",
-              "file": "05-testcase.spec.ts",
-              "line": 194,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "06-environment.spec.ts",
-      "file": "06-environment.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "环境管理",
-          "file": "06-environment.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示环境管理页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-e08885681328895b7db5",
-              "file": "06-environment.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "应该显示环境列表表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-6d76ca7bd72d5d382944",
-              "file": "06-environment.spec.ts",
-              "line": 33,
-              "column": 7
-            },
-            {
-              "title": "应该显示环境统计卡片",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-5e1eb7e0f06b95c51fe8",
-              "file": "06-environment.spec.ts",
-              "line": 47,
-              "column": 7
-            },
-            {
-              "title": "应该有新建环境按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-f8d3cff558639ffcede3",
-              "file": "06-environment.spec.ts",
-              "line": 62,
-              "column": 7
-            },
-            {
-              "title": "应该支持测试连接功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-e3cc0873e33af2f45948",
-              "file": "06-environment.spec.ts",
-              "line": 76,
-              "column": 7
-            },
-            {
-              "title": "应该支持导入导出功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-219309d48a92a69e21df",
-              "file": "06-environment.spec.ts",
-              "line": 90,
-              "column": 7
-            },
-            {
-              "title": "应该支持批量操作",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-22f7f2757ceb5f4733ae",
-              "file": "06-environment.spec.ts",
-              "line": 110,
-              "column": 7
-            },
-            {
-              "title": "应该支持搜索功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-5cc5057323222f81489c",
-              "file": "06-environment.spec.ts",
-              "line": 124,
-              "column": 7
-            },
-            {
-              "title": "应该能打开环境详情",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-3869ef20099827174b00",
-              "file": "06-environment.spec.ts",
-              "line": 143,
-              "column": 7
-            },
-            {
-              "title": "环境详情应该显示配置信息",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-6f3d94b248bbd100db94",
-              "file": "06-environment.spec.ts",
-              "line": 168,
-              "column": 7
-            },
-            {
-              "title": "应该支持设置默认环境",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-70c197880790db851db1",
-              "file": "06-environment.spec.ts",
-              "line": 186,
-              "column": 7
-            },
-            {
-              "title": "应该支持克隆环境",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "338cf8a692bea67e83fe-6d4e70b07989b7cdbd95",
-              "file": "06-environment.spec.ts",
-              "line": 200,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "07-http-executor.spec.ts",
-      "file": "07-http-executor.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "HTTP执行器",
-          "file": "07-http-executor.spec.ts",
-          "line": 22,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示HTTP执行器页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-6e5e138f5d15994f396f",
-              "file": "07-http-executor.spec.ts",
-              "line": 24,
-              "column": 7
-            },
-            {
-              "title": "应该显示请求方法选择器",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-385dbdb19e243dbabc04",
-              "file": "07-http-executor.spec.ts",
-              "line": 35,
-              "column": 7
-            },
-            {
-              "title": "应该显示URL输入框",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-d53da3c1810ce13ba170",
-              "file": "07-http-executor.spec.ts",
-              "line": 58,
-              "column": 7
-            },
-            {
-              "title": "应该显示请求头配置区域",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-707f40bc2c755d0bd9e2",
-              "file": "07-http-executor.spec.ts",
-              "line": 79,
-              "column": 7
-            },
-            {
-              "title": "应该显示请求体配置区域",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-6be3f264f0fc65b8c930",
-              "file": "07-http-executor.spec.ts",
-              "line": 93,
-              "column": 7
-            },
-            {
-              "title": "应该有发送请求按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-b418af194ad53584f20f",
-              "file": "07-http-executor.spec.ts",
-              "line": 111,
-              "column": 7
-            },
-            {
-              "title": "应该显示响应区域",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-1fb9dabf5470014b1ce2",
-              "file": "07-http-executor.spec.ts",
-              "line": 125,
-              "column": 7
-            },
-            {
-              "title": "应该支持cURL导入功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-069af674b4f81d25eb58",
-              "file": "07-http-executor.spec.ts",
-              "line": 141,
-              "column": 7
-            },
-            {
-              "title": "应该支持保存为用例功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-693f29261b533b6f14cd",
-              "file": "07-http-executor.spec.ts",
-              "line": 155,
-              "column": 7
-            },
-            {
-              "title": "应该显示请求历史",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-4ee1cde8ab49cf876eb0",
-              "file": "07-http-executor.spec.ts",
-              "line": 169,
-              "column": 7
-            },
-            {
-              "title": "应该支持环境选择",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-6e0a83efbb93a2ec2a99",
-              "file": "07-http-executor.spec.ts",
-              "line": 185,
-              "column": 7
-            },
-            {
-              "title": "应该支持变量替换",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d93be45ebc7e7164f3ff-a8b69b64887b2118edb6",
-              "file": "07-http-executor.spec.ts",
-              "line": 199,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "08-reports.spec.ts",
-      "file": "08-reports.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "测试报告",
-          "file": "08-reports.spec.ts",
-          "line": 22,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示报告列表页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-d2dab57439c813d49ae8",
-              "file": "08-reports.spec.ts",
-              "line": 24,
-              "column": 7
-            },
-            {
-              "title": "应该显示报告列表表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-5f1d5afa6749850022d7",
-              "file": "08-reports.spec.ts",
-              "line": 35,
-              "column": 7
-            },
-            {
-              "title": "应该支持按环境筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-8569c0b97a0718b3614e",
-              "file": "08-reports.spec.ts",
-              "line": 49,
-              "column": 7
-            },
-            {
-              "title": "应该能打开报告详情",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-4629fea1885e54571cb2",
-              "file": "08-reports.spec.ts",
-              "line": 63,
-              "column": 7
-            },
-            {
-              "title": "报告详情应该显示执行摘要",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-a77df47542988d9d4b99",
-              "file": "08-reports.spec.ts",
-              "line": 88,
-              "column": 7
-            },
-            {
-              "title": "报告详情应该显示测试结果列表",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-503752f09616d9dfd906",
-              "file": "08-reports.spec.ts",
-              "line": 102,
-              "column": 7
-            },
-            {
-              "title": "报告详情应该显示图表",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-7b5ae4956a733c1b3ea9",
-              "file": "08-reports.spec.ts",
-              "line": 116,
-              "column": 7
-            },
-            {
-              "title": "应该支持报告导出功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-42245fe1ffbaf1891b92",
-              "file": "08-reports.spec.ts",
-              "line": 130,
-              "column": 7
-            },
-            {
-              "title": "应该支持多种导出格式",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-185b2ff4d280a8a4b8cd",
-              "file": "08-reports.spec.ts",
-              "line": 144,
-              "column": 7
-            },
-            {
-              "title": "报告列表应该支持搜索",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-c2c3262d4930137c553e",
-              "file": "08-reports.spec.ts",
-              "line": 167,
-              "column": 7
-            },
-            {
-              "title": "报告列表应该支持时间范围筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-d733a0c7e7f6a3a75dff",
-              "file": "08-reports.spec.ts",
-              "line": 181,
-              "column": 7
-            },
-            {
-              "title": "应该支持批量操作",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "d5a7b5e479d09410b3ec-37c8b8394f25383bff68",
-              "file": "08-reports.spec.ts",
-              "line": 195,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "09-recycle-bin.spec.ts",
-      "file": "09-recycle-bin.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "回收站",
-          "file": "09-recycle-bin.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示回收站页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-a05efc363a4a2a63695d",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "应该显示回收站统计卡片",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-f16566baad32604b1767",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 33,
-              "column": 7
-            },
-            {
-              "title": "应该显示已删除数据表格",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-153f78be69544b40ecfb",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 48,
-              "column": 7
-            },
-            {
-              "title": "应该支持按类型筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-dace2c069ac7e7c06eab",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 62,
-              "column": 7
-            },
-            {
-              "title": "应该支持搜索功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-777113158a911d9bde72",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 76,
-              "column": 7
-            },
-            {
-              "title": "应该有恢复功能按钮",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-1622f91394af0b7fb2ca",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 90,
-              "column": 7
-            },
-            {
-              "title": "应该有批量恢复功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-35bfd8b3043b1c7c314f",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 104,
-              "column": 7
-            },
-            {
-              "title": "应该有彻底删除功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-a921dddae14062bfd081",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 118,
-              "column": 7
-            },
-            {
-              "title": "应该有批量彻底删除功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-e6542b082dd186465986",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 132,
-              "column": 7
-            },
-            {
-              "title": "应该显示删除时间",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-0686d9229f78b5d6b116",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 146,
-              "column": 7
-            },
-            {
-              "title": "应该显示数据类型标签",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-56bc3490935fb95a775d",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 160,
-              "column": 7
-            },
-            {
-              "title": "应该有分页功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-5eb1275791b27b7732a9",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 174,
-              "column": 7
-            },
-            {
-              "title": "应该支持选择功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "891a6516e0f28a43d66d-e7a2b216dc417f6d8b41",
-              "file": "09-recycle-bin.spec.ts",
-              "line": 188,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "10-execution-records.spec.ts",
-      "file": "10-execution-records.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "执行记录",
-          "file": "10-execution-records.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
-            {
-              "title": "应该显示执行记录页面",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-080247c6e7f3bb4cc328",
-              "file": "10-execution-records.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "应该显示执行记录列表",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-4d8ee6d713e56085a319",
-              "file": "10-execution-records.spec.ts",
-              "line": 33,
-              "column": 7
-            },
-            {
-              "title": "应该显示执行状态",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-3bd5c68df50d3013cdd5",
-              "file": "10-execution-records.spec.ts",
-              "line": 47,
-              "column": 7
-            },
-            {
-              "title": "应该能查看执行详情",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-1584f214d831f68b9d50",
-              "file": "10-execution-records.spec.ts",
-              "line": 61,
-              "column": 7
-            },
-            {
-              "title": "执行详情应该显示用例结果",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-31e4690b4c5ddf246d5f",
-              "file": "10-execution-records.spec.ts",
-              "line": 86,
-              "column": 7
-            },
-            {
-              "title": "执行详情应该显示进度条",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-7bd82d8cf399be46f6fb",
-              "file": "10-execution-records.spec.ts",
-              "line": 100,
-              "column": 7
-            },
-            {
-              "title": "应该支持取消执行功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-53a751802cf85e8acd53",
-              "file": "10-execution-records.spec.ts",
-              "line": 114,
-              "column": 7
-            },
-            {
-              "title": "应该支持重新执行功能",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-3575164b9f2c308a8904",
-              "file": "10-execution-records.spec.ts",
-              "line": 128,
-              "column": 7
-            },
-            {
-              "title": "应该显示执行时间",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-6234a1a267d059b548ab",
-              "file": "10-execution-records.spec.ts",
-              "line": 142,
-              "column": 7
-            },
-            {
-              "title": "应该支持按环境筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-3ead6dffc77eb9f1d82c",
-              "file": "10-execution-records.spec.ts",
-              "line": 156,
-              "column": 7
-            },
-            {
-              "title": "应该支持按状态筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-c6c574300c3550290b6a",
-              "file": "10-execution-records.spec.ts",
-              "line": 170,
-              "column": 7
-            },
-            {
-              "title": "应该支持时间范围筛选",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4c509ab0786c6e09cded-68e392235905e4ab201a",
-              "file": "10-execution-records.spec.ts",
-              "line": 185,
               "column": 7
             }
           ]
@@ -2413,10 +378,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-29T02:06:56.753Z",
-    "duration": 246.683,
-    "expected": 0,
-    "skipped": 109,
+    "startTime": "2026-02-13T03:44:36.759Z",
+    "duration": 32687.822,
+    "expected": 7,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }

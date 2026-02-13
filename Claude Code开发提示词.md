@@ -19,8 +19,8 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 ```
 
 ```text
-1.全盘分析目前已经实现的功能、未实现功能,和预计需要实现的功能,并更新总项目说明文件project_info.md,和README.md
-2.根据现在的项目结构，项目包依赖包和已实现功能，待实现功能等，更新项目说明文件project_info.md,和README.md
+1.全盘分析目前已经实现的功能、未实现功能,和预计需要实现的功能,并更新总项目说明文件project_info.md、ui_project_info.md,和README.md
+2.根据现在的项目结构，项目包依赖包和已实现功能，待实现功能等，更新项目说明文件project_info.md、ui_project_info.md,和README.md
 ```
 
 ```text
@@ -42,6 +42,24 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 
 ```text
 按照自动提交和推送规则提交代码到GitHub远端
+```
+
+```text
+使用tdd-workflow重构开发现有的所有前端内容,参考前端技能（frontend-design、frontend-patterns、canvas-design）,重构目前所有的前端显示和样式,包括登录页面和接口自动化、UI自动化，并满足如下的要求
+1.舍弃现在VUE的element组件,全部重构为更有高级感且美观大气的组件
+2.前端样式和风格参考图片：https://origin.picgo.net/2026/02/12/image28933957c3de33cb.png
+3.仅进行前端重构，不影响任何后端功能和接口
+4.删除目前已有的所有UI测试用例
+5.重构后针对目前的前端使用playwright-mcp进行全面的端到端的UI自动化测试
+6.所有开发和测试完成后，执行commit和push
+7.所有改动全部自动执行，不要询问我
+```
+
+```text
+1.执行npm run build,检查并修复所有存在或潜在的报错和问题
+2.使用playwright-mcp进行全面的端到端的UI自动化测试
+3.需要不断的循环UI测试-执行npm run build-修复报错,直到所有问题解决且测试通过位置
+4.commit全部代码并push到远端
 ```
 
 
