@@ -19,9 +19,9 @@ body {
   font-family: var(--font-family-body);
   color: var(--color-text-primary);
   background:
-    radial-gradient(circle at 8% 0%, rgba(149, 185, 255, 0.35) 0%, transparent 38%),
-    radial-gradient(circle at 100% 100%, rgba(184, 208, 255, 0.3) 0%, transparent 36%),
-    linear-gradient(180deg, #f7f9ff 0%, #eff4fc 100%);
+    radial-gradient(circle at 12% -5%, rgba(109, 150, 255, 0.24) 0%, transparent 34%),
+    radial-gradient(circle at 95% 100%, rgba(168, 193, 255, 0.2) 0%, transparent 36%),
+    linear-gradient(180deg, #f7f9fd 0%, #eef2f8 100%);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -56,13 +56,25 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(124, 151, 202, 0.45);
+  background: rgba(116, 139, 184, 0.42);
   border-radius: 999px;
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(111, 156, 255, 0.9);
+  outline: 2px solid rgba(79, 127, 255, 0.9);
   outline-offset: 2px;
+}
+
+.page-shell {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.surface-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
 }
 
 .animate-fade-in {
@@ -83,11 +95,11 @@ a:hover {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
