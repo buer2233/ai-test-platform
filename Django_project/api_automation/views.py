@@ -840,6 +840,28 @@ class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
             'test_case', 'execution', 'project', 'environment', 'executed_by'
         )
 
+    @action(detail=False, methods=['get'])
+    def statistics(self, request):
+        """获取HTTP执行记录统计信息"""
+        queryset = self.filter_queryset(self.get_queryset())
+        stats = queryset.aggregate(
+            total=Count('id'),
+            success=Count('id', filter=Q(status='SUCCESS')),
+            failed=Count('id', filter=Q(status='FAILED')),
+            timeout=Count('id', filter=Q(status='TIMEOUT')),
+            error=Count('id', filter=Q(status='ERROR')),
+            favorite=Count('id', filter=Q(is_favorite=True))
+        )
+
+        return Response({
+            'total': stats['total'] or 0,
+            'success': stats['success'] or 0,
+            'failed': stats['failed'] or 0,
+            'timeout': stats['timeout'] or 0,
+            'error': stats['error'] or 0,
+            'favorite': stats['favorite'] or 0
+        })
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Dashboard'])

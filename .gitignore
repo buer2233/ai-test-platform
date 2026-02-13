@@ -39,6 +39,7 @@ pnpm-debug.log*
 dist/
 dist-ssr/
 *.local
+*.tsbuildinfo
 
 # IDE
 .vscode/
