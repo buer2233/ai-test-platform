@@ -225,11 +225,13 @@
 }
 
 .el-select__wrapper {
-  appearance: none;
+  cursor: pointer;
+  user-select: none;
   padding-right: 28px;
+  position: relative;
 }
 
-.el-select::after {
+.el-select__wrapper::after {
   content: '';
   position: absolute;
   right: 12px;
@@ -240,6 +242,47 @@
   border-bottom: 2px solid #7d8cad;
   transform: translateY(-60%) rotate(45deg);
   pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.el-select.is-opened .el-select__wrapper::after {
+  transform: translateY(-30%) rotate(-135deg);
+}
+
+/* Select 下拉弹出菜单 */
+.el-select-dropdown {
+  border: 1px solid rgba(95, 133, 255, 0.36);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(54, 76, 117, 0.12);
+  background: var(--ep-surface);
+  overflow: hidden;
+  padding: 6px;
+  width: max-content;
+}
+
+.el-select-dropdown__item {
+  border-radius: 8px;
+  color: var(--ep-text);
+  height: 36px;
+  line-height: 36px;
+  padding: 0 12px;
+  margin: 2px 0;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.el-select-dropdown__item:hover,
+.el-select-dropdown__item.hover {
+  background: rgba(95, 133, 255, 0.1);
+  color: #3a5ec2;
+}
+
+.el-select-dropdown__item.is-selected,
+.el-select-dropdown__item.selected {
+  color: var(--ep-primary);
+  font-weight: 600;
+  background: rgba(95, 133, 255, 0.14);
 }
 
 .el-menu {

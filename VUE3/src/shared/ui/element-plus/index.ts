@@ -467,6 +467,12 @@ const ElInput = defineComponent({
 
 const SelectContextKey = Symbol('el-select')
 
+interface SelectOptionItem {
+  value: any
+  label: string
+  disabled: boolean
+}
+
 const ElOption = defineComponent({
   name: 'ElOption',
   props: {
@@ -474,11 +480,16 @@ const ElOption = defineComponent({
     label: { type: String, default: '' },
     disabled: { type: Boolean, default: false }
   },
-  setup(props, { slots }) {
+  setup(props) {
     const context = inject<any>(SelectContextKey, null)
-    if (context?.native) {
-      return () => h('option', { value: props.value as any, disabled: props.disabled }, slots.default?.() || props.label)
-    }
+    const item: SelectOptionItem = { value: props.value, label: props.label, disabled: props.disabled }
+    context?.register(item)
+    watch(() => [props.value, props.label, props.disabled], () => {
+      item.value = props.value
+      item.label = props.label
+      item.disabled = props.disabled
+    })
+    onUnmounted(() => context?.unregister(item))
     return () => null
   }
 })
@@ -494,47 +505,121 @@ const ElSelect = defineComponent({
   },
   emits: ['update:modelValue', 'change', 'clear', 'visible-change'],
   setup(props, { emit, slots, attrs }) {
-    provide(SelectContextKey, { native: true })
-    return () =>
-      h('div', { ...attrs, class: 'el-select' }, [
-        h(
-          'select',
-          {
-            class: 'el-select__wrapper',
-            value: props.modelValue as any,
-            multiple: props.multiple,
-            disabled: props.disabled,
-            onChange: (event: Event) => {
-              const target = event.target as HTMLSelectElement
-              if (props.multiple) {
-                const values = Array.from(target.selectedOptions).map((item) => item.value)
-                emit('update:modelValue', values)
-                emit('change', values)
-              } else {
-                emit('update:modelValue', target.value)
-                emit('change', target.value)
-              }
-            },
-            onFocus: () => emit('visible-change', true),
-            onBlur: () => emit('visible-change', false)
-          },
-          [!props.multiple ? h('option', { value: '', disabled: true, hidden: true }, props.placeholder) : null, slots.default?.()]
-        ),
-        props.clearable && !isEmpty(props.modelValue)
-          ? h(
-              'button',
-              {
+    const opened = ref(false)
+    const rootRef = ref<HTMLElement | null>(null)
+    const options = ref<SelectOptionItem[]>([])
+
+    provide(SelectContextKey, {
+      register(item: SelectOptionItem) { options.value.push(item) },
+      unregister(item: SelectOptionItem) {
+        const idx = options.value.indexOf(item)
+        if (idx >= 0) options.value.splice(idx, 1)
+      }
+    })
+
+    const selectedLabel = computed(() => {
+      if (props.multiple && Array.isArray(props.modelValue)) {
+        return props.modelValue
+          .map((v: any) => options.value.find((o) => o.value === v)?.label || v)
+          .join(', ')
+      }
+      const found = options.value.find((o) => o.value === props.modelValue)
+      return found ? found.label : ''
+    })
+
+    const onDocClick = (event: Event) => {
+      if (!rootRef.value?.contains(event.target as Node)) {
+        opened.value = false
+        emit('visible-change', false)
+      }
+    }
+
+    onMounted(() => document.addEventListener('mousedown', onDocClick))
+    onUnmounted(() => document.removeEventListener('mousedown', onDocClick))
+
+    const toggleOpen = () => {
+      if (props.disabled) return
+      opened.value = !opened.value
+      emit('visible-change', opened.value)
+    }
+
+    const selectItem = (item: SelectOptionItem) => {
+      if (item.disabled) return
+      if (props.multiple) {
+        const arr = Array.isArray(props.modelValue) ? [...props.modelValue] : []
+        const idx = arr.indexOf(item.value)
+        if (idx >= 0) arr.splice(idx, 1)
+        else arr.push(item.value)
+        emit('update:modelValue', arr)
+        emit('change', arr)
+      } else {
+        emit('update:modelValue', item.value)
+        emit('change', item.value)
+        opened.value = false
+        emit('visible-change', false)
+      }
+    }
+
+    const isSelected = (item: SelectOptionItem) => {
+      if (props.multiple && Array.isArray(props.modelValue)) {
+        return props.modelValue.includes(item.value)
+      }
+      return props.modelValue === item.value
+    }
+
+    return () => {
+      // Render slot content invisibly so ElOption registers
+      const hiddenSlot = h('div', { style: 'display:none' }, slots.default?.())
+
+      const triggerText = selectedLabel.value || props.placeholder
+      const hasValue = !isEmpty(props.modelValue)
+
+      const trigger = h(
+        'div',
+        {
+          class: ['el-select__wrapper', opened.value ? 'is-focused' : ''],
+          onClick: toggleOpen
+        },
+        [
+          h('span', {
+            class: 'el-select__label',
+            style: { color: hasValue ? 'inherit' : '#a8abb2', flex: '1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px', lineHeight: '1' }
+          }, triggerText),
+          props.clearable && hasValue
+            ? h('span', {
                 class: 'el-select__clear',
-                type: 'button',
-                onClick: () => {
+                onClick: (event: Event) => {
+                  event.stopPropagation()
                   emit('update:modelValue', props.multiple ? [] : '')
                   emit('clear')
-                }
-              },
-              'x'
+                  opened.value = false
+                  emit('visible-change', false)
+                },
+                style: { cursor: 'pointer', marginLeft: '4px', color: '#a8abb2', fontSize: '13px', flexShrink: '0' }
+              }, '\u2715')
+            : null
+        ]
+      )
+
+      const dropdown = opened.value
+        ? h('div', { class: 'el-select-dropdown', style: { position: 'absolute', top: '100%', left: '0', minWidth: '100%', marginTop: '4px', zIndex: '2050' } }, [
+            h('div', { class: 'el-select-dropdown__list' },
+              options.value.map((item) =>
+                h('div', {
+                  class: ['el-select-dropdown__item', isSelected(item) ? 'is-selected' : '', item.disabled ? 'is-disabled' : ''],
+                  onClick: (event: Event) => { event.stopPropagation(); selectItem(item) }
+                }, item.label)
+              )
             )
-          : null
+          ])
+        : null
+
+      return h('div', { ...attrs, class: ['el-select', opened.value ? 'is-opened' : ''], ref: rootRef, style: { position: 'relative' } }, [
+        hiddenSlot,
+        trigger,
+        dropdown
       ])
+    }
   }
 })
 

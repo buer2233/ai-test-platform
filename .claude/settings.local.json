@@ -35,7 +35,16 @@
       "mcp__plugin_playwright_playwright__browser_evaluate",
       "mcp__plugin_playwright_playwright__browser_fill_form",
       "mcp__plugin_playwright_playwright__browser_run_code",
-      "mcp__plugin_playwright_playwright__browser_wait_for"
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__web-to-mcp__get_html_for_reference",
+      "mcp__web-to-mcp__get_screenshot_for_reference",
+      "mcp__playwright-mcp__browser_navigate",
+      "mcp__playwright-mcp__browser_snapshot",
+      "mcp__playwright-mcp__browser_take_screenshot",
+      "mcp__playwright-mcp__browser_evaluate",
+      "mcp__playwright-mcp__browser_close",
+      "mcp__playwright-mcp__browser_click",
+      "mcp__playwright-mcp__browser_hover"
     ],
     "deny": [
       "Bash(rm -rf:)",
