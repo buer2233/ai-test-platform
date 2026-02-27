@@ -694,8 +694,66 @@ const ElRadio = simple('ElRadio', 'label', 'el-radio')
 const ElRadioButton = simple('ElRadioButton', 'label', 'el-radio-button')
 const ElRadioGroup = simple('ElRadioGroup', 'div', 'el-radio-group')
 const ElResult = simple('ElResult', 'section', 'el-result')
-const ElRow = simple('ElRow', 'div', 'el-row')
-const ElCol = simple('ElCol', 'div', 'el-col')
+const ElRow = defineComponent({
+  name: 'ElRow',
+  props: {
+    gutter: { type: Number, default: 0 },
+    justify: { type: String, default: 'start' },
+    align: { type: String, default: 'top' },
+    tag: { type: String, default: 'div' }
+  },
+  setup(props, { slots }) {
+    provide('ElRowGutter', computed(() => props.gutter))
+    return () => h(props.tag, {
+      class: 'el-row',
+      style: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: props.justify === 'start' ? 'flex-start' :
+                         props.justify === 'end' ? 'flex-end' :
+                         props.justify === 'center' ? 'center' :
+                         props.justify === 'space-between' ? 'space-between' :
+                         props.justify === 'space-around' ? 'space-around' :
+                         props.justify === 'space-evenly' ? 'space-evenly' : 'flex-start',
+        alignItems: props.align === 'top' ? 'flex-start' :
+                    props.align === 'middle' ? 'center' :
+                    props.align === 'bottom' ? 'flex-end' : 'flex-start',
+        marginLeft: props.gutter ? `-${props.gutter / 2}px` : undefined,
+        marginRight: props.gutter ? `-${props.gutter / 2}px` : undefined
+      }
+    }, slots.default?.())
+  }
+})
+
+const ElCol = defineComponent({
+  name: 'ElCol',
+  props: {
+    span: { type: Number, default: 24 },
+    offset: { type: Number, default: 0 },
+    push: { type: Number, default: 0 },
+    pull: { type: Number, default: 0 },
+    tag: { type: String, default: 'div' }
+  },
+  setup(props, { slots }) {
+    const gutter = inject<ReturnType<typeof computed<number>>>('ElRowGutter', computed(() => 0))
+    return () => {
+      const width = `${(props.span / 24) * 100}%`
+      const marginLeft = props.offset > 0 ? `${(props.offset / 24) * 100}%` : undefined
+      const g = gutter.value
+      return h(props.tag, {
+        class: ['el-col', `el-col-${props.span}`],
+        style: {
+          maxWidth: width,
+          flex: `0 0 ${width}`,
+          paddingLeft: g ? `${g / 2}px` : undefined,
+          paddingRight: g ? `${g / 2}px` : undefined,
+          marginLeft,
+          boxSizing: 'border-box'
+        }
+      }, slots.default?.())
+    }
+  }
+})
 const ElScrollbar = simple('ElScrollbar', 'div', 'el-scrollbar')
 const ElSlider = simple('ElSlider', 'input', 'el-slider')
 const ElSpace = simple('ElSpace', 'div', 'el-space')
