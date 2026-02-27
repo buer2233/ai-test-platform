@@ -15,6 +15,10 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 ```
 
 ```text
+启动前后端服务
+```
+
+```text
 进行一次全方面的测试，测试所有前端和后端功能。发现问题需要立即修复，最后给出完整且详细的测试报告。
 ```
 
@@ -119,10 +123,6 @@ D:\AI\AI-test-project\Django_project\ui_automation\browser-use-0.11.2\.venv\Scri
 ```
 
 ## 历史需求（未分组）
-```text
--------------------赛博炼丹:Claude Code零代码开发自动化测试平台--------------------------------
-```
-
 ```text
 --开发A计划--
 1.[X]完善更多的功能模块（测试环境、测试执行、测试报告等）
@@ -841,4 +841,19 @@ UI开发完成后集成到github
 执行mysql -u root -e "SELECT VERSION();",报错:ERROR 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) 
 ```
 
+## 2026-02-26
+
+```text
+http://localhost:3000/dashboard
+统计概览卡片的显示有问题,其中的四个卡片应该是横向均匀排布的显示在一行,现在错误显示未一竖排了,请修改
+```
+
+## 2026-02-27
+
+```text
+问题截图地址:D:\AI\AI-test-project\问题截图\下拉样式问题1.png
+问题描述: 下拉框的显示样式不够美观,需要统一为跟上面一样的蓝色线的圆角设计
+
+使用playwright进行截图验证问题时:降低playwright的截图大小,使用jpeg格式,图片质量设置60~80,保证图片大小小于20M.然后重新进行测试并截图验证问题
+```
 
