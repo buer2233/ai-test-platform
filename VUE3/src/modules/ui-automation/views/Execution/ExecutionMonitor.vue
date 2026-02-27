@@ -156,6 +156,8 @@ import {
   Refresh
 } from '@element-plus/icons-vue'
 import { useUiExecutionStore } from '../../stores/execution'
+import { uiReportApi, getScreenshotUrl } from '../../api/report'
+import type { BrowserUseReport } from '../../types/report'
 import ExecutionStatusBadge from '@ui-automation/components/ExecutionStatusBadge.vue'
 
 const route = useRoute()
@@ -245,7 +247,35 @@ const parseAgentHistory = () => {
 
   // 解析截图（从报告中获取）
   if (execution.report) {
-    // TODO: 从报告API获取截图
+    loadScreenshotsFromReport(execution.report)
+  }
+}
+
+// 从报告加载截图
+const loadScreenshotsFromReport = async (report: any) => {
+  try {
+    const reportId = typeof report === 'object' ? report.id : report
+    const summary = await uiReportApi.getReportSummary(reportId)
+    if (!summary.json_report_path) return
+
+    const reportData = await uiReportApi.getReportFile(summary.json_report_path) as BrowserUseReport
+    if (!reportData?.history) return
+
+    const loaded: Array<{ data: string; description: string; timestamp: string }> = []
+    for (const step of reportData.history) {
+      if (step.state?.screenshot_path) {
+        loaded.push({
+          data: getScreenshotUrl(step.state.screenshot_path),
+          description: step.model_output?.next_goal || `步骤 ${step.metadata?.step_number || ''}`,
+          timestamp: step.metadata?.step_start_time
+            ? new Date(step.metadata.step_start_time * 1000).toISOString()
+            : '',
+        })
+      }
+    }
+    screenshots.value = loaded
+  } catch (error) {
+    console.error('加载报告截图失败:', error)
   }
 }
 

@@ -7,16 +7,20 @@ UI自动化测试 API 视图
 import os
 import asyncio
 import json
+import mimetypes
 import threading
 from datetime import datetime
+from pathlib import Path as PathLib
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q, Count
 from django.conf import settings
+from django.http import FileResponse
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from .models import UiTestProject, UiTestCase, UiTestExecution, UiTestReport, UiScreenshot
 from .serializers import (
@@ -692,26 +696,38 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
         """返回序列化器"""
         return UiTestReportSerializer
 
+    # 允许的图片格式后缀
+    ALLOWED_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+
+    @staticmethod
+    def _error_response(error_code: str, message: str, http_status: int):
+        """统一错误响应格式"""
+        return Response(
+            {
+                'error': message,
+                'message': message,
+                'error_code': error_code,
+            },
+            status=http_status,
+        )
+
     def _resolve_and_validate_report_path(self, report_path: str):
         """解析并校验报告路径，仅允许 report 目录内文件。"""
-        from pathlib import Path
         import urllib.parse
 
         if not report_path:
-            return None, Response(
-                {'error': '请提供报告文件路径'},
-                status=status.HTTP_400_BAD_REQUEST
+            return None, self._error_response(
+                'REPORT_PATH_MISSING', '请提供报告文件路径', 400
             )
 
         decoded_path = urllib.parse.unquote(report_path)
-        base_report_dir = (Path(__file__).parent / 'browser-use-0.11.2' / 'report').resolve()
+        base_report_dir = (PathLib(__file__).parent / 'browser-use-0.11.2' / 'report').resolve()
 
         try:
-            file_path = Path(decoded_path).expanduser().resolve()
+            file_path = PathLib(decoded_path).expanduser().resolve()
         except Exception as e:
-            return None, Response(
-                {'error': f'无效的文件路径: {str(e)}'},
-                status=status.HTTP_400_BAD_REQUEST
+            return None, self._error_response(
+                'REPORT_PATH_INVALID', f'无效的文件路径: {str(e)}', 400
             )
 
         try:
@@ -720,24 +736,109 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
             file_path_str = str(file_path).lower()
             base_dir_str = str(base_report_dir).lower()
             if not file_path_str.startswith(base_dir_str):
-                return None, Response(
-                    {'error': '非法的文件路径，报告必须在报告目录内'},
-                    status=status.HTTP_403_FORBIDDEN
+                return None, self._error_response(
+                    'REPORT_PATH_FORBIDDEN', '非法的文件路径，报告必须在报告目录内', 403
                 )
 
         if not file_path.exists():
-            return None, Response(
-                {'error': f'报告文件不存在: {file_path.name}'},
-                status=status.HTTP_404_NOT_FOUND
+            return None, self._error_response(
+                'REPORT_NOT_FOUND', f'报告文件不存在: {file_path.name}', 404
             )
 
         if not file_path.is_file():
-            return None, Response(
-                {'error': '路径不是文件'},
-                status=status.HTTP_400_BAD_REQUEST
+            return None, self._error_response(
+                'REPORT_PATH_INVALID', '路径不是文件', 400
             )
 
         return file_path, None
+
+    def _resolve_and_validate_screenshot_path(self, screenshot_path: str):
+        """解析并校验截图路径，允许 browser-use-0.11.2 根目录下的图片文件。"""
+        import urllib.parse
+
+        if not screenshot_path:
+            return None, self._error_response(
+                'REPORT_PATH_MISSING', '请提供截图文件路径', 400
+            )
+
+        decoded_path = urllib.parse.unquote(screenshot_path)
+        base_dir = (PathLib(__file__).parent / 'browser-use-0.11.2').resolve()
+
+        try:
+            file_path = PathLib(decoded_path).expanduser().resolve()
+        except Exception as e:
+            return None, self._error_response(
+                'REPORT_PATH_INVALID', f'无效的文件路径: {str(e)}', 400
+            )
+
+        try:
+            file_path.relative_to(base_dir)
+        except ValueError:
+            file_path_str = str(file_path).lower()
+            base_dir_str = str(base_dir).lower()
+            if not file_path_str.startswith(base_dir_str):
+                return None, self._error_response(
+                    'REPORT_PATH_FORBIDDEN', '非法的文件路径，截图必须在允许的目录内', 403
+                )
+
+        if file_path.suffix.lower() not in self.ALLOWED_IMAGE_EXTENSIONS:
+            return None, self._error_response(
+                'SCREENSHOT_INVALID_FORMAT',
+                f'不支持的图片格式: {file_path.suffix}，允许: {", ".join(self.ALLOWED_IMAGE_EXTENSIONS)}',
+                400,
+            )
+
+        if not file_path.exists():
+            return None, self._error_response(
+                'SCREENSHOT_NOT_FOUND', f'截图文件不存在: {file_path.name}', 404
+            )
+
+        if not file_path.is_file():
+            return None, self._error_response(
+                'REPORT_PATH_INVALID', '路径不是文件', 400
+            )
+
+        return file_path, None
+
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def screenshot(self, request):
+        """获取截图文件
+
+        支持 token 查询参数认证（因为 <img src> 无法携带 Authorization header）。
+
+        参数:
+            path: 截图文件路径
+            token: 认证 token
+        """
+        # 手动进行 token 认证
+        token_key = request.query_params.get('token')
+        if not token_key:
+            # 也检查 Authorization header（兼容常规 API 调用）
+            if not request.user or not request.user.is_authenticated:
+                return self._error_response(
+                    'SCREENSHOT_NOT_FOUND', '认证失败', 401
+                )
+        else:
+            try:
+                token_obj = Token.objects.select_related('user').get(key=token_key)
+                request.user = token_obj.user
+            except Token.DoesNotExist:
+                return self._error_response(
+                    'SCREENSHOT_NOT_FOUND', '认证失败', 401
+                )
+
+        screenshot_path = request.query_params.get('path')
+        file_path, error_response = self._resolve_and_validate_screenshot_path(screenshot_path)
+        if error_response is not None:
+            return error_response
+
+        content_type = mimetypes.guess_type(str(file_path))[0] or 'image/png'
+        response = FileResponse(
+            open(file_path, 'rb'),
+            content_type=content_type,
+        )
+        response['Content-Disposition'] = f'inline; filename="{file_path.name}"'
+        return response
 
     @action(detail=True, methods=['get'])
     def summary(self, request, pk=None):
@@ -782,8 +883,10 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
                         step_results = last_step.get('result', []) if isinstance(last_step, dict) else []
                         if step_results and isinstance(step_results[0], dict):
                             last_result_text = step_results[0].get('extracted_content', '') or ''
-                except Exception:
+                except (json.JSONDecodeError, UnicodeDecodeError):
                     # 解析失败时回退到数据库中的统计，不阻断响应
+                    pass
+                except Exception:
                     pass
 
         if metrics['total_steps'] == 0:
@@ -830,19 +933,16 @@ class UiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
                 data = json.load(f)
             return Response(data)
         except json.JSONDecodeError as e:
-            return Response(
-                {'error': f'报告文件格式错误: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return self._error_response(
+                'REPORT_PARSE_ERROR', f'报告文件格式错误: {str(e)}', 422
             )
         except UnicodeDecodeError:
-            return Response(
-                {'error': '报告文件编码错误（需要 UTF-8 编码）'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return self._error_response(
+                'REPORT_ENCODING_ERROR', '报告文件编码错误（需要 UTF-8 编码）', 422
             )
         except Exception as e:
-            return Response(
-                {'error': f'读取报告文件失败: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return self._error_response(
+                'REPORT_PARSE_ERROR', f'读取报告文件失败: {str(e)}', 500
             )
 
 

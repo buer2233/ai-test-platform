@@ -254,16 +254,129 @@ async function setupApiMocks(page: Page, options: MockApiOptions = {}) {
       ]))
     }
 
+    // UI automation: screenshot endpoint
+    if (pathname.includes('/api/v1/ui-automation/reports/screenshot')) {
+      // Return a 1x1 transparent PNG
+      const pngBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+      return route.fulfill({
+        status: 200,
+        contentType: 'image/png',
+        body: Buffer.from(pngBase64, 'base64')
+      })
+    }
+
+    // UI automation: report file content (JSON report)
+    if (pathname.includes('/api/v1/ui-automation/reports/file')) {
+      return jsonResponse(route, {
+        history: [
+          {
+            model_output: {
+              evaluation_previous_goal: null,
+              memory: '开始测试',
+              next_goal: '打开首页',
+              action: [{ navigate: { url: 'https://example.com' } }]
+            },
+            result: [{ is_done: false, success: true }],
+            state: {
+              url: 'https://example.com',
+              title: '示例首页',
+              tabs: [{ url: 'https://example.com', title: '示例首页', target_id: '1', parent_target_id: null }],
+              screenshot_path: 'D:/mock/screenshots/step1.png'
+            },
+            metadata: { step_number: 1, step_start_time: 1700000000, step_end_time: 1700000005, step_interval: 5 },
+            state_message: ''
+          },
+          {
+            model_output: {
+              evaluation_previous_goal: '已打开首页',
+              memory: '首页已加载',
+              next_goal: '校验标题',
+              action: [{ done: { text: '标题验证成功', success: true } }]
+            },
+            result: [{ is_done: true, success: true, extracted_content: '标题验证通过' }],
+            state: {
+              url: 'https://example.com',
+              title: '示例首页',
+              tabs: [{ url: 'https://example.com', title: '示例首页', target_id: '1', parent_target_id: null }],
+              screenshot_path: 'D:/mock/screenshots/step2.png'
+            },
+            metadata: { step_number: 2, step_start_time: 1700000005, step_end_time: 1700000010, step_interval: 5 },
+            state_message: ''
+          }
+        ]
+      })
+    }
+
+    // UI automation: report summary (detail route with /summary/)
+    if (pathname.match(/\/api\/v1\/ui-automation\/reports\/\d+\/summary\//)) {
+      return jsonResponse(route, {
+        id: 701,
+        execution_id: 601,
+        project_id: 1,
+        project_name: 'UI 项目 A',
+        test_case_name: '首页烟雾测试',
+        browser_mode: 'headed',
+        status: 'passed',
+        started_at: '2026-02-12T08:00:00Z',
+        completed_at: '2026-02-12T08:00:12Z',
+        duration_seconds: 12,
+        json_report_path: 'D:/mock/report/test-report.json',
+        summary: '测试成功',
+        final_result: '标题验证通过',
+        error_message: '',
+        metrics: {
+          total_steps: 2,
+          failed_steps: 0,
+          success_steps: 2,
+          screenshot_count: 2
+        }
+      })
+    }
+
+    // UI automation: execution detail
+    if (pathname.match(/\/api\/v1\/ui-automation\/executions\/\d+\/$/)) {
+      return jsonResponse(route, {
+        id: 601,
+        test_case: 501,
+        test_case_name: '首页烟雾测试',
+        project: 1,
+        project_name: 'UI 项目 A',
+        status: 'passed',
+        browser_mode: 'headed',
+        duration_seconds: 12,
+        started_at: '2026-02-12T08:00:00Z',
+        completed_at: '2026-02-12T08:00:12Z',
+        error_message: null,
+        agent_history: '',
+        report: { id: 701 },
+        created_at: '2026-02-12T08:00:00Z'
+      })
+    }
+
     if (pathname.includes('/api/v1/ui-automation/executions/')) {
       return jsonResponse(route, paged([
         {
           id: 601,
           test_case_name: '首页烟雾测试',
-          status: 'SUCCESS',
+          status: 'passed',
           duration_seconds: 12,
           created_at: '2026-02-12T08:00:00Z'
         }
       ]))
+    }
+
+    // UI automation: report detail
+    if (pathname.match(/\/api\/v1\/ui-automation\/reports\/\d+\/$/)) {
+      return jsonResponse(route, {
+        id: 701,
+        execution: 601,
+        total_steps: 2,
+        completed_steps: 2,
+        failed_steps: 0,
+        summary: '测试成功',
+        json_report_path: 'D:/mock/report/test-report.json',
+        created_at: '2026-02-12T08:00:00Z'
+      })
     }
 
     if (pathname.includes('/api/v1/ui-automation/reports/')) {

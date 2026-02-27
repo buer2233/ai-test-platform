@@ -111,3 +111,40 @@ class UiReportSummaryApiTestCase(TestCase):
         self.assertEqual(payload['metrics']['total_steps'], 5)
         self.assertEqual(payload['metrics']['failed_steps'], 1)
         self.assertEqual(payload['metrics']['screenshot_count'], 2)
+
+    def test_report_file_json_parse_error_returns_422(self):
+        """JSON 解析失败返回 422"""
+        execution = UiTestExecution.objects.create(
+            project=self.project,
+            test_case=self.test_case,
+            status='passed',
+            browser_mode='headless',
+            executed_by=self.user,
+        )
+
+        report_dir = Path(__file__).resolve().parents[1] / 'browser-use-0.11.2' / 'report'
+        report_dir.mkdir(parents=True, exist_ok=True)
+        bad_json_file = report_dir / f'bad-report-{execution.id}.json'
+        bad_json_file.write_text('{invalid json!!!', encoding='utf-8')
+
+        try:
+            response = self.client.get(
+                '/api/v1/ui-automation/reports/file/',
+                {'path': str(bad_json_file)},
+            )
+            self.assertEqual(response.status_code, 422)
+            data = response.json()
+            self.assertEqual(data['error_code'], 'REPORT_PARSE_ERROR')
+        finally:
+            bad_json_file.unlink()
+
+    def test_report_file_error_response_has_unified_format(self):
+        """错误响应同时包含 error、message 和 error_code 字段"""
+        response = self.client.get('/api/v1/ui-automation/reports/file/')
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertIn('message', data)
+        self.assertIn('error_code', data)
+        self.assertEqual(data['error'], data['message'])
+        self.assertEqual(data['error_code'], 'REPORT_PATH_MISSING')

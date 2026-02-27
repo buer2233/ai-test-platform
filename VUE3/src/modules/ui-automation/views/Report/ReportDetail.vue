@@ -176,10 +176,10 @@
                   <div v-if="step.state.screenshot_path" class="state-item">
                     <span class="label">截图：</span>
                     <el-image
-                      :src="`file://${step.state.screenshot_path}`"
+                      :src="getScreenshotUrl(step.state.screenshot_path)"
                       fit="contain"
                       class="screenshot-thumb"
-                      :preview-src-list="[`file://${step.state.screenshot_path}`]"
+                      :preview-src-list="[getScreenshotUrl(step.state.screenshot_path)]"
                       preview-teleported
                     />
                   </div>
@@ -237,7 +237,7 @@ import {
 } from '@element-plus/icons-vue'
 import type { BrowserUseReport, AgentHistoryStep, Action } from '../../types'
 import { http } from '@/shared/utils/http'
-import { uiReportApi } from '../../api/report'
+import { uiReportApi, getScreenshotUrl } from '../../api/report'
 import type { UiTestReportSummary } from '../../types/report'
 
 const route = useRoute()
@@ -277,9 +277,10 @@ const loadReport = async () => {
     // 默认展开最后一步
     const lastStep = (browserUseReport.value.history?.length || 1) - 1
     expandedSteps.value[lastStep] = true
-  } catch (error) {
-    ElMessage.error('加载报告失败')
-    console.error(error)
+  } catch (error: any) {
+    // http.ts 拦截器已通过 ElMessage.error 显示了后端返回的 message
+    // 这里仅做日志记录，避免重复弹出消息
+    console.error('加载报告失败:', error)
   } finally {
     loading.value = false
   }
