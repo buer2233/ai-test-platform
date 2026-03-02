@@ -1,3 +1,14 @@
+<!--
+  EnvironmentManager.vue - 测试环境管理组件
+
+  提供测试环境的完整 CRUD 功能：
+  - 环境列表展示（表格形式，含分页）
+  - 创建/编辑环境（对话框表单）
+  - 连接测试：验证环境 Base URL 是否可达
+  - 设为默认环境
+  - 删除环境（带确认提示）
+  - 支持全局请求头和全局变量的动态配置
+-->
 <template>
   <div class="environment-manager">
     <div class="header">

@@ -1,22 +1,36 @@
 """
-测试报告生成器模块
+测试报告生成器
 
-生成HTML格式的UI自动化测试报告。
+根据测试执行结果生成 HTML 格式的可视化报告。
+
+报告包含:
+    - 测试状态总览（通过/失败/错误）
+    - 执行统计卡片（步骤数、完成数、失败数、时长）
+    - 测试用例信息（名称、任务描述、预期结果、浏览器模式）
+    - 执行步骤时间线
+    - 错误信息详情
+    - 执行截图画廊
 """
 
 import json
 import os
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
+
 from django.template import Template, Context
 from django.utils import timezone
 
 
 class ReportGenerator:
     """
-    测试报告生成器
+    HTML 测试报告生成器。
 
-    根据测试执行结果生成详细的HTML报告。
+    使用 Django 模板引擎将执行结果渲染为独立的 HTML 报告文件。
+    报告包含内联 CSS 样式，无需外部依赖即可在浏览器中直接打开。
+
+    使用方式:
+        generator = ReportGenerator(execution)
+        html = generator.generate_html()        # 获取 HTML 字符串
+        generator.save_to_file('/path/to.html')  # 保存为文件
     """
 
     # HTML 模板
@@ -260,20 +274,15 @@ class ReportGenerator:
 
     def __init__(self, execution):
         """
-        初始化报告生成器
+        初始化报告生成器。
 
         Args:
-            execution: UiTestExecution 实例
+            execution: UiTestExecution 实例，需要已关联 test_case、project 和 report
         """
         self.execution = execution
 
     def _parse_agent_history(self) -> List[Dict]:
-        """
-        解析 Agent 执行历史
-
-        Returns:
-            步骤列表
-        """
+        """从关联的报告记录中解析 Agent 执行历史 JSON 数据。"""
         try:
             if self.execution.report:
                 history_json = self.execution.report.agent_history
@@ -285,12 +294,7 @@ class ReportGenerator:
         return []
 
     def _parse_screenshots(self) -> List[Dict]:
-        """
-        解析截图数据
-
-        Returns:
-            截图列表
-        """
+        """从关联的报告记录中解析截图路径列表。"""
         try:
             if self.execution.report:
                 screenshots_json = self.execution.report.screenshot_paths
@@ -302,12 +306,7 @@ class ReportGenerator:
         return []
 
     def _format_duration(self) -> str:
-        """
-        格式化执行时长
-
-        Returns:
-            格式化的时长字符串
-        """
+        """将执行时长格式化为中文可读字符串（如 '2分30秒'）。"""
         if self.execution.duration_seconds is None:
             return '-'
 
@@ -319,22 +318,20 @@ class ReportGenerator:
         return f'{minutes}分{seconds}秒'
 
     def _format_execution_time(self) -> str:
-        """
-        格式化执行时间
-
-        Returns:
-            格式化的时间字符串
-        """
+        """格式化执行开始时间为 'YYYY-MM-DD HH:MM:SS' 格式。"""
         if self.execution.started_at:
             return self.execution.started_at.strftime('%Y-%m-%d %H:%M:%S')
         return timezone.now().strftime('%Y-%m-%d %H:%M:%S')
 
     def generate_html(self) -> str:
         """
-        生成 HTML 报告
+        生成完整的 HTML 报告。
+
+        从执行记录和关联的报告数据中提取信息，
+        使用 Django 模板引擎渲染为 HTML 字符串。
 
         Returns:
-            HTML 字符串
+            渲染后的 HTML 报告字符串
         """
         # 解析数据
         steps = self._parse_agent_history()
@@ -364,13 +361,15 @@ class ReportGenerator:
 
     def save_to_file(self, file_path: str) -> str:
         """
-        保存报告到文件
+        生成报告并保存到指定文件路径。
+
+        自动创建所需的目录结构。
 
         Args:
-            file_path: 文件路径
+            file_path: 保存文件的目标路径
 
         Returns:
-            文件路径
+            保存成功的文件路径
         """
         html_content = self.generate_html()
 
@@ -384,29 +383,12 @@ class ReportGenerator:
 
 
 def generate_report(execution) -> str:
-    """
-    生成测试报告的便捷函数
-
-    Args:
-        execution: UiTestExecution 实例
-
-    Returns:
-        HTML 报告字符串
-    """
+    """生成 HTML 测试报告的便捷函数。"""
     generator = ReportGenerator(execution)
     return generator.generate_html()
 
 
 def save_report(execution, file_path: str) -> str:
-    """
-    保存测试报告的便捷函数
-
-    Args:
-        execution: UiTestExecution 实例
-        file_path: 文件路径
-
-    Returns:
-        文件路径
-    """
+    """生成并保存 HTML 测试报告的便捷函数。"""
     generator = ReportGenerator(execution)
     return generator.save_to_file(file_path)

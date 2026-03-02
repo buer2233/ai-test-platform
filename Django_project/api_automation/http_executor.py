@@ -1,22 +1,33 @@
 """
-HTTP执行器API视图
-支持直接执行HTTP请求，不依赖于测试用例
+HTTP执行器 - API视图层
+
+提供直接执行HTTP请求的REST API端点，不依赖于测试用例。
+支持单次执行、批量执行、执行历史保存和查询。
+
+端点列表：
+- POST /execute/      - 执行单个HTTP请求
+- POST /batch/        - 批量执行多个HTTP请求
+- GET  /history/      - 获取执行历史记录
+- POST /cancel/{id}/  - 取消正在执行的请求
 """
 
 import json
+import logging
 import time
-from datetime import datetime
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.request import Request
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from rest_framework.response import Response
 
-from api_automation.services.http_executor import HttpExecutor
-from api_automation.services.assertion_engine import AssertionEngine
 from api_automation.models import ApiTestExecution, ApiTestResult
+from api_automation.services.assertion_engine import AssertionEngine
+from api_automation.services.http_executor import HttpExecutor
+
+logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -26,13 +37,31 @@ from api_automation.models import ApiTestExecution, ApiTestResult
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'method': openapi.Schema(type=openapi.TYPE_STRING, description='HTTP方法'),
-            'url': openapi.Schema(type=openapi.TYPE_STRING, description='请求URL'),
-            'headers': openapi.Schema(type=openapi.TYPE_OBJECT, description='请求头'),
-            'params': openapi.Schema(type=openapi.TYPE_OBJECT, description='查询参数'),
-            'body': openapi.Schema(type=openapi.TYPE_OBJECT, description='请求体'),
-            'variables': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT), description='变量列表'),
-            'tests': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT), description='断言测试'),
+            'method': openapi.Schema(
+                type=openapi.TYPE_STRING, description='HTTP方法'
+            ),
+            'url': openapi.Schema(
+                type=openapi.TYPE_STRING, description='请求URL'
+            ),
+            'headers': openapi.Schema(
+                type=openapi.TYPE_OBJECT, description='请求头'
+            ),
+            'params': openapi.Schema(
+                type=openapi.TYPE_OBJECT, description='查询参数'
+            ),
+            'body': openapi.Schema(
+                type=openapi.TYPE_OBJECT, description='请求体'
+            ),
+            'variables': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_OBJECT),
+                description='变量列表'
+            ),
+            'tests': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_OBJECT),
+                description='断言测试'
+            ),
         }
     )
 )
@@ -41,6 +70,9 @@ from api_automation.models import ApiTestExecution, ApiTestResult
 def execute_http_request(request: Request):
     """
     直接执行HTTP请求
+
+    接受请求参数，创建HTTP执行器发送请求，执行断言，
+    可选保存执行历史。返回完整的响应数据和断言结果。
     """
     try:
         data = request.data
@@ -53,52 +85,34 @@ def execute_http_request(request: Request):
         settings = data.get('settings', {})
         tests = data.get('tests', [])
 
-        # 创建HTTP执行器
+        # 创建执行器并发送请求
         timeout = settings.get('timeout', 30)
         verify_ssl = settings.get('verify_ssl', True)
         executor = HttpExecutor(timeout=timeout, verify_ssl=verify_ssl)
 
-        # 执行请求
         start_time = time.time()
         response = executor.execute_request(
-            method=method,
-            url=url,
-            headers=headers,
-            params=params,
-            body=body,
-            global_variables=variables
+            method=method, url=url, headers=headers,
+            params=params, body=body, global_variables=variables
         )
         execution_time = time.time() - start_time
 
-        # 处理响应
+        # 构建响应数据
         response_data = {
             'status_code': response.status_code,
             'headers': response.headers,
             'body': response.body,
             'response_time': response.response_time,
             'body_size': response.body_size,
-            'execution_time': round(execution_time * 1000)  # 转换为毫秒
+            'execution_time': round(execution_time * 1000),
         }
 
-        # 如果有错误，添加到响应中
         if response.error:
             response_data['error'] = response.error
 
-        # 处理cookies
-        if 'set-cookie' in response.headers:
-            cookies = {}
-            cookie_header = response.headers['set-cookie']
-            if isinstance(cookie_header, list):
-                for cookie in cookie_header:
-                    parts = cookie.split(';')[0]
-                    if '=' in parts:
-                        key, value = parts.split('=', 1)
-                        cookies[key] = value
-            else:
-                parts = cookie_header.split(';')[0]
-                if '=' in parts:
-                    key, value = parts.split('=', 1)
-                    cookies[key] = value
+        # 解析Set-Cookie响应头
+        cookies = _parse_cookies(response.headers)
+        if cookies:
             response_data['cookies'] = cookies
 
         # 执行断言测试
@@ -109,44 +123,63 @@ def execute_http_request(request: Request):
 
         response_data['assertion_results'] = assertion_results
 
-        # 计算断言统计
+        # 断言统计
         passed_count = sum(1 for r in assertion_results if r.passed)
-        failed_count = len(assertion_results) - passed_count
-
         response_data['assertion_summary'] = {
             'total': len(assertion_results),
             'passed': passed_count,
-            'failed': failed_count
+            'failed': len(assertion_results) - passed_count,
         }
 
-        # 记录执行历史（可选）
+        # 可选保存执行历史
         if data.get('save_history', False):
-            execution_record_id = save_execution_history(request.user, {
+            record_id = save_execution_history(request.user, {
                 'request': {
-                    'method': method,
-                    'url': url,
-                    'base_url': '',
-                    'headers': headers,
-                    'params': params,
-                    'body': body
+                    'method': method, 'url': url, 'base_url': '',
+                    'headers': headers, 'params': params, 'body': body
                 },
                 'response': response_data
             })
-            if execution_record_id:
-                response_data['execution_record_id'] = execution_record_id
+            if record_id:
+                response_data['execution_record_id'] = record_id
 
         return Response({
-            'code': 200,
-            'message': 'success',
-            'data': response_data
+            'code': 200, 'message': 'success', 'data': response_data
         })
 
     except Exception as e:
-        return Response({
-            'code': 500,
-            'message': f'请求执行失败: {str(e)}',
-            'data': None
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'code': 500, 'message': f'请求执行失败: {str(e)}', 'data': None},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+def _parse_cookies(headers: dict) -> dict:
+    """
+    从响应头中解析Set-Cookie字段
+
+    Args:
+        headers: 响应头字典
+
+    Returns:
+        解析后的 {cookie名: cookie值} 字典，无Cookie时返回空字典
+    """
+    if 'set-cookie' not in headers:
+        return {}
+
+    cookies = {}
+    cookie_header = headers['set-cookie']
+
+    # Set-Cookie可能是列表（多个Cookie）或单个字符串
+    cookie_items = cookie_header if isinstance(cookie_header, list) else [cookie_header]
+
+    for cookie in cookie_items:
+        name_value_part = cookie.split(';')[0]
+        if '=' in name_value_part:
+            key, value = name_value_part.split('=', 1)
+            cookies[key] = value
+
+    return cookies
 
 
 @swagger_auto_schema(
@@ -159,6 +192,9 @@ def execute_http_request(request: Request):
 def execute_batch_requests(request: Request):
     """
     批量执行HTTP请求
+
+    接受请求数组，逐条执行并返回汇总结果。
+    单条请求失败不影响后续请求的执行。
     """
     try:
         requests_data = request.data.get('requests', [])
@@ -167,39 +203,42 @@ def execute_batch_requests(request: Request):
         for i, req_data in enumerate(requests_data):
             try:
                 result = execute_single_request(req_data)
-                results.append({
-                    'index': i,
-                    'success': True,
-                    'data': result
-                })
+                results.append({'index': i, 'success': True, 'data': result})
             except Exception as e:
-                results.append({
-                    'index': i,
-                    'success': False,
-                    'error': str(e)
-                })
+                results.append({'index': i, 'success': False, 'error': str(e)})
+
+        success_count = sum(1 for r in results if r['success'])
 
         return Response({
             'code': 200,
             'message': 'success',
             'data': {
                 'total': len(requests_data),
-                'success_count': sum(1 for r in results if r['success']),
-                'failed_count': sum(1 for r in results if not r['success']),
+                'success_count': success_count,
+                'failed_count': len(requests_data) - success_count,
                 'results': results
             }
         })
 
     except Exception as e:
-        return Response({
-            'code': 500,
-            'message': f'批量执行失败: {str(e)}',
-            'data': None
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'code': 500, 'message': f'批量执行失败: {str(e)}', 'data': None},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
-def execute_single_request(request_data):
-    """执行单个HTTP请求的内部函数"""
+def execute_single_request(request_data: dict) -> dict:
+    """
+    执行单个HTTP请求的内部函数
+
+    由 execute_batch_requests 调用，封装请求参数解析和执行逻辑。
+
+    Args:
+        request_data: 请求配置字典
+
+    Returns:
+        响应数据字典
+    """
     method = request_data.get('method', 'GET')
     url = request_data.get('url', '')
     headers = request_data.get('headers', {})
@@ -208,22 +247,16 @@ def execute_single_request(request_data):
     variables = request_data.get('variables', {})
     settings = request_data.get('settings', {})
 
-    # 创建HTTP执行器
-    timeout = settings.get('timeout', 30)
-    verify_ssl = settings.get('verify_ssl', True)
-    executor = HttpExecutor(timeout=timeout, verify_ssl=verify_ssl)
-
-    # 执行请求
-    response = executor.execute_request(
-        method=method,
-        url=url,
-        headers=headers,
-        params=params,
-        body=body,
-        global_variables=variables
+    executor = HttpExecutor(
+        timeout=settings.get('timeout', 30),
+        verify_ssl=settings.get('verify_ssl', True)
     )
 
-    # 返回响应数据
+    response = executor.execute_request(
+        method=method, url=url, headers=headers,
+        params=params, body=body, global_variables=variables
+    )
+
     return {
         'status_code': response.status_code,
         'headers': response.headers,
@@ -234,11 +267,26 @@ def execute_single_request(request_data):
     }
 
 
-def save_execution_history(user, execution_data):
-    """保存执行历史到ApiHttpExecutionRecord模型"""
+def save_execution_history(user, execution_data: dict):
+    """
+    保存HTTP请求执行历史到 ApiHttpExecutionRecord 模型
+
+    将请求和响应数据持久化存储，包含请求方法、URL、请求头、
+    请求体、响应状态、响应体、断言结果等完整信息。
+
+    Args:
+        user: 执行用户对象
+        execution_data: 包含 request 和 response 子字典的执行数据
+
+    Returns:
+        保存成功返回记录ID，失败返回None
+    """
     try:
-        from api_automation.models import ApiHttpExecutionRecord
         from urllib.parse import urljoin
+
+        from django.utils import timezone
+
+        from api_automation.models import ApiHttpExecutionRecord
 
         request_data = execution_data.get('request', {})
         response_data = execution_data.get('response', execution_data)
@@ -252,59 +300,53 @@ def save_execution_history(user, execution_data):
         else:
             full_url = url
 
-        # 计算请求大小
-        import json
-        request_size = 0
-        request_size += len(method or '')
-        request_size += len(full_url or '')
+        # 估算请求大小
         headers = request_data.get('headers', {})
-        request_size += len(json.dumps(headers))
         params = request_data.get('params', {})
-        if params:
-            request_size += len(json.dumps(params))
         body = request_data.get('body')
-        if body:
-            request_size += len(json.dumps(body))
+        request_size = (
+            len(method or '')
+            + len(full_url or '')
+            + len(json.dumps(headers))
+            + (len(json.dumps(params)) if params else 0)
+            + (len(json.dumps(body)) if body else 0)
+        )
 
-        # 确定执行状态
+        # 根据响应状态确定执行状态
         status_code = response_data.get('status_code', 0)
         error = response_data.get('error')
-        if error:
-            status_record = 'ERROR'
-            error_type = 'RequestError'
-            error_message = error
-        elif 200 <= status_code < 300:
-            status_record = 'SUCCESS'
-            error_type = None
-            error_message = None
-        elif 300 <= status_code < 400:
-            status_record = 'SUCCESS'
-            error_type = None
-            error_message = None
-        else:
-            status_record = 'FAILED'
-            error_type = 'HTTPError'
-            error_message = f'HTTP {status_code}'
+        status_record, error_type, error_message = _determine_execution_status(
+            status_code, error
+        )
 
-        # 处理断言结果
+        # 如果有断言失败，覆盖状态为FAILED
         assertion_results_data = response_data.get('assertion_results', [])
-        assertions_passed = response_data.get('assertion_summary', {}).get('passed', 0)
-        assertions_failed = response_data.get('assertion_summary', {}).get('failed', 0)
+        assertions_passed = response_data.get(
+            'assertion_summary', {}
+        ).get('passed', 0)
+        assertions_failed = response_data.get(
+            'assertion_summary', {}
+        ).get('failed', 0)
 
-        # 如果有断言失败，更新状态
         if assertion_results_data and assertions_failed > 0:
             status_record = 'FAILED'
             error_message = '断言失败'
 
-        # 创建执行记录（不关联test_case，因为是直接执行）
-        execution_record = ApiHttpExecutionRecord.objects.create(
-            project=None,  # 直接执行没有关联项目
-            test_case=None,  # 直接执行没有关联测试用例
-            environment=None,  # 直接执行没有关联环境
-            execution=None,  # 直接执行不关联批次
-            execution_source='API',  # API触发
+        # 处理响应体（区分JSON和文本）
+        response_body_raw = response_data.get('body', {})
+        if isinstance(response_body_raw, (dict, list)):
+            response_body = response_body_raw
+            response_body_text = None
+        else:
+            response_body = {}
+            response_body_text = response_body_raw
 
-            # 请求信息
+        execution_record = ApiHttpExecutionRecord.objects.create(
+            project=None,
+            test_case=None,
+            environment=None,
+            execution=None,
+            execution_source='API',
             request_method=method,
             request_url=full_url,
             request_base_url=base_url,
@@ -313,33 +355,26 @@ def save_execution_history(user, execution_data):
             request_params=params,
             request_body=body,
             request_size=request_size,
-
-            # 时间信息
             request_time=timezone.now(),
             response_time=timezone.now(),
-            duration=response_data.get('response_time', 0) or response_data.get('execution_time', 0),
-
-            # 响应信息
+            duration=(
+                response_data.get('response_time', 0)
+                or response_data.get('execution_time', 0)
+            ),
             response_status=status_code,
             response_status_text='',
             response_headers=response_data.get('headers', {}),
-            response_body=response_data.get('body', {}) if isinstance(response_data.get('body'), (dict, list)) else {},
-            response_body_text=response_data.get('body') if not isinstance(response_data.get('body'), (dict, list)) else None,
+            response_body=response_body,
+            response_body_text=response_body_text,
             response_size=response_data.get('body_size', 0),
             response_encoding='utf-8',
-
-            # 状态信息
             status=status_record,
             error_type=error_type,
             error_message=error_message,
             stack_trace=None,
-
-            # 断言结果
             assertion_results=assertion_results_data,
             assertions_passed=assertions_passed,
             assertions_failed=assertions_failed,
-
-            # 执行者
             executed_by=user
         )
 
@@ -347,9 +382,29 @@ def save_execution_history(user, execution_data):
 
     except Exception as e:
         import traceback
-        print(f"Failed to save execution history: {e}")
-        print(traceback.format_exc())
+        logger.error(f"Failed to save execution history: {e}")
+        logger.debug(traceback.format_exc())
         return None
+
+
+def _determine_execution_status(status_code: int, error: str = None) -> tuple:
+    """
+    根据HTTP状态码和错误信息确定执行状态
+
+    Args:
+        status_code: HTTP响应状态码
+        error: 请求错误信息
+
+    Returns:
+        (status_record, error_type, error_message) 三元组
+    """
+    if error:
+        return 'ERROR', 'RequestError', error
+
+    if 200 <= status_code < 400:
+        return 'SUCCESS', None, None
+
+    return 'FAILED', 'HTTPError', f'HTTP {status_code}'
 
 
 @swagger_auto_schema(
@@ -362,25 +417,21 @@ def save_execution_history(user, execution_data):
 def get_execution_history(request: Request):
     """
     获取执行历史
+
+    TODO: 实现从 ApiHttpExecutionRecord 查询历史记录
     """
     try:
-        # 这里应该从数据库获取历史记录
-        # 暂时返回空列表
         return Response({
             'code': 200,
             'message': 'success',
-            'data': {
-                'count': 0,
-                'results': []
-            }
+            'data': {'count': 0, 'results': []}
         })
 
     except Exception as e:
-        return Response({
-            'code': 500,
-            'message': f'获取历史记录失败: {str(e)}',
-            'data': None
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'code': 500, 'message': f'获取历史记录失败: {str(e)}', 'data': None},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @swagger_auto_schema(
@@ -393,18 +444,16 @@ def get_execution_history(request: Request):
 def cancel_execution(request: Request, execution_id: str):
     """
     取消正在执行的请求
+
+    TODO: 实现请求取消逻辑
     """
     try:
-        # 这里应该实现取消逻辑
         return Response({
-            'code': 200,
-            'message': 'execution cancelled',
-            'data': None
+            'code': 200, 'message': 'execution cancelled', 'data': None
         })
 
     except Exception as e:
-        return Response({
-            'code': 500,
-            'message': f'取消执行失败: {str(e)}',
-            'data': None
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'code': 500, 'message': f'取消执行失败: {str(e)}', 'data': None},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

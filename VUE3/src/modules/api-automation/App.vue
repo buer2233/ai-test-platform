@@ -1,3 +1,14 @@
+<!--
+  App.vue - 应用根组件
+
+  使用 Element Plus 的 ElConfigProvider 包裹路由出口，
+  提供全局 UI 框架配置。同时定义全局样式，包括：
+  - 基础重置样式（html/body/app）
+  - 自定义滚动条样式
+  - 全局过渡动画
+  - 页面通用布局样式
+  - 表格工具栏通用样式
+-->
 <template>
   <el-config-provider>
     <router-view />
@@ -9,6 +20,8 @@ import { ElConfigProvider } from 'element-plus'
 </script>
 
 <style>
+/* ==================== 基础重置 ==================== */
+
 html, body {
   margin: 0;
   padding: 0;
@@ -20,7 +33,7 @@ html, body {
   height: 100%;
 }
 
-/* 自定义滚动条样式 */
+/* ==================== 自定义滚动条 ==================== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -40,7 +53,7 @@ html, body {
   background: #a8a8a8;
 }
 
-/* 全局过渡动画 */
+/* ==================== 全局过渡动画 ==================== */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -51,7 +64,7 @@ html, body {
   opacity: 0;
 }
 
-/* 页面内容区域样式 */
+/* ==================== 页面通用布局 ==================== */
 .page-container {
   padding: 20px;
   background: #f5f5f5;
@@ -75,12 +88,12 @@ html, body {
   margin-top: 8px;
 }
 
-/* 卡片间距 */
+/* ==================== 工具类 ==================== */
 .mb-20 {
   margin-bottom: 20px;
 }
 
-/* 表格工具栏 */
+/* ==================== 表格工具栏 ==================== */
 .table-toolbar {
   display: flex;
   justify-content: space-between;

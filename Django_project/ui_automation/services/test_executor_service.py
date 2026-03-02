@@ -1,39 +1,53 @@
 """
-测试执行服务模块
+测试执行编排服务
 
-处理UI测试的执行逻辑，协调 BrowserUse、数据库和报告生成。
+协调 UI 测试的完整执行流程，包括:
+1. 加载和验证执行记录状态
+2. 初始化并运行 BrowserUse Agent
+3. 收集执行步骤和截图
+4. 更新执行记录状态
+5. 生成测试报告
+
+此服务通过直接调用 BrowserUseService 执行测试（区别于 CLI 方式），
+适用于在 Django 进程内直接运行的场景。
 """
 
 import asyncio
 import json
-import os
-from datetime import datetime
-from typing import Dict, Optional, Callable
-from django.utils import timezone
-from django.db import transaction
+from typing import Callable, Dict, Optional
 
-from ..models import UiTestExecution, UiTestReport, UiScreenshot
+from django.db import transaction
+from django.utils import timezone
+
+from ..models import UiTestExecution, UiTestReport
 from .browser_use_service import BrowserUseService
 
 
 class TestExecutorService:
     """
-    测试执行服务类
+    测试执行编排服务类。
 
-    协调测试执行的完整流程：
-    1. 初始化执行记录
-    2. 启动 BrowserUse Agent
-    3. 收集执行结果
-    4. 生成测试报告
+    协调测试执行的完整流程:
+        1. 加载执行记录并验证状态
+        2. 初始化 BrowserUse Agent
+        3. 执行测试任务
+        4. 收集结果并更新执行记录
+        5. 生成测试报告
+
+    Attributes:
+        execution_id: 执行记录 ID
+        execution: 加载后的 UiTestExecution 实例
+        execution_steps: 收集的执行步骤列表
+        screenshot_data: 收集的截图数据列表
     """
 
     def __init__(self, execution_id: int, progress_callback: Optional[Callable] = None):
         """
-        初始化测试执行服务
+        初始化测试执行服务。
 
         Args:
-            execution_id: 执行记录ID
-            progress_callback: 进度回调函数
+            execution_id: 数据库中的执行记录 ID
+            progress_callback: 进度回调函数，签名: (dict) -> None
         """
         self.execution_id = execution_id
         self.progress_callback = progress_callback
@@ -43,13 +57,7 @@ class TestExecutorService:
         self.screenshot_data = []
 
     def _emit_progress(self, message: str, data: Optional[Dict] = None) -> None:
-        """
-        发送进度更新
-
-        Args:
-            message: 进度消息
-            data: 附加数据
-        """
+        """通过回调函数发送进度更新。"""
         if self.progress_callback:
             try:
                 self.progress_callback({
@@ -62,36 +70,23 @@ class TestExecutorService:
                 print(f"Progress callback error: {e}")
 
     def _on_browser_step(self, step: Dict) -> None:
-        """
-        BrowserUse 步骤回调
-
-        Args:
-            step: 步骤信息
-        """
+        """BrowserUse 步骤回调: 记录步骤并通知进度。"""
         self.execution_steps.append({
             **step,
             'timestamp': timezone.now().isoformat(),
         })
-
         self._emit_progress(
             f"执行步骤: {step.get('action', 'unknown')}",
             {'step': step}
         )
 
     async def _on_screenshot(self, screenshot_data: str, description: str) -> None:
-        """
-        截图回调
-
-        Args:
-            screenshot_data: 截图数据（base64）
-            description: 截图描述
-        """
+        """截图回调: 收集截图数据并通知进度。"""
         self.screenshot_data.append({
             'data': screenshot_data,
             'description': description,
             'timestamp': timezone.now().isoformat(),
         })
-
         self._emit_progress(
             f"截图: {description}",
             {'screenshot_count': len(self.screenshot_data)}
@@ -99,13 +94,10 @@ class TestExecutorService:
 
     def _load_execution(self) -> UiTestExecution:
         """
-        加载执行记录
-
-        Returns:
-            UiTestExecution 实例
+        从数据库加载执行记录。
 
         Raises:
-            ValueError: 如果执行记录不存在
+            ValueError: 指定 ID 的执行记录不存在
         """
         try:
             execution = UiTestExecution.objects.get(id=self.execution_id)
@@ -115,13 +107,7 @@ class TestExecutorService:
             raise ValueError(f"Execution {self.execution_id} not found")
 
     def _update_execution_status(self, status: str, **kwargs) -> None:
-        """
-        更新执行状态
-
-        Args:
-            status: 新状态
-            **kwargs: 其他更新字段
-        """
+        """更新执行记录的状态及其他字段。"""
         if self.execution:
             for key, value in kwargs.items():
                 setattr(self.execution, key, value)
@@ -129,62 +115,47 @@ class TestExecutorService:
             self.execution.save()
 
     def _create_test_report(self, result: Dict) -> UiTestReport:
-        """
-        创建测试报告
-
-        Args:
-            result: 执行结果字典
-
-        Returns:
-            UiTestReport 实例
-        """
-        # 统计步骤
+        """根据执行结果创建测试报告记录。"""
         total_steps = len(self.execution_steps)
         completed_steps = sum(1 for s in self.execution_steps if s.get('success', True))
         failed_steps = total_steps - completed_steps
 
-        # 创建报告
-        report = UiTestReport.objects.create(
+        return UiTestReport.objects.create(
             execution=self.execution,
             agent_history=json.dumps(self.execution_steps, ensure_ascii=False),
             total_steps=total_steps,
             completed_steps=completed_steps,
             failed_steps=failed_steps,
-            screenshot_paths=json.dumps([s['description'] for s in self.screenshot_data], ensure_ascii=False),
+            screenshot_paths=json.dumps(
+                [s['description'] for s in self.screenshot_data],
+                ensure_ascii=False
+            ),
             summary=self._generate_summary(result),
         )
 
-        return report
-
     def _generate_summary(self, result: Dict) -> str:
-        """
-        生成执行摘要
+        """根据执行结果生成简洁的摘要文本。"""
+        steps_count = len(self.execution_steps)
+        screenshots_count = len(self.screenshot_data)
 
-        Args:
-            result: 执行结果字典
-
-        Returns:
-            摘要文本
-        """
         if result.get('success'):
-            return f"测试执行成功。共执行 {len(self.execution_steps)} 个步骤，捕获 {len(self.screenshot_data)} 张截图。"
-        else:
-            error = result.get('error', '未知错误')
-            return f"测试执行失败: {error}。共执行 {len(self.execution_steps)} 个步骤。"
+            return f"测试执行成功。共执行 {steps_count} 个步骤，捕获 {screenshots_count} 张截图。"
+
+        error = result.get('error', '未知错误')
+        return f"测试执行失败: {error}。共执行 {steps_count} 个步骤。"
 
     def _save_screenshots(self) -> None:
-        """保存截图到数据库"""
-        # 注意：实际保存图片文件需要处理文件上传
-        # 这里暂时只记录截图信息
-        pass
+        """保存截图到数据库（当前为占位实现，实际需处理文件上传）。"""
 
     @transaction.atomic
     def execute(self) -> Dict[str, any]:
         """
-        执行测试用例
+        执行测试用例（同步，事务保护）。
+
+        完整流程: 加载记录 -> 校验状态 -> 初始化 Agent -> 执行 -> 更新结果 -> 生成报告。
 
         Returns:
-            执行结果字典
+            执行结果字典，包含 success、status、duration、report_id 等字段
         """
         try:
             # 加载执行记录
@@ -281,7 +252,7 @@ class TestExecutorService:
 
     async def execute_async(self) -> Dict[str, any]:
         """
-        异步执行测试用例
+        异步执行测试用例（在线程池中运行同步 execute 方法）。
 
         Returns:
             执行结果字典
@@ -291,7 +262,9 @@ class TestExecutorService:
 
     def cancel(self) -> bool:
         """
-        取消执行
+        取消正在执行的测试。
+
+        更新执行记录状态为 cancelled 并清理 BrowserUse 资源。
 
         Returns:
             是否成功取消
@@ -317,14 +290,9 @@ def execute_test_case(
     progress_callback: Optional[Callable] = None,
 ) -> Dict[str, any]:
     """
-    执行测试用例的便捷函数
+    同步执行测试用例的便捷函数。
 
-    Args:
-        execution_id: 执行记录ID
-        progress_callback: 进度回调函数
-
-    Returns:
-        执行结果字典
+    创建 TestExecutorService 实例并立即执行，参数含义同构造函数。
     """
     executor = TestExecutorService(execution_id, progress_callback)
     return executor.execute()
@@ -335,14 +303,9 @@ async def execute_test_case_async(
     progress_callback: Optional[Callable] = None,
 ) -> Dict[str, any]:
     """
-    异步执行测试用例的便捷函数
+    异步执行测试用例的便捷函数。
 
-    Args:
-        execution_id: 执行记录ID
-        progress_callback: 进度回调函数
-
-    Returns:
-        执行结果字典
+    创建 TestExecutorService 实例并异步执行，参数含义同构造函数。
     """
     executor = TestExecutorService(execution_id, progress_callback)
     return await executor.execute_async()

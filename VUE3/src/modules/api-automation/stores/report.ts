@@ -1,21 +1,38 @@
+/**
+ * 测试报告 Store
+ *
+ * 管理测试报告的状态：报告列表、当前报告详情、加载状态等。
+ * 提供报告查询、详情查看、文件导出等操作。
+ * 提供最近报告和统计汇总的计算属性。
+ */
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { reportApi } from '../api/report'
-import type { ApiTestReport, ReportDetail } from '../types/report'
 import { ElMessage } from 'element-plus'
 
+import { reportApi } from '../api/report'
+import type { ApiTestReport, ReportDetail } from '../types/report'
+
 export const useReportStore = defineStore('report', () => {
-  // 状态
+  // ==================== 状态 ====================
+
+  /** 报告列表 */
   const reports = ref<ApiTestReport[]>([])
+  /** 当前查看的报告详情 */
   const currentReport = ref<ReportDetail | null>(null)
+  /** 全局加载状态 */
   const loading = ref(false)
+  /** 数据总条数（分页用） */
   const total = ref(0)
 
-  // 计算属性
+  // ==================== 计算属性 ====================
+
+  /** 最近 10 条报告 */
   const recentReports = computed(() => {
     return reports.value.slice(0, 10)
   })
 
+  /** 汇总统计：总执行次数、平均通过率、平均耗时 */
   const statistics = computed(() => {
     if (!reports.value.length) {
       return {
@@ -40,7 +57,9 @@ export const useReportStore = defineStore('report', () => {
     }
   })
 
-  // 方法
+  // ==================== 异步操作 ====================
+
+  /** 获取报告列表 */
   const fetchReports = async (params?: any) => {
     loading.value = true
     try {

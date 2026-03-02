@@ -308,7 +308,9 @@ class TestRequestFormats(unittest.TestCase):
         """测试原始文本请求体"""
         mock_response = Mock()
         mock_response.status_code = 200
+        mock_response.headers = {'Content-Type': 'text/plain'}
         mock_response.text = 'Echo: Hello World'
+        mock_response.content = b'Echo: Hello World'
         mock_request.return_value = mock_response
 
         response = self.executor.execute_request(

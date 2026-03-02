@@ -1,26 +1,45 @@
+/**
+ * 测试执行 Store
+ *
+ * 管理测试执行任务的状态和生命周期。
+ * 支持创建、运行、取消、轮询刷新等操作。
+ * 提供运行中任务筛选、通过率计算等计算属性。
+ */
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { executionApi } from '../api/execution'
-import type { ApiTestExecution, ExecutionCreate, ExecutionDetail } from '../types/execution'
 import { ElMessage } from 'element-plus'
 
+import { executionApi } from '../api/execution'
+import type { ApiTestExecution, ExecutionCreate, ExecutionDetail } from '../types/execution'
+
 export const useExecutionStore = defineStore('execution', () => {
-  // 状态
+  // ==================== 状态 ====================
+
+  /** 执行任务列表 */
   const executions = ref<ApiTestExecution[]>([])
+  /** 当前选中的执行任务详情 */
   const currentExecution = ref<ExecutionDetail | null>(null)
+  /** 全局加载状态 */
   const loading = ref(false)
+  /** 数据总条数（分页用） */
   const total = ref(0)
+  /** 全局执行统计数据 */
   const statistics = ref<any>(null)
 
-  // 计算属性
+  // ==================== 计算属性 ====================
+
+  /** 筛选出正在运行的执行任务 */
   const runningExecutions = computed(() => {
     return executions.value.filter(exec => exec.status === 'RUNNING')
   })
 
+  /** 最近的 10 条执行任务 */
   const recentExecutions = computed(() => {
     return executions.value.slice(0, 10)
   })
 
+  /** 计算所有执行任务的综合通过率 */
   const passRate = computed(() => {
     if (!executions.value.length) return 0
     const totalTests = executions.value.reduce((sum, exec) => sum + exec.total_count, 0)
@@ -28,7 +47,7 @@ export const useExecutionStore = defineStore('execution', () => {
     return totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0
   })
 
-  // 方法
+  // ==================== 异步操作 ====================
   const fetchExecutions = async (params?: any) => {
     loading.value = true
     try {

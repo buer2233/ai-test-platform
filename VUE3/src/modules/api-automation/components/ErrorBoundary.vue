@@ -1,3 +1,11 @@
+<!--
+  ErrorBoundary.vue - 错误边界组件
+
+  捕获子组件树中的运行时错误，防止错误向上传播导致整个页面崩溃。
+  - 正常状态：透传子组件内容（slot）
+  - 错误状态：显示友好的错误提示页面，包含重新加载和返回首页按钮
+  - 可展开查看错误堆栈详情（调试用途）
+-->
 <template>
   <div class="error-boundary">
     <slot v-if="!hasError"></slot>

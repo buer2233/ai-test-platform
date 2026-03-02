@@ -1,10 +1,21 @@
+/**
+ * 认证 Store
+ *
+ * 管理用户登录状态、Token 存储、以及当前用户信息。
+ * Token 持久化到 localStorage，页面刷新后自动恢复登录态。
+ */
+
 import { defineStore } from 'pinia'
 import { authApi } from '../api/auth'
 import type { User } from '../types/project'
 
+/** 认证状态接口 */
 interface AuthState {
+  /** 当前登录用户信息 */
   user: User | null
+  /** 认证 Token（从 localStorage 初始化） */
   token: string | null
+  /** 是否已通过认证验证 */
   isAuthenticated: boolean
 }
 
@@ -16,35 +27,37 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
+    /** 获取当前用户信息 */
     currentUser: (state) => state.user,
+    /** 判断用户是否已登录（需同时满足认证标记和有效 Token） */
     isLoggedIn: (state) => state.isAuthenticated && !!state.token
   },
 
   actions: {
-    // 登录
+    /** 调用登录 API */
     async login(username: string, password: string) {
       const response = await authApi.login(username, password)
       return response
     },
 
-    // 注册
+    /** 调用注册 API */
     async register(username: string, password: string, email: string) {
       return await authApi.register(username, password, email)
     },
 
-    // 设置token
+    /** 保存 Token 到状态和 localStorage */
     setToken(token: string) {
       this.token = token
       localStorage.setItem('auth_token', token)
     },
 
-    // 清除token
+    /** 清除 Token（登出或 Token 失效时调用） */
     clearToken() {
       this.token = null
       localStorage.removeItem('auth_token')
     },
 
-    // 获取当前用户信息
+    /** 从后端获取当前用户信息，更新认证状态 */
     async fetchCurrentUser() {
       try {
         const user = await authApi.getCurrentUser()
@@ -59,7 +72,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // 登出
+    /** 登出并清除所有认证状态 */
     async logout() {
       try {
         await authApi.logout()
@@ -70,7 +83,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // 初始化认证状态
+    /** 应用启动时调用，检查 Token 有效性并恢复登录态 */
     async initAuth() {
       if (this.token) {
         try {

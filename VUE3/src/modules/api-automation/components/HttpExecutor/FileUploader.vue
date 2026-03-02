@@ -1,3 +1,14 @@
+<!--
+  FileUploader.vue - 文件上传组件
+
+  用于 HTTP 请求中的文件上传功能：
+  - 支持拖拽上传和点击选择文件
+  - 文件大小和数量限制校验
+  - 重复文件检测
+  - 每个文件可自定义表单字段名（formKey）
+  - 文件预览：支持图片、文本、JSON 格式的文件预览
+  - 文件管理：列表展示、删除操作
+-->
 <template>
   <div class="file-uploader">
     <div class="upload-area"

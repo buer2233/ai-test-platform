@@ -1,61 +1,77 @@
 """
 api_automation/views.py
 
-Django REST Framework 视图定义
+API自动化测试模块的视图层定义。
+
+本模块包含所有 REST API 端点的 ViewSet 和 APIView，负责:
+    - 请求路由和参数解析
+    - 权限校验和数据过滤
+    - 业务逻辑委托（调用 service 层）
+    - 响应数据序列化
+
+视图集概览:
+    ApiProjectViewSet           -- 项目 CRUD + 批量执行
+    ApiCollectionViewSet        -- 集合 CRUD + 用例批量管理 + 批量执行
+    ApiTestCaseViewSet          -- 用例 CRUD + 单个/批量执行
+    ApiTestEnvironmentViewSet   -- 环境 CRUD + 连接测试
+    ApiTestExecutionViewSet     -- 执行记录查询 + 取消执行
+    ApiTestResultViewSet        -- 测试结果只读查询
+    ApiTestReportViewSet        -- 测试报告只读查询
+    ApiDataDriverViewSet        -- 数据驱动 CRUD
+    ApiHttpExecutionRecordViewSet -- HTTP执行记录只读查询 + 统计
+    DashboardViewSet            -- 仪表盘统计 + 多维度报告
+    ApiTestCaseAssertionViewSet -- 断言配置 CRUD + 批量操作
+    ApiTestCaseExtractionViewSet -- 数据提取配置 CRUD + 批量操作
+    UserViewSet                 -- 用户列表 + 注册
+    CurrentUserView             -- 当前用户信息
 """
-from rest_framework import viewsets, status, permissions, views, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.db.models import Q, Count, Sum, F
 from django.contrib.auth.models import User
+from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Case, When, IntegerField
-from django.db.models.functions import Coalesce
-
-
-def format_datetime(dt):
-    """
-    格式化日期时间为字符串
-    输入: datetime 对象
-    输出: 'YYYY-MM-DD HH:mm:ss' 格式字符串
-    """
-    if dt is None:
-        return None
-    # 如果是字符串，先转换为 datetime
-    if isinstance(dt, str):
-        try:
-            dt = timezone.now().fromisoformat(dt.replace('Z', '+00:00'))
-        except:
-            return dt
-    # 格式化为 YYYY-MM-DD HH:mm:ss
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
-
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status, views, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .models import (
-    ApiProject, ApiCollection, ApiTestCase, ApiTestEnvironment,
-    ApiTestExecution, ApiTestReport, ApiTestResult, ApiDataDriver,
-    ApiTestCaseAssertion, ApiTestCaseExtraction, ApiHttpExecutionRecord
+    ApiCollection,
+    ApiDataDriver,
+    ApiHttpExecutionRecord,
+    ApiProject,
+    ApiTestCase,
+    ApiTestCaseAssertion,
+    ApiTestCaseExtraction,
+    ApiTestEnvironment,
+    ApiTestExecution,
+    ApiTestReport,
+    ApiTestResult,
 )
 from .serializers import (
-    ApiProjectSerializer, ApiProjectDetailSerializer,
-    ApiCollectionSerializer, ApiCollectionDetailSerializer,
-    ApiTestCaseSerializer, ApiTestCaseListSerializer, ApiTestCaseDetailSerializer,
-    ApiTestEnvironmentSerializer, ApiTestEnvironmentDetailSerializer,
-    ApiTestExecutionSerializer, ApiTestExecutionDetailSerializer,
-    ApiTestResultSerializer, ApiTestReportSerializer,
-    ApiDataDriverSerializer, UserSerializer,
-    ApiTestCaseAssertionSerializer, ApiTestCaseExtractionSerializer,
-    ApiHttpExecutionRecordSerializer
+    ApiCollectionDetailSerializer,
+    ApiCollectionSerializer,
+    ApiDataDriverSerializer,
+    ApiHttpExecutionRecordSerializer,
+    ApiProjectDetailSerializer,
+    ApiProjectSerializer,
+    ApiTestCaseDetailSerializer,
+    ApiTestCaseListSerializer,
+    ApiTestCaseSerializer,
+    ApiTestEnvironmentDetailSerializer,
+    ApiTestEnvironmentSerializer,
+    ApiTestExecutionDetailSerializer,
+    ApiTestExecutionSerializer,
+    ApiTestReportSerializer,
+    ApiTestResultSerializer,
+    ApiTestCaseAssertionSerializer,
+    ApiTestCaseExtractionSerializer,
+    UserSerializer,
 )
 from .services.cascade_delete_service import cascade_delete_service
 
-# WebSocket服务导入
+# WebSocket 服务：仅在依赖可用时启用，用于实时推送执行状态
 try:
     from .services.websocket_service import websocket_service
     WEBSOCKET_ENABLED = True
@@ -64,29 +80,44 @@ except ImportError:
     websocket_service = None
 
 
+# =============================================================================
+# 工具函数
+# =============================================================================
+
+
+def format_datetime(dt):
+    """
+    将 datetime 对象格式化为 'YYYY-MM-DD HH:mm:ss' 字符串。
+
+    参数:
+        dt: datetime 对象或 ISO 格式字符串，None 时直接返回 None
+
+    返回:
+        格式化后的时间字符串，或原值（解析失败时）
+    """
+    if dt is None:
+        return None
+    if isinstance(dt, str):
+        try:
+            dt = timezone.now().fromisoformat(dt.replace('Z', '+00:00'))
+        except Exception:
+            return dt
+    return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+
+# =============================================================================
+# 项目管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Project Management'])
 class ApiProjectViewSet(viewsets.ModelViewSet):
     """
-    API项目视图集
+    API项目视图集 -- 提供项目的完整 CRUD 和批量执行能力。
 
-    list:
-    获取项目列表
-
-    retrieve:
-    获取项目详情
-
-    create:
-    创建新项目
-
-    update:
-    更新项目
-
-    destroy:
-    删除项目（软删除）
-
-    execute:
-    按项目执行所有测试用例
+    权限规则: 超级用户可访问全部项目，普通用户仅访问自己拥有的项目。
+    删除方式: 默认级联软删除（cascade=true），可通过查询参数切换为仅标记删除。
     """
     serializer_class = ApiProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -97,7 +128,7 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的项目列表"""
+        """获取当前用户有权访问的项目列表（排除已软删除的）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiProject.objects.none()
@@ -107,13 +138,13 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        """根据action选择不同的序列化器"""
+        """详情页使用包含集合列表的详情序列化器。"""
         if self.action == 'retrieve':
             return ApiProjectDetailSerializer
         return ApiProjectSerializer
 
     def perform_destroy(self, instance):
-        """软删除项目"""
+        """软删除项目，默认级联删除关联的集合和用例。"""
         cascade = self.request.query_params.get('cascade', 'true').lower() == 'true'
         if cascade:
             cascade_delete_service.cascade_delete(instance)
@@ -123,11 +154,7 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def execute(self, request, pk=None):
-        """
-        按项目执行所有测试用例
-
-        执行指定项目下的所有测试用例
-        """
+        """按项目执行所有测试用例，需指定 environment_id。"""
         from .services.batch_execution_service import BatchExecutionService
 
         project = self.get_object()
@@ -159,11 +186,7 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def collections(self, request, pk=None):
-        """
-        获取项目的集合列表
-
-        返回指定项目下的所有集合
-        """
+        """获取指定项目下的所有集合（分页）。"""
         project = self.get_object()
         collections = project.api_collections.filter(is_deleted=False)
         page = self.paginate_queryset(collections)
@@ -172,11 +195,7 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def test_cases(self, request, pk=None):
-        """
-        获取项目的测试用例列表
-
-        返回指定项目下的所有测试用例
-        """
+        """获取指定项目下的所有测试用例（分页）。"""
         project = self.get_object()
         test_cases = project.test_cases.filter(is_deleted=False)
         page = self.paginate_queryset(test_cases)
@@ -184,35 +203,18 @@ class ApiProjectViewSet(viewsets.ModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
+# =============================================================================
+# 集合管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Collection Management'])
 class ApiCollectionViewSet(viewsets.ModelViewSet):
     """
-    API集合视图集
+    API集合视图集 -- 提供集合的 CRUD、用例批量管理和批量执行能力。
 
-    list:
-    获取集合列表
-
-    retrieve:
-    获取集合详情（包含测试用例）
-
-    create:
-    创建新集合
-
-    update:
-    更新集合
-
-    destroy:
-    删除集合（软删除）
-
-    batch_add_test_cases:
-    批量添加测试用例到集合
-
-    batch_remove_test_cases:
-    批量从集合移除测试用例
-
-    execute:
-    按集合执行测试用例
+    支持批量向集合添加/移除测试用例，以及按集合执行全部用例。
     """
     serializer_class = ApiCollectionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -223,7 +225,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的集合列表"""
+        """获取当前用户有权访问的集合列表（排除已软删除的）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiCollection.objects.none()
@@ -236,13 +238,13 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        """根据action选择不同的序列化器"""
+        """详情页使用包含用例列表的详情序列化器。"""
         if self.action == 'retrieve':
             return ApiCollectionDetailSerializer
         return ApiCollectionSerializer
 
     def perform_destroy(self, instance):
-        """软删除集合"""
+        """软删除集合，默认级联删除关联的测试用例。"""
         cascade = self.request.query_params.get('cascade', 'true').lower() == 'true'
         if cascade:
             cascade_delete_service.cascade_delete(instance)
@@ -252,11 +254,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def batch_add_test_cases(self, request, pk=None):
-        """
-        批量添加测试用例到集合
-
-        将多个测试用例添加到当前集合
-        """
+        """批量将指定测试用例添加到当前集合。"""
         collection = self.get_object()
         test_case_ids = request.data.get('test_case_ids', [])
 
@@ -267,7 +265,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            # 批量更新测试用例的集合
+            # 仅更新属于同一项目且未删除的用例
             updated_count = ApiTestCase.objects.filter(
                 id__in=test_case_ids,
                 project=collection.project,
@@ -287,11 +285,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def batch_remove_test_cases(self, request, pk=None):
-        """
-        批量从集合移除测试用例
-
-        将多个测试用例从当前集合移除（设置为不归属任何集合）
-        """
+        """批量将指定测试用例从当前集合移除（设置 collection 为 NULL）。"""
         collection = self.get_object()
         test_case_ids = request.data.get('test_case_ids', [])
 
@@ -302,7 +296,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            # 批量更新测试用例的集合为NULL
+            # 将目标用例的集合字段置为 NULL
             updated_count = ApiTestCase.objects.filter(
                 id__in=test_case_ids,
                 collection=collection,
@@ -322,11 +316,7 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def execute(self, request, pk=None):
-        """
-        按集合执行测试用例
-
-        执行集合中的所有测试用例
-        """
+        """按集合执行全部测试用例，需指定 environment_id。"""
         from .services.batch_execution_service import BatchExecutionService
 
         collection = self.get_object()
@@ -357,29 +347,19 @@ class ApiCollectionViewSet(viewsets.ModelViewSet):
             )
 
 
+# =============================================================================
+# 测试用例管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Test Case Management'])
 class ApiTestCaseViewSet(viewsets.ModelViewSet):
     """
-    API测试用例视图集
+    API测试用例视图集 -- 提供用例 CRUD 和单个/批量执行能力。
 
-    list:
-    获取测试用例列表
-
-    retrieve:
-    获取测试用例详情（包含断言和数据提取配置）
-
-    create:
-    创建新测试用例
-
-    update:
-    更新测试用例
-
-    destroy:
-    删除测试用例（软删除）
-
-    batch_execute:
-    批量执行测试用例（手动选择）
+    列表视图使用精简序列化器以提升性能，
+    详情视图额外包含断言和数据提取配置。
     """
     serializer_class = ApiTestCaseSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -390,7 +370,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的测试用例列表"""
+        """获取当前用户有权访问的测试用例（使用 select_related 优化查询）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiTestCase.objects.none()
@@ -403,7 +383,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
         return queryset.select_related('project', 'collection', 'created_by')
 
     def get_serializer_class(self):
-        """根据action选择不同的序列化器"""
+        """列表使用精简序列化器，详情使用包含断言/提取配置的完整序列化器。"""
         if self.action == 'retrieve':
             return ApiTestCaseDetailSerializer
         elif self.action == 'list':
@@ -411,7 +391,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
         return ApiTestCaseSerializer
 
     def perform_destroy(self, instance):
-        """软删除测试用例"""
+        """软删除测试用例，默认级联删除关联的断言和提取配置。"""
         cascade = self.request.query_params.get('cascade', 'true').lower() == 'true'
         if cascade:
             cascade_delete_service.cascade_delete(instance)
@@ -421,11 +401,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def batch_execute(self, request):
-        """
-        批量执行测试用例（手动选择）
-
-        执行用户手动选择的测试用例
-        """
+        """批量执行用户手动选择的测试用例，需指定 test_case_ids 和 environment_id。"""
         from .services.batch_execution_service import BatchExecutionService
 
         test_case_ids = request.data.get('test_case_ids', [])
@@ -463,11 +439,7 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def run_test(self, request, pk=None):
-        """
-        执行单个测试用例
-
-        执行指定ID的测试用例
-        """
+        """执行单个测试用例，需指定 environment_id。"""
         from .services.batch_execution_service import BatchExecutionService
 
         test_case = self.get_object()
@@ -498,29 +470,18 @@ class ApiTestCaseViewSet(viewsets.ModelViewSet):
             )
 
 
+# =============================================================================
+# 环境管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Environment Management'])
 class ApiTestEnvironmentViewSet(viewsets.ModelViewSet):
     """
-    API测试环境视图集
+    API测试环境视图集 -- 提供环境 CRUD 和连接测试能力。
 
-    list:
-    获取环境列表
-
-    retrieve:
-    获取环境详情
-
-    create:
-    创建新环境
-
-    update:
-    更新环境
-
-    destroy:
-    删除环境（软删除）
-
-    test_connection:
-    测试环境连接
+    环境列表默认按收藏优先、创建时间倒序排列。
     """
     serializer_class = ApiTestEnvironmentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -531,7 +492,7 @@ class ApiTestEnvironmentViewSet(viewsets.ModelViewSet):
     ordering = ['-is_favorite', '-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的环境列表"""
+        """获取当前用户有权访问的环境列表（使用 select_related 优化）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiTestEnvironment.objects.none()
@@ -544,22 +505,22 @@ class ApiTestEnvironmentViewSet(viewsets.ModelViewSet):
         return queryset.select_related('project')
 
     def get_serializer_class(self):
-        """根据action选择不同的序列化器"""
+        """详情页使用包含最近执行记录的详情序列化器。"""
         if self.action == 'retrieve':
             return ApiTestEnvironmentDetailSerializer
         return ApiTestEnvironmentSerializer
 
     def perform_destroy(self, instance):
-        """软删除环境"""
+        """软删除环境（不级联删除关联数据）。"""
         instance.is_deleted = True
         instance.save()
 
     @action(detail=True, methods=['post'])
     def test_connection(self, request, pk=None):
         """
-        测试环境连接
+        测试环境连接 -- 向 base_url 发送 GET 请求验证可达性。
 
-        测试环境的base_url是否可访问
+        返回连接状态、HTTP 状态码和响应耗时。
         """
         import requests
 
@@ -599,23 +560,18 @@ class ApiTestEnvironmentViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# =============================================================================
+# 执行管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Execution Management'])
 class ApiTestExecutionViewSet(viewsets.ModelViewSet):
     """
-    API测试执行视图集
+    API测试执行视图集 -- 提供执行记录查询和取消执行能力。
 
-    list:
-    获取执行记录列表
-
-    retrieve:
-    获取执行记录详情
-
-    destroy:
-    删除执行记录
-
-    cancel:
-    取消执行
+    支持通过 WebSocket 实时推送执行状态变更通知。
     """
     serializer_class = ApiTestExecutionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -626,7 +582,7 @@ class ApiTestExecutionViewSet(viewsets.ModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的执行记录列表"""
+        """获取执行记录列表（使用 select_related 和 prefetch_related 优化）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiTestExecution.objects.none()
@@ -641,18 +597,14 @@ class ApiTestExecutionViewSet(viewsets.ModelViewSet):
         ).prefetch_related('test_results')
 
     def get_serializer_class(self):
-        """根据action选择不同的序列化器"""
+        """详情页使用包含测试结果和报告的详情序列化器。"""
         if self.action == 'retrieve':
             return ApiTestExecutionDetailSerializer
         return ApiTestExecutionSerializer
 
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
-        """
-        取消执行
-
-        取消正在运行的测试执行
-        """
+        """取消正在执行或待执行的任务，仅 PENDING/RUNNING 状态可取消。"""
         execution = self.get_object()
 
         if execution.status not in ['PENDING', 'RUNNING']:
@@ -683,18 +635,15 @@ class ApiTestExecutionViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# =============================================================================
+# 只读资源视图（测试结果、报告）
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Test Result Management'])
 class ApiTestResultViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API测试结果视图集（只读）
-
-    list:
-    获取测试结果列表
-
-    retrieve:
-    获取测试结果详情
-    """
+    """API测试结果视图集（只读） -- 查询单个用例的执行结果。"""
     serializer_class = ApiTestResultSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -704,14 +653,13 @@ class ApiTestResultViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的测试结果列表"""
+        """获取测试结果列表（按项目归属过滤，使用 select_related 优化）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiTestResult.objects.none()
 
         queryset = ApiTestResult.objects.all()
 
-        # 非超级用户只能查看自己项目的测试结果
         if not user.is_superuser:
             queryset = queryset.filter(execution__project__owner=user)
 
@@ -723,15 +671,7 @@ class ApiTestResultViewSet(viewsets.ReadOnlyModelViewSet):
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Report Management'])
 class ApiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API测试报告视图集（只读）
-
-    list:
-    获取报告列表
-
-    retrieve:
-    获取报告详情
-    """
+    """API测试报告视图集（只读） -- 查询测试执行的汇总报告。"""
     serializer_class = ApiTestReportSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -741,7 +681,7 @@ class ApiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的报告列表"""
+        """获取报告列表（按执行记录的项目归属过滤）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiTestReport.objects.none()
@@ -754,27 +694,15 @@ class ApiTestReportViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset.select_related('execution', 'execution__project')
 
 
+# =============================================================================
+# 数据驱动管理
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Data Driver Management'])
 class ApiDataDriverViewSet(viewsets.ModelViewSet):
-    """
-    API数据驱动视图集
-
-    list:
-    获取数据驱动配置列表
-
-    retrieve:
-    获取数据驱动配置详情
-
-    create:
-    创建数据驱动配置
-
-    update:
-    更新数据驱动配置
-
-    destroy:
-    删除数据驱动配置（软删除）
-    """
+    """API数据驱动视图集 -- 管理测试用例的参数化数据源配置。"""
     serializer_class = ApiDataDriverSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -784,7 +712,7 @@ class ApiDataDriverViewSet(viewsets.ModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的数据驱动配置列表"""
+        """获取数据驱动配置列表（排除已软删除的）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiDataDriver.objects.none()
@@ -797,22 +725,23 @@ class ApiDataDriverViewSet(viewsets.ModelViewSet):
         return queryset.select_related('project', 'test_case')
 
     def perform_destroy(self, instance):
-        """软删除数据驱动配置"""
+        """软删除数据驱动配置。"""
         instance.is_deleted = True
         instance.save()
+
+
+# =============================================================================
+# HTTP执行记录
+# =============================================================================
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['HTTP Execution Records'])
 class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    HTTP执行记录视图集（只读）
+    HTTP执行记录视图集（只读） -- 查询和统计 HTTP 请求的历史执行记录。
 
-    list:
-    获取HTTP执行记录列表
-
-    retrieve:
-    获取HTTP执行记录详情
+    支持按状态、方法、环境等多维度筛选，以及聚合统计查询。
     """
     serializer_class = ApiHttpExecutionRecordSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -826,7 +755,7 @@ class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-created_time']
 
     def get_queryset(self):
-        """获取当前用户有权访问的HTTP执行记录列表"""
+        """获取 HTTP 执行记录列表（使用 select_related 优化）。"""
         user = self.request.user
         if getattr(self, 'swagger_fake_view', False):
             return ApiHttpExecutionRecord.objects.none()
@@ -842,7 +771,7 @@ class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'])
     def statistics(self, request):
-        """获取HTTP执行记录统计信息"""
+        """获取 HTTP 执行记录的聚合统计（按状态分类计数）。"""
         queryset = self.filter_queryset(self.get_queryset())
         stats = queryset.aggregate(
             total=Count('id'),
@@ -863,34 +792,31 @@ class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
 
+# =============================================================================
+# 仪表盘与报告
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Dashboard'])
 class DashboardViewSet(viewsets.ViewSet):
     """
-    Dashboard视图集
+    仪表盘视图集 -- 提供统计概览和多维度报告。
 
-    提供仪表盘统计数据和报告
+    支持按项目、集合、环境、负责人、模块和时间范围筛选。
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
         """
-        获取Dashboard统计数据
+        获取仪表盘统计概览。
 
-        返回项目的统计信息，包括：
-        - 总项目数
-        - 总集合数
-        - 总测试用例数
-        - 总执行记录数
-        - 最近执行记录
+        返回数据结构:
+            overview    -- 项目/集合/用例/执行的总数统计
+            test_stats  -- 测试结果通过/失败/跳过/错误计数及通过率
+            recent_results -- 最近 10 条执行记录
 
-        支持筛选参数：
-        - project_id: 项目ID
-        - collection_id: 集合ID
-        - owner_id: 负责人ID
-        - module: 模块名称
-        - start_date: 开始日期（YYYY-MM-DD）
-        - end_date: 结束日期（YYYY-MM-DD）
+        支持筛选参数: project_id, collection_id, owner_id, module, start_date, end_date
         """
         user = request.user
 
@@ -1049,11 +975,7 @@ class DashboardViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def environment_reports(self, request):
-        """
-        按环境维度获取报告
-
-        返回每个环境的测试执行统计
-        """
+        """按环境维度统计测试执行结果，按执行次数降序排列。"""
         user = request.user
 
         # 基础查询
@@ -1142,11 +1064,7 @@ class DashboardViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def collection_reports(self, request):
-        """
-        按集合维度获取报告
-
-        返回每个集合的测试执行统计
-        """
+        """按集合维度统计测试执行结果，按结果总数降序排列。"""
         user = request.user
 
         # 基础查询
@@ -1240,17 +1158,9 @@ class DashboardViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def project_reports(self, request):
         """
-        按项目维度获取报告
+        按项目维度统计测试执行结果。
 
-        返回每个项目的测试执行统计
-
-        支持筛选参数：
-        - project_id: 项目ID
-        - collection_id: 集合ID
-        - owner_id: 负责人ID
-        - module: 模块名称
-        - start_date: 开始日期
-        - end_date: 结束日期
+        支持筛选参数: project_id, collection_id, owner_id, module, start_date, end_date
         """
         user = request.user
 
@@ -1394,17 +1304,10 @@ class DashboardViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def test_results(self, request):
         """
-        获取测试结果详情
+        获取测试结果详情列表（分页）。
 
-        支持筛选参数：
-        - environment_id: 环境ID
-        - collection_id: 集合ID
-        - project_id: 项目ID
-        - owner_id: 负责人ID
-        - module: 模块名称
-        - status: 测试状态
-        - start_date: 开始日期
-        - end_date: 结束日期
+        支持筛选参数: environment_id, collection_id, project_id, owner_id,
+                      module, status, start_date, end_date
         """
         user = request.user
 
@@ -1500,17 +1403,13 @@ class DashboardViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['post'])
     def retry_failed(self, request):
         """
-        重试失败用例
+        重试失败用例。
 
-        支持两种模式：
-        - scope='all': 重试当前筛选条件下的所有失败用例
-        - scope='selected': 重试选中的失败用例
+        支持两种模式:
+            scope='all'      -- 重试当前用户所有失败/错误用例
+            scope='selected' -- 重试指定 test_result_ids 对应的失败用例
 
-        请求参数：
-        - scope: 'all' 或 'selected'
-        - test_result_ids: scope='selected'时必填，选中的测试结果ID列表
-        - environment_id: 测试环境ID
-        - execution_name: 可选，执行名称
+        需指定 environment_id，可选 execution_name。
         """
         from .services.batch_execution_service import BatchExecutionService
 
@@ -1621,29 +1520,18 @@ class DashboardViewSet(viewsets.ViewSet):
             )
 
 
+# =============================================================================
+# 断言与数据提取配置
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Test Case Assertions'])
 class ApiTestCaseAssertionViewSet(viewsets.ModelViewSet):
     """
-    API测试用例断言配置视图集
+    测试用例断言配置视图集 -- CRUD 及批量启用/禁用/删除/排序。
 
-    list:
-    获取测试用例的断言配置列表
-
-    retrieve:
-    获取断言配置详情
-
-    create:
-    创建断言配置
-
-    update:
-    更新断言配置
-
-    destroy:
-    删除断言配置
-
-    batch_update:
-    批量更新断言配置
+    通过 URL 中的 test_case_id 参数自动关联到对应的测试用例。
     """
     serializer_class = ApiTestCaseAssertionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -1654,7 +1542,7 @@ class ApiTestCaseAssertionViewSet(viewsets.ModelViewSet):
     ordering = ['order', 'created_time']
 
     def get_queryset(self):
-        """获取断言配置列表"""
+        """获取断言配置列表，优先按 URL 中的 test_case_id 过滤。"""
         user = self.request.user
 
         if getattr(self, 'swagger_fake_view', False):
@@ -1675,7 +1563,7 @@ class ApiTestCaseAssertionViewSet(viewsets.ModelViewSet):
         return queryset.select_related('test_case')
 
     def perform_create(self, serializer):
-        """创建时自动设置test_case"""
+        """创建时自动从 URL 参数中设置 test_case 关联。"""
         test_case_id = self.kwargs.get('test_case_id')
         if test_case_id:
             serializer.save(test_case_id=test_case_id)
@@ -1685,9 +1573,9 @@ class ApiTestCaseAssertionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def batch_update(self, request):
         """
-        批量更新断言配置
+        批量操作断言配置。
 
-        支持批量启用/禁用、删除、更新排序等操作
+        支持的 action 类型: enable（启用）、disable（禁用）、delete（删除）、reorder（排序）。
         """
         test_case_id = self.kwargs.get('test_case_id')
         action_type = request.data.get('action')  # enable, disable, delete, reorder
@@ -1760,25 +1648,9 @@ class ApiTestCaseAssertionViewSet(viewsets.ModelViewSet):
 @swagger_auto_schema(tags=['Test Case Extractions'])
 class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
     """
-    API测试用例数据提取配置视图集
+    测试用例数据提取配置视图集 -- CRUD 及批量启用/禁用/删除。
 
-    list:
-    获取测试用例的数据提取配置列表
-
-    retrieve:
-    获取数据提取配置详情
-
-    create:
-    创建数据提取配置
-
-    update:
-    更新数据提取配置
-
-    destroy:
-    删除数据提取配置
-
-    batch_update:
-    批量更新数据提取配置
+    通过 URL 中的 test_case_id 参数自动关联到对应的测试用例。
     """
     serializer_class = ApiTestCaseExtractionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -1789,7 +1661,7 @@ class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
     ordering = ['created_time']
 
     def get_queryset(self):
-        """获取数据提取配置列表"""
+        """获取数据提取配置列表，优先按 URL 中的 test_case_id 过滤。"""
         user = self.request.user
 
         if getattr(self, 'swagger_fake_view', False):
@@ -1797,12 +1669,12 @@ class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
 
         queryset = ApiTestCaseExtraction.objects.all()
 
-        # 从URL参数获取test_case_id
+        # 从 URL 参数获取 test_case_id
         test_case_id = self.kwargs.get('test_case_id')
         if test_case_id:
             queryset = queryset.filter(test_case_id=test_case_id)
         elif not user.is_superuser:
-            # 如果没有指定test_case_id，只返回用户有权限的
+            # 未指定 test_case_id 时，仅返回用户有权限访问的数据
             queryset = queryset.filter(
                 test_case__project__owner=user
             )
@@ -1810,7 +1682,7 @@ class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
         return queryset.select_related('test_case')
 
     def perform_create(self, serializer):
-        """创建时自动设置test_case"""
+        """创建时自动从 URL 参数中设置 test_case 关联。"""
         test_case_id = self.kwargs.get('test_case_id')
         if test_case_id:
             serializer.save(test_case_id=test_case_id)
@@ -1820,9 +1692,9 @@ class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def batch_update(self, request):
         """
-        批量更新数据提取配置
+        批量操作数据提取配置。
 
-        支持批量启用/禁用、删除等操作
+        支持的 action 类型: enable（启用）、disable（禁用）、delete（删除）。
         """
         test_case_id = self.kwargs.get('test_case_id')
         action_type = request.data.get('action')  # enable, disable, delete
@@ -1878,26 +1750,24 @@ class ApiTestCaseExtractionViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# =============================================================================
+# 用户与认证
+# =============================================================================
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Users'])
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    用户视图集（只读 + 注册）
+    用户视图集（只读 + 注册）。
 
-    list:
-    获取用户列表
-
-    retrieve:
-    获取用户详情
-
-    register:
-    用户注册
+    列表和详情接口需认证，注册接口允许匿名访问。
     """
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        """获取用户列表"""
+        """获取全部用户列表（按 ID 排序）。"""
         if getattr(self, 'swagger_fake_view', False):
             return User.objects.none()
         return User.objects.all().order_by('id')
@@ -1905,14 +1775,9 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
     def register(self, request):
         """
-        用户注册
+        用户注册（匿名可访问）。
 
-        POST /api/v1/api-automation/users/register/
-        {
-            "username": "newuser",
-            "password": "password123",
-            "email": "user@example.com"
-        }
+        校验用户名和密码必填，用户名和邮箱唯一性。
         """
         from django.contrib.auth.models import User
 
@@ -1971,15 +1836,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Authentication'])
 class CurrentUserView(views.APIView):
-    """
-    当前用户信息视图
+    """当前用户信息视图 -- 返回当前已认证用户的基本信息。"""
 
-    get:
-    获取当前登录用户的信息
-    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        """返回当前用户信息"""
+        """返回当前认证用户的序列化信息。"""
         serializer = UserSerializer(request.user)
         return Response(serializer.data)

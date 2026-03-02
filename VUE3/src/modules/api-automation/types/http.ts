@@ -1,11 +1,25 @@
-// HTTP请求相关类型定义
+/**
+ * HTTP 请求/响应相关类型定义
+ *
+ * 本文件定义了 HTTP 执行器的核心数据结构，包括：
+ * - 请求配置（方法、URL、参数、请求体、变量等）
+ * - 响应结构（状态码、响应头、响应体等）
+ * - 断言和操作符常量
+ * - 常用 HTTP 头和状态码参考
+ * - 执行记录相关类型
+ */
 
+// ==================== 基础数据结构 ====================
+
+/** 通用键值对（用于请求头、查询参数、表单数据等） */
 export interface KeyValueItem {
   key: string
   value: string
+  /** 是否启用（禁用的项在发送请求时会被过滤掉） */
   enabled?: boolean
 }
 
+/** 变量定义（用于请求中的动态值替换） */
 export interface Variable {
   name: string
   value: string
@@ -14,15 +28,20 @@ export interface Variable {
   description?: string
 }
 
+/** 上传文件项 */
 export interface FileItem {
   file: File
   name: string
   size: number
   type: string
+  /** 表单字段名（对应 multipart 的 key） */
   formKey: string
   url?: string
 }
 
+// ==================== 请求配置 ====================
+
+/** 请求体结构（根据 bodyType 使用不同字段） */
 export interface RequestBody {
   json: string
   form: KeyValueItem[]
@@ -30,33 +49,51 @@ export interface RequestBody {
   files: FileItem[]
 }
 
+/** 请求高级设置 */
 export interface RequestSettings {
+  /** 超时时间（毫秒） */
   timeout: number
+  /** 是否自动跟随重定向 */
   followRedirects: boolean
+  /** 是否验证 SSL 证书 */
   verifySSL: boolean
 }
 
+/** HTTP 请求完整配置 */
 export interface HttpRequest {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'
+  /** 环境 Base URL */
   baseUrl: string
+  /** 请求路径（拼接在 baseUrl 之后） */
   url: string
+  /** 查询参数 */
   params: KeyValueItem[]
+  /** 请求头 */
   headers: KeyValueItem[]
+  /** 请求体类型 */
   bodyType: 'none' | 'json' | 'form' | 'raw' | 'file'
   body: RequestBody
+  /** 自定义变量（在请求中通过 ${变量名} 引用） */
   variables: Variable[]
   settings: RequestSettings
+  /** 断言配置（可选） */
   tests?: TestAssertion[]
 }
 
+// ==================== 响应结构 ====================
+
+/** HTTP 响应结果 */
 export interface HttpResponse {
   status: number
   headers: Record<string, string>
   body: any
+  /** 响应时间（毫秒） */
   response_time: number
+  /** 响应体大小（字节） */
   body_size: number
   error?: string
   cookies?: Record<string, string>
+  /** 原始请求信息（用于结果展示） */
   request?: {
     method: string
     url: string
@@ -66,6 +103,9 @@ export interface HttpResponse {
   }
 }
 
+// ==================== 断言配置 ====================
+
+/** 测试断言定义 */
 export interface TestAssertion {
   name?: string
   assert_type: string
@@ -75,7 +115,9 @@ export interface TestAssertion {
   enabled?: boolean
 }
 
-// 断言类型
+// ==================== 断言与操作符常量 ====================
+
+/** 断言类型枚举 */
 export const ASSERTION_TYPES = {
   STATUS_CODE: 'status_code',
   RESPONSE_TIME: 'response_time',
@@ -86,7 +128,7 @@ export const ASSERTION_TYPES = {
   JSON_SCHEMA: 'json_schema'
 } as const
 
-// 操作符类型
+/** 比较操作符枚举 */
 export const OPERATORS = {
   EQUALS: 'equals',
   NOT_EQUALS: 'not_equals',
@@ -105,7 +147,7 @@ export const OPERATORS = {
   IS_NOT_EMPTY: 'is_not_empty'
 } as const
 
-// 操作符显示名称
+/** 操作符的中文显示标签 */
 export const OPERATOR_LABELS = {
   [OPERATORS.EQUALS]: '等于',
   [OPERATORS.NOT_EQUALS]: '不等于',
@@ -124,7 +166,7 @@ export const OPERATOR_LABELS = {
   [OPERATORS.IS_NOT_EMPTY]: '不为空'
 } as const
 
-// 断言类型显示名称
+/** 断言类型的中文显示标签 */
 export const ASSERTION_TYPE_LABELS = {
   [ASSERTION_TYPES.STATUS_CODE]: '状态码',
   [ASSERTION_TYPES.RESPONSE_TIME]: '响应时间',
@@ -135,7 +177,9 @@ export const ASSERTION_TYPE_LABELS = {
   [ASSERTION_TYPES.JSON_SCHEMA]: 'JSON Schema'
 } as const
 
-// 常用Content-Type
+// ==================== HTTP 常用参考数据 ====================
+
+/** 常用 Content-Type 类型选项 */
 export const COMMON_CONTENT_TYPES = [
   { value: 'application/json', label: 'JSON' },
   { value: 'application/x-www-form-urlencoded', label: '表单编码' },
@@ -151,7 +195,7 @@ export const COMMON_CONTENT_TYPES = [
   { value: 'image/gif', label: 'GIF图片' }
 ] as const
 
-// 常用请求头
+/** 常用请求头预设（供下拉选择使用） */
 export const COMMON_HEADERS = [
   { key: 'Accept', value: 'application/json' },
   { key: 'Accept', value: 'text/html' },
@@ -167,7 +211,7 @@ export const COMMON_HEADERS = [
   { key: 'X-Requested-With', value: 'XMLHttpRequest' }
 ] as const
 
-// HTTP状态码分类
+/** HTTP 状态码分类及对应的 UI 颜色标识 */
 export const STATUS_CODE_CATEGORIES = {
   '1xx': { label: '信息响应', color: 'info' },
   '2xx': { label: '成功', color: 'success' },
@@ -176,7 +220,7 @@ export const STATUS_CODE_CATEGORIES = {
   '5xx': { label: '服务器错误', color: 'danger' }
 } as const
 
-// 常用HTTP状态码
+/** 常用 HTTP 状态码参考 */
 export const COMMON_STATUS_CODES = [
   { code: 200, name: 'OK' },
   { code: 201, name: 'Created' },
@@ -198,10 +242,15 @@ export const COMMON_STATUS_CODES = [
   { code: 504, name: 'Gateway Timeout' }
 ] as const
 
-// HTTP执行记录相关类型定义
+// ==================== 执行记录相关类型 ====================
+
+/** 执行结果状态 */
 export type ExecutionStatus = 'SUCCESS' | 'FAILED' | 'TIMEOUT' | 'ERROR' | 'PENDING'
+
+/** 执行来源（手动、定时、批量、API 调用、直接 HTTP） */
 export type ExecutionSource = 'MANUAL' | 'SCHEDULED' | 'BATCH' | 'API' | 'DIRECT_HTTP'
 
+/** 单个断言的执行结果 */
 export interface AssertionResult {
   assertion_id: number
   assertion_type: string
@@ -211,12 +260,14 @@ export interface AssertionResult {
   error_message?: string
 }
 
+/** 数据提取的执行结果 */
 export interface ExtractionResult {
   path: string
   value: any
   type: string
 }
 
+/** HTTP 执行记录完整信息 */
 export interface HttpExecutionRecord {
   id: number
   project: number
@@ -229,7 +280,7 @@ export interface HttpExecutionRecord {
   execution_source: ExecutionSource
   execution_batch: string | null
 
-  // 请求信息
+  /** 请求信息 */
   request_method: string
   request_url: string
   request_base_url: string
@@ -240,13 +291,13 @@ export interface HttpExecutionRecord {
   request_size: number
   request_size_formatted?: string
 
-  // 时间信息
+  /** 时间信息 */
   request_time: string
   response_time: string
   duration: number
   duration_formatted?: string
 
-  // 响应信息
+  /** 响应信息 */
   response_status: number | null
   response_status_text: string
   response_headers: Record<string, string>
@@ -256,22 +307,22 @@ export interface HttpExecutionRecord {
   response_size_formatted?: string
   response_encoding: string
 
-  // 状态信息
+  /** 状态和错误信息 */
   status: ExecutionStatus
   error_type?: string
   error_message?: string
   stack_trace?: string
 
-  // 断言结果
+  /** 断言执行结果 */
   assertion_results: AssertionResult[]
   assertions_passed: number
   assertions_failed: number
 
-  // 数据提取
+  /** 数据提取结果 */
   extraction_results: Record<string, ExtractionResult>
   extracted_variables: Record<string, any>
 
-  // 其他
+  /** 其他元数据 */
   is_favorite: boolean
   retry_count: number
   metadata: Record<string, any>
@@ -281,6 +332,7 @@ export interface HttpExecutionRecord {
   updated_time: string
 }
 
+/** 执行记录列表分页响应 */
 export interface HttpExecutionRecordListResponse {
   count: number
   next: string | null
@@ -288,6 +340,7 @@ export interface HttpExecutionRecordListResponse {
   results: HttpExecutionRecord[]
 }
 
+/** 执行记录汇总统计 */
 export interface HttpExecutionRecordStatistics {
   total: number
   success: number
@@ -297,6 +350,7 @@ export interface HttpExecutionRecordStatistics {
   favorite: number
 }
 
+/** 执行记录查询参数 */
 export interface HttpExecutionRecordQuery {
   page?: number
   page_size?: number
@@ -313,6 +367,7 @@ export interface HttpExecutionRecordQuery {
   ordering?: string
 }
 
+/** 批量删除请求参数（支持按 ID 或筛选条件） */
 export interface BatchDeleteRequest {
   ids?: number[]
   filters?: {

@@ -1,7 +1,15 @@
+/**
+ * 项目 Store
+ *
+ * 管理项目的状态：项目列表、当前选中项目、加载状态等。
+ * 提供项目的增删改查和克隆操作。
+ */
+
 import { defineStore } from 'pinia'
 import { projectApi } from '../api/project'
 import type { ApiProject, ApiProjectCreate } from '../types/project'
 
+/** 项目状态接口 */
 interface ProjectState {
   projects: ApiProject[]
   currentProject: ApiProject | null
@@ -18,6 +26,7 @@ export const useProjectStore = defineStore('project', {
   }),
 
   getters: {
+    /** 转换为下拉选项格式（用于表单选择器） */
     projectOptions: (state) => {
       return state.projects.map(project => ({
         label: project.name,
@@ -27,7 +36,7 @@ export const useProjectStore = defineStore('project', {
   },
 
   actions: {
-    // 获取项目列表
+    /** 获取项目列表 */
     async fetchProjects(params?: any) {
       this.loading = true
       try {
@@ -36,14 +45,14 @@ export const useProjectStore = defineStore('project', {
         this.total = response.count
         return response
       } catch (error) {
-        console.error('Failed to fetch projects:', error)
+        console.error('获取项目列表失败:', error)
         throw error
       } finally {
         this.loading = false
       }
     },
 
-    // 获取单个项目
+    /** 获取单个项目详情 */
     async fetchProject(id: number) {
       this.loading = true
       try {
@@ -51,14 +60,14 @@ export const useProjectStore = defineStore('project', {
         this.currentProject = project
         return project
       } catch (error) {
-        console.error('Failed to fetch project:', error)
+        console.error('获取项目详情失败:', error)
         throw error
       } finally {
         this.loading = false
       }
     },
 
-    // 创建项目
+    /** 创建项目，并将新项目插入列表顶部 */
     async createProject(data: ApiProjectCreate) {
       try {
         const project = await projectApi.createProject(data)
@@ -66,12 +75,12 @@ export const useProjectStore = defineStore('project', {
         this.total += 1
         return project
       } catch (error) {
-        console.error('Failed to create project:', error)
+        console.error('创建项目失败:', error)
         throw error
       }
     },
 
-    // 更新项目
+    /** 更新项目信息，同步更新列表和当前选中项 */
     async updateProject(id: number, data: Partial<ApiProjectCreate>) {
       try {
         const updatedProject = await projectApi.updateProject(id, data)
@@ -84,12 +93,12 @@ export const useProjectStore = defineStore('project', {
         }
         return updatedProject
       } catch (error) {
-        console.error('Failed to update project:', error)
+        console.error('更新项目失败:', error)
         throw error
       }
     },
 
-    // 删除项目
+    /** 删除项目，同步从列表中移除 */
     async deleteProject(id: number) {
       try {
         await projectApi.deleteProject(id)
@@ -99,12 +108,12 @@ export const useProjectStore = defineStore('project', {
           this.currentProject = null
         }
       } catch (error) {
-        console.error('Failed to delete project:', error)
+        console.error('删除项目失败:', error)
         throw error
       }
     },
 
-    // 克隆项目
+    /** 克隆项目（包括其下所有集合和测试用例） */
     async cloneProject(id: number, name: string) {
       try {
         const clonedProject = await projectApi.cloneProject(id, { name })
@@ -112,12 +121,12 @@ export const useProjectStore = defineStore('project', {
         this.total += 1
         return clonedProject
       } catch (error) {
-        console.error('Failed to clone project:', error)
+        console.error('克隆项目失败:', error)
         throw error
       }
     },
 
-    // 清除当前项目
+    /** 清除当前选中的项目 */
     clearCurrentProject() {
       this.currentProject = null
     }

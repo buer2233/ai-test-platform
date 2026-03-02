@@ -84,6 +84,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 - **project_info.md** - 接口自动化的完整项目概述、技术架构、功能模块、开发进度
 - **ui_project_info.md** - 基于 **browser_use** 开源框架的 AI 驱动 UI 自动化测试平台，文件记录完整项目介绍、技术架构、功能模块、开发进度
+- **.\\issue**：存放问题截图，比如playwright的截图。playwright的截图要求：使用jpeg格式，图片质量设置60~80，保证图片大小小于20M。
 
 ## 开发流程
 

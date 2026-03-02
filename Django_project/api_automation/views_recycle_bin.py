@@ -1,45 +1,47 @@
 """
-回收站视图
-提供回收站相关API接口
+api_automation/views_recycle_bin.py
+
+回收站视图层，提供已软删除数据的查看、恢复和彻底删除功能。
+
+主要端点:
+    RecycleBinViewSet       -- 回收站列表、统计、单个/批量恢复与彻底删除
+    internal_cleanup_view   -- 内部物理删除接口（仅限运维使用，需密钥认证）
 """
-from rest_framework import viewsets, status, permissions
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from django_filters.rest_framework import DjangoFilterBackend
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 
 from .services.recycle_bin_service import recycle_bin_service
+
+
+# =============================================================================
+# 回收站视图集
+# =============================================================================
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 @swagger_auto_schema(tags=['Recycle Bin'])
 class RecycleBinViewSet(viewsets.ViewSet):
     """
-    回收站视图集
+    回收站视图集 -- 管理已软删除数据的查看、恢复和彻底删除。
 
-    list:
-    获取回收站中的已删除数据列表
-
-    retrieve:
-    获取回收站中特定类型的已删除数据
-
-    stats:
-    获取回收站统计信息
+    所有操作均委托给 recycle_bin_service 处理，视图层仅负责参数校验和响应封装。
     """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
         """
-        获取回收站列表
+        获取回收站数据列表（支持分页和筛选）。
 
-        Query参数:
-        - type: 数据类型筛选 (apiproject, apicollection, apitestcase等)
-        - search: 搜索关键词
-        - page: 页码 (默认1)
-        - page_size: 每页数量 (默认20)
+        查询参数:
+            type      -- 数据类型筛选（如 apiproject, apicollection, apitestcase）
+            search    -- 搜索关键词
+            page      -- 页码（默认 1）
+            page_size -- 每页数量（默认 20）
         """
         item_type = request.query_params.get('type', '').lower()
         search = request.query_params.get('search', '')
@@ -58,19 +60,13 @@ class RecycleBinViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """获取回收站统计信息"""
+        """获取回收站各类型数据的统计信息。"""
         result = recycle_bin_service.get_recycle_bin_stats(user=request.user)
         return Response(result)
 
     @action(detail=False, methods=['post'], url_path='restore/(?P<item_type>[^/.]+)/(?P<item_id>[^/.]+)')
     def restore_item(self, request, item_type=None, item_id=None):
-        """
-        恢复单个数据
-
-        URL参数:
-        - item_type: 数据类型 (apiproject, apicollection等)
-        - item_id: 数据ID
-        """
+        """恢复单条已删除数据（将 is_deleted 重新设为 False）。"""
         try:
             item_id = int(item_id)
             result = recycle_bin_service.restore_item(item_type, item_id, request.user)
@@ -84,13 +80,7 @@ class RecycleBinViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'], url_path='permanent-delete/(?P<item_type>[^/.]+)/(?P<item_id>[^/.]+)')
     def permanent_delete_item(self, request, item_type=None, item_id=None):
-        """
-        彻底删除单个数据
-
-        URL参数:
-        - item_type: 数据类型 (apiproject, apicollection等)
-        - item_id: 数据ID
-        """
+        """彻底删除单条数据（物理删除，不可恢复）。"""
         try:
             item_id = int(item_id)
             result = recycle_bin_service.permanent_delete_item(item_type, item_id, request.user)
@@ -104,13 +94,7 @@ class RecycleBinViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
     def batch_restore(self, request):
-        """
-        批量恢复数据
-
-        Body参数:
-        - type: 数据类型
-        - ids: 数据ID列表
-        """
+        """批量恢复已删除数据，需提供 type 和 ids 列表。"""
         item_type = request.data.get('type', '')
         item_ids = request.data.get('ids', [])
 
@@ -122,13 +106,7 @@ class RecycleBinViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
     def batch_permanent_delete(self, request):
-        """
-        批量彻底删除数据
-
-        Body参数:
-        - type: 数据类型
-        - ids: 数据ID列表
-        """
+        """批量彻底删除数据（物理删除），需提供 type 和 ids 列表。"""
         item_type = request.data.get('type', '')
         item_ids = request.data.get('ids', [])
 
@@ -139,20 +117,25 @@ class RecycleBinViewSet(viewsets.ViewSet):
         return Response(result)
 
 
+# =============================================================================
+# 内部运维接口
+# =============================================================================
+
+
 @swagger_auto_schema(method='post', tags=['Internal'], operation_description="内部物理删除接口")
 @api_view(['POST'])
-@permission_classes([])  # 无需登录，但需要内部密钥认证
+@permission_classes([])
 def internal_cleanup_view(request):
     """
-    内部物理删除接口（仅供研发运维使用）
+    内部物理删除接口（仅供研发运维使用）。
 
-    Headers:
-    - X-Internal-Auth: 内部认证密钥
+    通过 X-Internal-Auth 请求头验证内部密钥，
+    支持级联和非级联两种物理删除模式。
 
-    Body参数:
-    - model: 模型名称 (ApiProject, ApiCollection等)
-    - ids: 要删除的ID列表
-    - cascade: 是否级联删除 (默认true)
+    请求体:
+        model   -- 模型名称（如 ApiProject, ApiCollection 等）
+        ids     -- 要删除的记录 ID 列表
+        cascade -- 是否级联删除（默认 true）
     """
     from django.conf import settings
     from .services.cascade_delete_service import cascade_delete_service

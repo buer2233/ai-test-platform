@@ -1,3 +1,16 @@
+<!--
+  HttpExecutionRecordDetail.vue - HTTP 执行记录详情组件
+
+  展示单次 HTTP 请求执行的完整记录，包含六个标签页：
+  1. 请求信息：方法、URL、请求头、查询参数、请求体
+  2. 响应信息：状态码、响应大小、响应时间、响应头、响应体
+  3. 断言结果：通过数/失败数统计、每条断言的预期值/实际值对比
+  4. 错误信息：错误类型、消息、堆栈跟踪（仅 ERROR/FAILED 状态显示）
+  5. 数据提取：提取的变量名、路径、值、类型
+  6. 元信息：执行来源、批次、重试次数、收藏状态、关联用例/环境
+
+  操作功能：复制 cURL 命令、导出为 JSON、重新执行（开发中）
+-->
 <template>
   <div class="execution-record-detail">
     <el-tabs v-model="activeTab" type="border-card">

@@ -1,3 +1,15 @@
+<!--
+  ConfigPreviewDialog.vue - 配置编辑预览对话框
+
+  用于编辑环境的全局请求头或全局变量配置：
+  - 支持两种配置类型：headers（请求头）和 variables（变量）
+  - 动态添加/删除配置行
+  - 变量值中的 ${变量名} 引用自动高亮标识
+  - 一键复制全部配置
+  - 一键清空全部配置
+  - 保存后通过 API 更新环境配置
+  - 变量使用提示（${variable_name} 格式说明）
+-->
 <template>
   <el-dialog
     v-model="visible"

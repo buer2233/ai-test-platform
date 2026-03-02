@@ -1,11 +1,29 @@
+/**
+ * HTTP 执行器组合式函数
+ *
+ * 提供客户端侧的 HTTP 请求处理逻辑，包括：
+ * - 变量替换（支持 ${变量名} 语法）
+ * - 请求头 / 查询参数 / 请求体的预处理
+ * - 通过后端代理执行 HTTP 请求
+ * - 批量执行和请求取消
+ *
+ * 注意：实际的 HTTP 请求通过后端 test-execute 接口转发，
+ * 前端不直接发送目标请求，以避免 CORS 等问题。
+ */
+
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
 import type { HttpRequest, HttpResponse, KeyValueItem, Variable } from '../types/http'
 
 export function useHttpExecutor() {
+  /** 是否正在执行请求 */
   const executing = ref(false)
 
-  // 替换变量
+  // ==================== 变量替换工具 ====================
+
+  /**
+   * 将字符串中的 ${变量名} 替换为实际值。
+   * 仅替换已启用的变量，未匹配的占位符保持原样。
+   */
   const replaceVariables = (text: string, variables: Variable[]): string => {
     if (!text || !variables.length) return text
 
@@ -21,7 +39,10 @@ export function useHttpExecutor() {
     })
   }
 
-  // 替换对象中的变量
+  /**
+   * 递归替换对象中所有字符串值里的变量占位符。
+   * 支持数组、嵌套对象、字符串等多种数据类型。
+   */
   const replaceVariablesInObject = (obj: any, variables: Variable[]): any => {
     if (!obj || !variables.length) return obj
 
@@ -50,14 +71,19 @@ export function useHttpExecutor() {
     return obj
   }
 
-  // 处理请求头
+  // ==================== 请求预处理 ====================
+
+  /**
+   * 处理请求头：合并默认 User-Agent 和用户自定义的请求头。
+   * 过滤掉已禁用或键值为空的项。
+   */
   const processHeaders = (headers: KeyValueItem[], variables: Variable[]) => {
     const processedHeaders: Record<string, string> = {}
 
     // 默认请求头
     processedHeaders['User-Agent'] = 'API-Automation-Platform/1.0'
 
-    // 处理用户定义的请求头
+    // 处理用户自定义的请求头
     headers
       .filter(h => h.enabled !== false && h.key && h.value)
       .forEach(header => {
@@ -69,7 +95,9 @@ export function useHttpExecutor() {
     return processedHeaders
   }
 
-  // 处理查询参数
+  /**
+   * 处理查询参数：过滤禁用项，替换变量，并尝试将纯数字字符串转为数字类型。
+   */
   const processParams = (params: KeyValueItem[], variables: Variable[]) => {
     const processedParams: Record<string, any> = {}
 
@@ -79,7 +107,6 @@ export function useHttpExecutor() {
         const key = replaceVariables(param.key, variables)
         const value = replaceVariables(param.value, variables)
 
-        // 尝试转换为数字
         const numValue = Number(value)
         processedParams[key] = isNaN(numValue) ? value : numValue
       })
@@ -87,7 +114,14 @@ export function useHttpExecutor() {
     return processedParams
   }
 
-  // 处理请求体
+  /**
+   * 处理请求体：根据 bodyType 解析不同格式的请求体。
+   * - json: 尝试解析为 JSON 对象并替换变量，解析失败则作为字符串处理
+   * - form: 处理表单键值对
+   * - raw: 纯文本替换变量
+   * - file: 直接传递文件列表
+   * - none: 或 GET 等不需要 body 的方法返回 null
+   */
   const processBody = (request: HttpRequest, variables: Variable[]) => {
     const { bodyType, body } = request
 
@@ -105,7 +139,7 @@ export function useHttpExecutor() {
           return replaceVariables(body.json, variables)
         }
 
-      case 'form':
+      case 'form': {
         const formData: Record<string, any> = {}
         body.form
           .filter(f => f.enabled !== false && f.key && f.value)
@@ -115,6 +149,7 @@ export function useHttpExecutor() {
             formData[key] = value
           })
         return formData
+      }
 
       case 'raw':
         return replaceVariables(body.raw, variables)
@@ -127,47 +162,42 @@ export function useHttpExecutor() {
     }
   }
 
-  // 执行HTTP请求
+  // ==================== 请求执行 ====================
+
+  /**
+   * 执行单个 HTTP 请求。
+   * 通过后端 test-execute 接口代理发送请求，返回标准化的响应对象。
+   */
   const executeHttpRequest = async (request: HttpRequest): Promise<HttpResponse> => {
     try {
       executing.value = true
 
-      // 处理变量
+      // 处理变量替换
       const processedBaseUrl = replaceVariables(request.baseUrl, request.variables)
       const processedUrl = replaceVariables(request.url, request.variables)
-      const fullUrl = processBaseUrl + processedUrl
+      const fullUrl = processedBaseUrl + processedUrl
 
-      // 构建请求选项
-      const requestOptions: any = {
+      // 构建发送给后端的请求数据
+      const requestData = {
         method: request.method,
-        url: '/api/v1/api-automation/test-execute/', // 后端执行接口
-        data: {
-          method: request.method,
-          url: fullUrl,
-          headers: processHeaders(request.headers, request.variables),
-          params: processParams(request.params, request.variables),
-          body: processBody(request, request.variables),
-          settings: request.settings
-        }
+        url: fullUrl,
+        headers: processHeaders(request.headers, request.variables),
+        params: processParams(request.params, request.variables),
+        body: processBody(request, request.variables),
+        settings: request.settings
       }
 
-      // 添加认证token（如果有）
+      // 从 localStorage 获取认证 Token
       const token = localStorage.getItem('token')
-      if (token) {
-        requestOptions.headers = {
-          ...requestOptions.headers,
-          'Authorization': `Bearer ${token}`
-        }
-      }
 
-      // 发送请求到后端执行
-      const response = await fetch(requestOptions.url, {
+      // 通过后端代理发送请求
+      const response = await fetch('/api/v1/api-automation/test-execute/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
-        body: JSON.stringify(requestOptions.data)
+        body: JSON.stringify(requestData)
       })
 
       const responseData = await response.json()
@@ -176,7 +206,7 @@ export function useHttpExecutor() {
         throw new Error(responseData.message || '请求执行失败')
       }
 
-      // 构建响应对象
+      // 构建标准化的响应对象
       const httpResponse: HttpResponse = {
         status: responseData.status_code || 200,
         headers: responseData.headers || {},
@@ -185,12 +215,10 @@ export function useHttpExecutor() {
         body_size: responseData.body_size || 0
       }
 
-      // 添加错误信息（如果有）
+      // 附加可选字段
       if (responseData.error) {
         httpResponse.error = responseData.error
       }
-
-      // 处理cookies
       if (responseData.cookies) {
         httpResponse.cookies = responseData.cookies
       }
@@ -200,7 +228,7 @@ export function useHttpExecutor() {
     } catch (error) {
       console.error('HTTP请求执行失败:', error)
 
-      // 返回错误响应
+      // 返回错误响应对象
       return {
         status: 0,
         headers: {},
@@ -214,7 +242,10 @@ export function useHttpExecutor() {
     }
   }
 
-  // 批量执行请求
+  /**
+   * 批量执行多个 HTTP 请求（串行执行）。
+   * 每个请求之间间隔 100ms，避免对目标服务造成过大压力。
+   */
   const executeBatchRequests = async (requests: HttpRequest[]) => {
     const results: HttpResponse[] = []
 
@@ -222,17 +253,15 @@ export function useHttpExecutor() {
       const result = await executeHttpRequest(request)
       results.push(result)
 
-      // 避免请求过于频繁
+      // 请求间隔，避免过于频繁
       await new Promise(resolve => setTimeout(resolve, 100))
     }
 
     return results
   }
 
-  // 取消正在执行的请求
+  /** 取消正在执行的请求（当前为占位实现，后续可通过 AbortController 实现） */
   const cancelRequest = () => {
-    // 这里可以添加取消请求的逻辑
-    // 使用AbortController等API
     executing.value = false
   }
 

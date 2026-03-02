@@ -1,3 +1,14 @@
+<!--
+  Layout/index.vue - 应用主布局组件
+
+  提供整体页面结构，包括：
+  - 左侧导航栏（可折叠）：Logo、模块切换器、菜单项、系统状态指示
+  - 顶部头部栏：折叠按钮、面包屑导航、快捷操作、用户下拉菜单
+  - 主内容区域：路由视图出口（带页面切换过渡动画）
+
+  支持 API 测试平台与 AI 驱动 UI 测试平台之间的切换。
+  响应式设计：768px 以下自动折叠侧边栏。
+-->
 <template>
   <div class="layout-container">
     <!-- Sidebar -->
@@ -214,22 +225,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import {
-  Odometer,
-  FolderOpened,
-  Collection,
-  DocumentChecked,
-  Setting,
-  Expand,
-  Fold,
-  UserFilled,
-  ArrowDown,
-  User,
-  SwitchButton,
-  Lightning,
-  Bell,
-  Document,
-  Delete,
-  Monitor
+  Odometer, FolderOpened, Collection, DocumentChecked, Setting,
+  Expand, Fold, UserFilled, ArrowDown, User, SwitchButton,
+  Lightning, Bell, Document, Delete, Monitor
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../../stores'
 
@@ -237,33 +235,46 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+// ==================== 响应式状态 ====================
+
+/** 侧边栏是否折叠 */
 const isCollapse = ref(false)
+/** 头部是否为紧凑模式（窗口宽度 < 1200px 时隐藏用户名） */
 const isHeaderCompact = ref(false)
+/** 当前选中的平台模块 */
 const currentPlatform = ref<'api' | 'ui'>('api')
+/** 模块切换下拉菜单是否展开 */
 const showModuleDropdown = ref(false)
 
+/** 当前登录用户信息 */
 const currentUser = computed(() => authStore.user)
+/** 当前激活的菜单项（与路由路径同步） */
 const activeMenu = computed(() => route.path)
 
-// 切换模块下拉菜单
+// ==================== 模块切换 ====================
+
+/** 切换模块下拉菜单的显示/隐藏 */
 const toggleModuleDropdown = () => {
   showModuleDropdown.value = !showModuleDropdown.value
 }
 
-// 切换到API测试平台
+// 切换到 API 测试平台
 const switchToApiPlatform = () => {
   currentPlatform.value = 'api'
   showModuleDropdown.value = false
   router.push('/dashboard')
 }
 
-// 切换到UI自动化平台
+// 切换到 UI 自动化测试平台
 const switchToUiPlatform = () => {
   currentPlatform.value = 'ui'
   showModuleDropdown.value = false
   router.push('/ui-automation/projects')
 }
 
+// ==================== 面包屑导航 ====================
+
+/** 根据当前路由匹配生成面包屑列表 */
 const breadcrumbList = computed(() => {
   const matched = route.matched.filter(item => item.meta && item.meta.title)
   return matched.map(item => ({
@@ -272,10 +283,16 @@ const breadcrumbList = computed(() => {
   }))
 })
 
+// ==================== 侧边栏折叠 ====================
+
+/** 切换侧边栏折叠/展开状态 */
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 
+// ==================== 用户操作 ====================
+
+/** 处理用户下拉菜单命令：个人中心、设置、退出登录 */
 const handleCommand = async (command: string) => {
   switch (command) {
     case 'profile':
@@ -298,6 +315,9 @@ const handleCommand = async (command: string) => {
   }
 }
 
+// ==================== 响应式布局 ====================
+
+/** 窗口尺寸变化时调整布局：紧凑头部和自动折叠侧边栏 */
 const handleResize = () => {
   isHeaderCompact.value = window.innerWidth < 1200
   if (window.innerWidth < 768) {
@@ -305,10 +325,8 @@ const handleResize = () => {
   }
 }
 
-// 点击外部关闭下拉菜单
+/** 点击侧边栏外部区域时关闭模块切换下拉菜单 */
 const handleClickOutside = (event: Event) => {
-  const target = event.target as HTMLElement
-  // 检查点击是否在logo区域或下拉菜单内
   if (target.closest('.sidebar-logo')) {
     return
   }
