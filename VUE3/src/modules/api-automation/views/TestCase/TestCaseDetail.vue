@@ -1,3 +1,17 @@
+<!--
+  TestCaseDetail.vue - 接口详情页面
+
+  展示和编辑单个 API 接口的完整配置，包含两个主要选项卡：
+  1. 用例配置：
+     - 基本信息：名称、请求方法、所属项目/集合、URL、描述
+     - 请求配置：Headers、Query 参数、请求体（JSON/Form/Raw 三种模式）
+     - 断言配置：通过 AssertionConfig 组件管理断言规则
+     - 变量提取：通过 VariableExtraction 组件管理提取规则
+  2. 执行记录：通过 TestCaseExecutionRecords 展示历史执行记录
+
+  操作功能：编辑/保存、执行测试、克隆用例、删除用例
+  保存时会同步更新断言和变量提取配置（先删除旧配置再创建新配置）
+-->
 <template>
   <div class="testcase-detail-container">
     <div class="page-header">
