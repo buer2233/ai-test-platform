@@ -223,41 +223,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+/**
+ * 测试报告详情页
+ *
+ * 展示 browser_use 生成的 JSON 报告的完整内容：
+ * - 执行概览（步骤数、状态、截图数量）
+ * - 逐步执行时间线（AI 决策、执行结果、浏览器状态、截图）
+ * - 最终结果展示
+ * - 原始 JSON 数据（可展开/折叠）
+ *
+ * 支持按步骤状态筛选和批量展开/折叠。
+ */
+
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
-  ArrowLeft,
-  Refresh,
   ArrowDown,
+  ArrowLeft,
   ChatDotRound,
   CircleCheck,
   Monitor,
+  Refresh,
   WarningFilled
 } from '@element-plus/icons-vue'
-import type { BrowserUseReport, AgentHistoryStep, Action } from '../../types'
+
 import { http } from '@/shared/utils/http'
-import { uiReportApi, getScreenshotUrl } from '../../api/report'
+import { getScreenshotUrl, uiReportApi } from '../../api/report'
+import type { Action, AgentHistoryStep, BrowserUseReport } from '../../types'
 import type { UiTestReportSummary } from '../../types/report'
 
 const route = useRoute()
 const router = useRouter()
 
+/** 报告 ID（从路由参数获取） */
 const reportId = Number(route.params.id)
+
 const loading = ref(false)
+/** browser_use JSON 报告数据 */
 const browserUseReport = ref<BrowserUseReport | null>(null)
+/** 后端报告摘要（含统计指标） */
 const reportSummary = ref<UiTestReportSummary | null>(null)
+/** 是否显示原始 JSON 面板 */
 const showJson = ref(false)
+/** 步骤筛选条件 */
 const stepFilter = ref<'all' | 'failed' | 'success'>('all')
+/** 各步骤的展开/折叠状态 */
 const expandedSteps = ref<Record<number, boolean>>({})
+/** 是否全部展开 */
 const allExpanded = ref(false)
 
-// 获取报告路径（优先 query，回退 summary）
+/* ---------- 数据来源 ---------- */
+
+/** 获取报告文件路径（优先使用 URL query 参数，回退到摘要中的路径） */
 const reportPath = computed(() => {
   return (route.query.report as string) || reportSummary.value?.json_report_path || ''
 })
 
-// 加载 JSON 报告
+/* ---------- 数据加载 ---------- */
+
+/** 加载报告：先获取摘要，再读取 JSON 报告文件 */
 const loadReport = async () => {
   loading.value = true
   try {
@@ -267,32 +292,35 @@ const loadReport = async () => {
       return
     }
 
-    // 使用 http 工具（自动携带认证信息）
+    // 使用共享 http 工具请求（自动携带认证 header）
     const data = await http.get<BrowserUseReport>(
       `/v1/ui-automation/reports/file`,
       { path: reportPath.value }
     )
     browserUseReport.value = data
 
-    // 默认展开最后一步
-    const lastStep = (browserUseReport.value.history?.length || 1) - 1
-    expandedSteps.value[lastStep] = true
+    // 默认展开最后一步（通常包含最终结果）
+    const lastStepIndex = (browserUseReport.value.history?.length || 1) - 1
+    expandedSteps.value[lastStepIndex] = true
   } catch (error: any) {
-    // http.ts 拦截器已通过 ElMessage.error 显示了后端返回的 message
-    // 这里仅做日志记录，避免重复弹出消息
+    // http 拦截器已通过 ElMessage.error 展示错误，此处仅记录日志
     console.error('加载报告失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 总步骤数
+/* ---------- 计算属性 ---------- */
+
+/** 总步骤数 */
 const totalSteps = computed(() => {
-  if (browserUseReport.value?.history?.length) return browserUseReport.value.history.length
+  if (browserUseReport.value?.history?.length) {
+    return browserUseReport.value.history.length
+  }
   return reportSummary.value?.metrics.total_steps || 0
 })
 
-// 截图数量
+/** 包含截图的步骤数量 */
 const screenshotCount = computed(() => {
   if (browserUseReport.value?.history) {
     return browserUseReport.value.history.filter(step => step.state.screenshot_path).length
@@ -300,7 +328,7 @@ const screenshotCount = computed(() => {
   return reportSummary.value?.metrics.screenshot_count || 0
 })
 
-// 是否成功
+/** 是否执行成功 */
 const isSuccess = computed(() => {
   if (reportSummary.value) {
     return reportSummary.value.status === 'passed'
@@ -310,7 +338,7 @@ const isSuccess = computed(() => {
   return lastStep?.result?.[0]?.success ?? false
 })
 
-// 最终结果
+/** 最终结果文本 */
 const finalResult = computed(() => {
   if (reportSummary.value?.final_result) return reportSummary.value.final_result
   if (!browserUseReport.value?.history) return ''
@@ -318,32 +346,32 @@ const finalResult = computed(() => {
   return lastStep?.result?.[0]?.extracted_content || ''
 })
 
-// 过滤后的步骤
+/** 根据筛选条件过滤步骤列表 */
 const filteredSteps = computed(() => {
   if (!browserUseReport.value?.history) return []
 
-  let steps = browserUseReport.value.history
-
   if (stepFilter.value === 'failed') {
-    steps = steps.filter(step => stepHasError(step))
-  } else if (stepFilter.value === 'success') {
-    steps = steps.filter(step => !stepHasError(step))
+    return browserUseReport.value.history.filter(step => stepHasError(step))
   }
-
-  return steps
+  if (stepFilter.value === 'success') {
+    return browserUseReport.value.history.filter(step => !stepHasError(step))
+  }
+  return browserUseReport.value.history
 })
 
-// 判断步骤是否有错误
+/* ---------- 步骤操作 ---------- */
+
+/** 判断步骤是否包含错误 */
 const stepHasError = (step: AgentHistoryStep) => {
   return step.result?.some(r => r.error)
 }
 
-// 切换步骤展开
+/** 切换单个步骤的展开/折叠状态 */
 const toggleStep = (index: number) => {
   expandedSteps.value[index] = !expandedSteps.value[index]
 }
 
-// 切换全部展开
+/** 切换全部步骤的展开/折叠状态 */
 const toggleExpandAll = () => {
   allExpanded.value = !allExpanded.value
   filteredSteps.value.forEach((_, index) => {
@@ -351,7 +379,9 @@ const toggleExpandAll = () => {
   })
 }
 
-// 获取操作类型
+/* ---------- 操作类型标签（用于步骤详情中的操作列表展示） ---------- */
+
+/** 根据操作类型返回对应的 El-Tag 类型 */
 const getActionType = (action: Action) => {
   if ('navigate' in action) return 'primary'
   if ('click' in action) return 'success'
@@ -361,7 +391,7 @@ const getActionType = (action: Action) => {
   return ''
 }
 
-// 获取操作标签
+/** 根据操作类型返回中文标签 */
 const getActionLabel = (action: Action) => {
   if ('navigate' in action) return '导航'
   if ('click' in action) return '点击'
@@ -377,7 +407,7 @@ const getActionLabel = (action: Action) => {
   return '未知操作'
 }
 
-// 格式化操作详情
+/** 格式化操作的核心参数为可读文本 */
 const formatAction = (action: Action) => {
   if ('navigate' in action) return action.navigate?.url || ''
   if ('click' in action) return action.click?.element || ''
@@ -389,25 +419,25 @@ const formatAction = (action: Action) => {
   return JSON.stringify(action)
 }
 
-// 格式化步骤时间
+/** 格式化步骤的时间信息（开始-结束时间和耗时） */
 const formatStepTime = (metadata: { step_start_time: number; step_end_time: number; step_interval: number | null }) => {
   const start = new Date(metadata.step_start_time * 1000)
   const end = new Date(metadata.step_end_time * 1000)
   const duration = metadata.step_interval ? `${metadata.step_interval.toFixed(2)}s` : '-'
-
   return `${start.toLocaleTimeString()} - ${end.toLocaleTimeString()} (${duration})`
 }
 
-// 刷新
+/* ---------- 页面操作 ---------- */
+
 const handleRefresh = () => {
   loadReport()
 }
 
-// 返回
 const goBack = () => {
   router.back()
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(() => {
   loadReport()
 })

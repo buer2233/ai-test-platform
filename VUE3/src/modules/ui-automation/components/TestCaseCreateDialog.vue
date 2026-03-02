@@ -80,15 +80,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+/**
+ * 测试用例创建/编辑对话框组件
+ *
+ * 通过 v-model 控制显隐，根据 testCaseId 判断创建或编辑模式。
+ * 编辑模式下自动加载现有用例数据，创建模式下重置表单为初始值。
+ */
+
+import { computed, reactive, ref, watch } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { useUiTestCaseStore } from '../stores/testCase'
+
 import { useUiProjectStore } from '../stores/project'
-import type { UiTestCase, UiTestCaseCreate, UiTestCaseUpdate } from '../types/testCase'
+import { useUiTestCaseStore } from '../stores/testCase'
+import type { UiTestCaseCreate, UiTestCaseUpdate } from '../types/testCase'
 import NaturalLanguageEditor from './NaturalLanguageEditor.vue'
 
 interface Props {
+  /** 对话框显隐状态（v-model） */
   modelValue: boolean
+  /** 编辑模式下的用例 ID，null 表示创建模式 */
   testCaseId: number | null
 }
 
@@ -102,11 +112,13 @@ const emit = defineEmits<{
 const testCaseStore = useUiTestCaseStore()
 const projectStore = useUiProjectStore()
 
+/** 是否为编辑模式 */
 const isEdit = computed(() => props.testCaseId !== null)
 
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
 
+/** 表单数据 */
 const formData = reactive({
   project: undefined as number | undefined,
   name: '',
@@ -115,8 +127,10 @@ const formData = reactive({
   browser_mode: 'headless' as 'headless' | 'headed'
 })
 
+/** 预设的常用标签选项 */
 const commonTags = ref(['登录', '搜索', '表单', '导航', '注册'])
 
+/** 表单验证规则 */
 const formRules: FormRules = {
   project: [{ required: true, message: '请选择项目', trigger: 'change' }],
   name: [
@@ -129,10 +143,12 @@ const formRules: FormRules = {
   ]
 }
 
+/** 关闭对话框 */
 const handleClose = () => {
   emit('update:modelValue', false)
 }
 
+/** 提交表单：根据模式调用创建或更新接口 */
 const handleSubmit = async () => {
   if (!formRef.value) return
 
@@ -164,14 +180,14 @@ const handleSubmit = async () => {
       emit('success')
       handleClose()
     } catch {
-      // Error already handled
+      // 错误已由 Store 层处理
     } finally {
       submitting.value = false
     }
   })
 }
 
-// 加载编辑数据
+/** 编辑模式：加载已有用例数据填入表单 */
 const loadEditData = async () => {
   if (isEdit.value && props.testCaseId) {
     const testCase = await testCaseStore.fetchTestCase(props.testCaseId)
@@ -185,7 +201,7 @@ const loadEditData = async () => {
   }
 }
 
-// 重置表单
+/** 创建模式：重置表单为初始值 */
 const resetForm = () => {
   formData.project = undefined
   formData.name = ''
@@ -195,6 +211,7 @@ const resetForm = () => {
   formRef.value?.clearValidate()
 }
 
+/** 监听对话框打开：编辑模式加载数据，创建模式重置表单 */
 watch(() => props.modelValue, (val) => {
   if (val) {
     if (isEdit.value) {
@@ -202,6 +219,7 @@ watch(() => props.modelValue, (val) => {
     } else {
       resetForm()
     }
+    // 每次打开都刷新项目列表，确保下拉选项为最新
     projectStore.fetchProjects()
   }
 })

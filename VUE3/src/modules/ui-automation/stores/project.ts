@@ -1,12 +1,26 @@
+/**
+ * 项目状态管理（Pinia Store）
+ *
+ * 管理 UI 自动化测试项目的列表、当前选中项目、
+ * 项目统计信息等状态数据。
+ */
+
 import { defineStore } from 'pinia'
+
 import { uiProjectApi } from '../api/project'
 import type { UiProject, UiProjectCreate, UiProjectStatistics } from '../types/project'
 
+/** 项目 Store 的状态类型定义 */
 interface ProjectState {
+  /** 项目列表 */
   projects: UiProject[]
+  /** 当前查看的项目详情 */
   currentProject: UiProject | null
+  /** 当前项目的统计数据 */
   projectStatistics: UiProjectStatistics | null
+  /** 列表加载状态 */
   loading: boolean
+  /** 列表总数（用于分页） */
   total: number
 }
 
@@ -20,6 +34,7 @@ export const useUiProjectStore = defineStore('uiProject', {
   }),
 
   getters: {
+    /** 将项目列表转换为下拉选项格式（label + value） */
     projectOptions: (state) => {
       return state.projects.map(project => ({
         label: project.name,
@@ -27,13 +42,14 @@ export const useUiProjectStore = defineStore('uiProject', {
       }))
     },
 
+    /** 筛选出已启用的项目 */
     activeProjects: (state) => {
       return state.projects.filter(p => p.is_active)
     }
   },
 
   actions: {
-    // 获取项目列表
+    /** 获取项目列表（支持分页和筛选参数） */
     async fetchProjects(params?: any) {
       this.loading = true
       try {
@@ -49,7 +65,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 获取单个项目
+    /** 获取单个项目详情并设为当前项目 */
     async fetchProject(id: number) {
       this.loading = true
       try {
@@ -64,7 +80,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 创建项目
+    /** 创建项目并插入列表头部 */
     async createProject(data: UiProjectCreate) {
       try {
         const project = await uiProjectApi.createProject(data)
@@ -77,7 +93,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 更新项目
+    /** 更新项目信息并同步列表和当前项目 */
     async updateProject(id: number, data: Partial<UiProjectCreate>) {
       try {
         const updatedProject = await uiProjectApi.updateProject(id, data)
@@ -95,7 +111,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 删除项目
+    /** 删除项目并从列表中移除 */
     async deleteProject(id: number) {
       try {
         await uiProjectApi.deleteProject(id)
@@ -110,7 +126,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 获取项目统计信息
+    /** 获取项目统计信息（用例数、执行数、成功率等） */
     async fetchProjectStatistics(id: number) {
       try {
         const statistics = await uiProjectApi.getProjectStatistics(id)
@@ -122,7 +138,7 @@ export const useUiProjectStore = defineStore('uiProject', {
       }
     },
 
-    // 清除当前项目
+    /** 清除当前项目和统计数据（离开项目详情页时调用） */
     clearCurrentProject() {
       this.currentProject = null
       this.projectStatistics = null

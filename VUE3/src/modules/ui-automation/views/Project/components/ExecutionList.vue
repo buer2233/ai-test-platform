@@ -38,51 +38,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+/**
+ * 项目内执行记录列表组件
+ *
+ * 嵌入在项目详情页的 Tab 页中，展示该项目最近 10 条执行记录。
+ * 点击行可跳转到执行监控详情页。
+ */
+
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { UiTestExecution, ExecutionStatus } from '../../../types/execution'
+
 import { uiExecutionApi } from '../../../api/execution'
+import type { ExecutionStatus, UiTestExecution } from '../../../types/execution'
 
 interface Props {
+  /** 所属项目 ID */
   projectId: number
 }
 
 const props = defineProps<Props>()
-
 const router = useRouter()
 
 const loading = ref(false)
 const executions = ref<UiTestExecution[]>([])
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+/* ---------- 状态映射 ---------- */
+
+/** 执行状态 -> El-Tag 类型映射 */
+const STATUS_TYPE_MAP: Record<ExecutionStatus, string> = {
+  pending: 'info',
+  running: 'warning',
+  passed: 'success',
+  failed: 'danger',
+  error: 'danger',
+  cancelled: 'info'
+}
+
+/** 执行状态 -> 中文文本映射 */
+const STATUS_TEXT_MAP: Record<ExecutionStatus, string> = {
+  pending: '待执行',
+  running: '执行中',
+  passed: '通过',
+  failed: '失败',
+  error: '错误',
+  cancelled: '已取消'
 }
 
 const getStatusType = (status: ExecutionStatus) => {
-  const types: Record<ExecutionStatus, any> = {
-    pending: 'info',
-    running: 'warning',
-    passed: 'success',
-    failed: 'danger',
-    error: 'danger',
-    cancelled: 'info'
-  }
-  return types[status] || 'info'
+  return STATUS_TYPE_MAP[status] || 'info'
 }
 
 const getStatusText = (status: ExecutionStatus) => {
-  const texts: Record<ExecutionStatus, string> = {
-    pending: '待执行',
-    running: '执行中',
-    passed: '通过',
-    failed: '失败',
-    error: '错误',
-    cancelled: '已取消'
-  }
-  return texts[status] || status
+  return STATUS_TEXT_MAP[status] || status
 }
 
+/** 格式化日期为中文本地化字符串 */
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+/* ---------- 数据加载 ---------- */
+
+/** 加载该项目最近 10 条执行记录 */
 const loadExecutions = async () => {
   loading.value = true
   try {
@@ -93,6 +110,7 @@ const loadExecutions = async () => {
   }
 }
 
+/** 点击行：跳转到执行监控页面 */
 const handleRowClick = (row: UiTestExecution) => {
   router.push(`/ui-automation/executions/${row.id}`)
 }

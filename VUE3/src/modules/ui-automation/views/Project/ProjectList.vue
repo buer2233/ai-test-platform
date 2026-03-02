@@ -139,36 +139,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+/**
+ * 项目列表页
+ *
+ * 展示所有 UI 自动化测试项目，支持：
+ * - 按名称搜索、按启用状态筛选
+ * - 分页浏览
+ * - 创建、编辑、删除项目
+ * - 点击行跳转到项目详情
+ */
+
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { Plus, Search, View, Edit, Delete } from '@element-plus/icons-vue'
+import { Delete, Edit, Plus, Search, View } from '@element-plus/icons-vue'
+
 import { useUiProjectStore } from '../../stores/project'
 import type { UiProject, UiProjectCreate } from '../../types/project'
 
 const router = useRouter()
 const projectStore = useUiProjectStore()
 
-// 分页
+/* ---------- 分页配置 ---------- */
 const pagination = reactive({
   page: 1,
   pageSize: 20
 })
 
-// 筛选表单
+/* ---------- 筛选表单 ---------- */
 const filterForm = reactive({
   search: '',
   is_active: undefined as boolean | undefined
 })
 
-// 对话框
+/* ---------- 创建/编辑对话框 ---------- */
+
 const dialogVisible = ref(false)
-const dialogTitle = computed(() => isEdit.value ? '编辑项目' : '创建项目')
 const isEdit = ref(false)
 const editingId = ref<number | null>(null)
 const submitting = ref(false)
 
-// 表单
+/** 对话框标题：根据编辑/创建模式动态切换 */
+const dialogTitle = computed(() => isEdit.value ? '编辑项目' : '创建项目')
+
 const formRef = ref<FormInstance>()
 const formData = reactive<UiProjectCreate>({
   name: '',
@@ -183,13 +196,16 @@ const formRules: FormRules = {
   ]
 }
 
-// 格式化日期
+/* ---------- 工具函数 ---------- */
+
+/** 格式化日期为中文本地化字符串 */
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+  return new Date(dateStr).toLocaleString('zh-CN')
 }
 
-// 获取项目列表
+/* ---------- 数据加载 ---------- */
+
+/** 根据筛选条件和分页参数获取项目列表 */
 const fetchProjects = async () => {
   const params: any = {
     page: pagination.page,
@@ -204,23 +220,25 @@ const fetchProjects = async () => {
   await projectStore.fetchProjects(params)
 }
 
-// 搜索
+/** 筛选条件变更：重置到第一页后重新加载 */
 const handleSearch = () => {
   pagination.page = 1
   fetchProjects()
 }
 
-// 行点击
+/* ---------- 行操作 ---------- */
+
+/** 点击行：跳转到项目详情页 */
 const handleRowClick = (row: UiProject) => {
   router.push(`/ui-automation/projects/${row.id}`)
 }
 
-// 查看详情
+/** 查看项目详情 */
 const handleView = (row: UiProject) => {
   router.push(`/ui-automation/projects/${row.id}`)
 }
 
-// 编辑
+/** 编辑项目：回填数据并打开对话框 */
 const handleEdit = (row: UiProject) => {
   isEdit.value = true
   editingId.value = row.id
@@ -230,7 +248,7 @@ const handleEdit = (row: UiProject) => {
   dialogVisible.value = true
 }
 
-// 删除
+/** 删除项目（需二次确认） */
 const handleDelete = async (row: UiProject) => {
   try {
     await ElMessageBox.confirm(
@@ -246,11 +264,11 @@ const handleDelete = async (row: UiProject) => {
     ElMessage.success('删除成功')
     fetchProjects()
   } catch {
-    // 用户取消
+    // 用户取消确认操作
   }
 }
 
-// 打开创建对话框
+/** 打开创建项目对话框 */
 const openCreateDialog = () => {
   isEdit.value = false
   editingId.value = null
@@ -260,7 +278,7 @@ const openCreateDialog = () => {
   dialogVisible.value = true
 }
 
-// 提交表单
+/** 提交表单：根据模式调用创建或更新接口 */
 const handleSubmit = async () => {
   if (!formRef.value) return
 
@@ -278,19 +296,20 @@ const handleSubmit = async () => {
       }
       dialogVisible.value = false
       fetchProjects()
-    } catch (error) {
-      // Error already handled by store
+    } catch {
+      // 错误已由 Store 层处理
     } finally {
       submitting.value = false
     }
   })
 }
 
-// 对话框关闭
+/** 对话框关闭时重置表单验证状态 */
 const handleDialogClose = () => {
   formRef.value?.resetFields()
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(() => {
   fetchProjects()
 })

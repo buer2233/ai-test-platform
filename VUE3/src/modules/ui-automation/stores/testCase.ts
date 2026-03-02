@@ -1,11 +1,24 @@
+/**
+ * 测试用例状态管理（Pinia Store）
+ *
+ * 管理 UI 自动化测试用例的列表、当前查看的用例详情，
+ * 提供按项目、标签和启用状态筛选等派生数据。
+ */
+
 import { defineStore } from 'pinia'
+
 import { uiTestCaseApi } from '../api/testCase'
 import type { UiTestCase, UiTestCaseCreate, UiTestCaseUpdate } from '../types/testCase'
 
+/** 测试用例 Store 的状态类型定义 */
 interface TestCaseState {
+  /** 用例列表 */
   testCases: UiTestCase[]
+  /** 当前查看的用例详情 */
   currentTestCase: UiTestCase | null
+  /** 列表加载状态 */
   loading: boolean
+  /** 列表总数（用于分页） */
   total: number
 }
 
@@ -18,21 +31,24 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
   }),
 
   getters: {
+    /** 筛选出已启用的测试用例 */
     activeTestCases: (state) => {
       return state.testCases.filter(tc => tc.is_active)
     },
 
+    /** 按项目 ID 筛选测试用例 */
     testCasesByProject: (state) => (projectId: number) => {
       return state.testCases.filter(tc => tc.project === projectId)
     },
 
+    /** 按标签筛选测试用例 */
     testCasesByTag: (state) => (tag: string) => {
       return state.testCases.filter(tc => tc.tags.includes(tag))
     }
   },
 
   actions: {
-    // 获取测试用例列表
+    /** 获取测试用例列表（支持分页和筛选参数） */
     async fetchTestCases(params?: any) {
       this.loading = true
       try {
@@ -48,7 +64,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 获取单个测试用例
+    /** 获取单个测试用例详情并设为当前用例 */
     async fetchTestCase(id: number) {
       this.loading = true
       try {
@@ -63,7 +79,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 创建测试用例
+    /** 创建测试用例并插入列表头部 */
     async createTestCase(data: UiTestCaseCreate) {
       try {
         const testCase = await uiTestCaseApi.createTestCase(data)
@@ -76,7 +92,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 更新测试用例
+    /** 更新测试用例信息并同步列表和当前用例 */
     async updateTestCase(id: number, data: UiTestCaseUpdate) {
       try {
         const updatedTestCase = await uiTestCaseApi.updateTestCase(id, data)
@@ -94,7 +110,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 删除测试用例
+    /** 删除测试用例并从列表中移除 */
     async deleteTestCase(id: number) {
       try {
         await uiTestCaseApi.deleteTestCase(id)
@@ -109,7 +125,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 复制测试用例
+    /** 复制测试用例（后端生成副本）并插入列表头部 */
     async copyTestCase(id: number) {
       try {
         const newTestCase = await uiTestCaseApi.copyTestCase(id)
@@ -122,7 +138,7 @@ export const useUiTestCaseStore = defineStore('uiTestCase', {
       }
     },
 
-    // 清除当前测试用例
+    /** 清除当前查看的测试用例 */
     clearCurrentTestCase() {
       this.currentTestCase = null
     }

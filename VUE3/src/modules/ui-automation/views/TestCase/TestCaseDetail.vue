@@ -118,10 +118,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+/**
+ * 测试用例详情页
+ *
+ * 展示单个 UI 测试用例的完整信息：
+ * - 基本信息（名称、项目、浏览器模式、超时、重试次数、标签等）
+ * - 测试任务描述（自然语言）
+ * - 最近 5 条执行历史记录
+ * - 支持编辑、运行测试操作
+ */
+
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft, VideoPlay } from '@element-plus/icons-vue'
+
 import { useUiTestCaseStore } from '../../stores/testCase'
 import { uiTestCaseApi } from '../../api/testCase'
 import type { ExecutionStatus, UiTestExecution } from '../../types/execution'
@@ -130,22 +141,71 @@ const route = useRoute()
 const router = useRouter()
 const testCaseStore = useUiTestCaseStore()
 
+/** 当前用例 ID（从路由参数获取） */
 const testCaseId = Number(route.params.id)
+/** 是否正在运行测试 */
 const running = ref(false)
+/** 执行历史加载状态 */
 const loadingHistory = ref(false)
+/** 最近的执行记录列表 */
 const executions = ref<UiTestExecution[]>([])
 
-// 返回
+/* ---------- 状态映射 ---------- */
+
+/** 执行状态 -> El-Tag 类型映射 */
+const STATUS_TYPE_MAP: Record<ExecutionStatus, string> = {
+  pending: 'info',
+  running: 'warning',
+  passed: 'success',
+  failed: 'danger',
+  error: 'danger',
+  cancelled: 'info'
+}
+
+/** 执行状态 -> 中文文本映射 */
+const STATUS_TEXT_MAP: Record<ExecutionStatus, string> = {
+  pending: '待执行',
+  running: '执行中',
+  passed: '通过',
+  failed: '失败',
+  error: '错误',
+  cancelled: '已取消'
+}
+
+const getStatusType = (status: ExecutionStatus) => {
+  return STATUS_TYPE_MAP[status] || 'info'
+}
+
+const getStatusText = (status: ExecutionStatus) => {
+  return STATUS_TEXT_MAP[status] || status
+}
+
+/**
+ * 格式化日期为中文本地化字符串
+ * 支持可选参数（用于 created_at 和 updated_at 字段）
+ */
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+/* ---------- 页面操作 ---------- */
+
+/** 返回测试用例列表 */
 const goBack = () => {
   router.push('/ui-automation/test-cases')
 }
 
-// 编辑
+/** 跳转到编辑页面 */
 const handleEdit = () => {
   router.push(`/ui-automation/test-cases/${testCaseId}/edit`)
 }
 
-// 运行测试
+/**
+ * 运行测试
+ * 检查启用状态后调用 run 端点，自动创建执行记录并启动测试，
+ * 成功后跳转到执行监控页面
+ */
 const handleRun = async () => {
   if (!testCaseStore.currentTestCase) return
 
@@ -156,12 +216,10 @@ const handleRun = async () => {
 
   running.value = true
   try {
-    // 直接调用 run 端点（自动创建执行记录并启动测试）
     const result = await uiTestCaseApi.run(testCaseId, {
       browser_mode: testCaseStore.currentTestCase.browser_mode
     })
     ElMessage.success(result.message || '开始执行测试')
-    // 跳转到执行监控页面
     router.push(`/ui-automation/executions/${result.execution.id}`)
   } catch (error: any) {
     console.error('Run test failed:', error)
@@ -176,54 +234,23 @@ const handleRun = async () => {
   }
 }
 
-// 跳转到执行记录
+/** 跳转到执行记录列表（查看全部历史） */
 const goToExecutions = () => {
   router.push('/ui-automation/executions')
 }
 
-// 执行记录点击
+/** 点击执行记录行：跳转到执行监控页面 */
 const handleExecutionClick = (row: UiTestExecution) => {
   router.push(`/ui-automation/executions/${row.id}`)
 }
 
-// 获取状态类型
-const getStatusType = (status: ExecutionStatus) => {
-  const types: Record<ExecutionStatus, any> = {
-    pending: 'info',
-    running: 'warning',
-    passed: 'success',
-    failed: 'danger',
-    error: 'danger',
-    cancelled: 'info'
-  }
-  return types[status] || 'info'
-}
+/* ---------- 数据加载 ---------- */
 
-// 获取状态文本
-const getStatusText = (status: ExecutionStatus) => {
-  const texts: Record<ExecutionStatus, string> = {
-    pending: '待执行',
-    running: '执行中',
-    passed: '通过',
-    failed: '失败',
-    error: '错误',
-    cancelled: '已取消'
-  }
-  return texts[status] || status
-}
-
-// 格式化日期
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return '-'
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
-}
-
-// 加载执行历史
+/** 加载该用例最近 5 条执行历史记录 */
 const loadExecutionHistory = async () => {
   loadingHistory.value = true
   try {
-    const result = await testCaseStore.currentTestCase?.id
+    const result = testCaseStore.currentTestCase?.id
       ? await (await fetch(`/api/v1/ui-automation/test-cases/${testCaseId}/executions/`)).json()
       : { results: [] }
     executions.value = result.results?.slice(0, 5) || []
@@ -232,6 +259,7 @@ const loadExecutionHistory = async () => {
   }
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(async () => {
   await testCaseStore.fetchTestCase(testCaseId)
   loadExecutionHistory()

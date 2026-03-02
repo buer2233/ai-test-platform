@@ -67,26 +67,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+/**
+ * 项目内测试用例列表组件
+ *
+ * 嵌入在项目详情页的 Tab 页中，展示该项目下所有测试用例。
+ * 支持搜索过滤、运行测试、编辑和删除操作。
+ */
+
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Plus, Search, VideoPlay, Edit, Delete } from '@element-plus/icons-vue'
-import type { UiTestCase } from '../../../types/testCase'
+import { Delete, Edit, Plus, Search, VideoPlay } from '@element-plus/icons-vue'
+
 import { uiTestCaseApi } from '../../../api/testCase'
+import type { UiTestCase } from '../../../types/testCase'
 
 interface Props {
+  /** 所属项目 ID */
   projectId: number
 }
 
 const props = defineProps<Props>()
-
 const router = useRouter()
 
 const loading = ref(false)
 const searchText = ref('')
 const testCases = ref<UiTestCase[]>([])
+/** 正在运行测试的用例 ID 集合（用于显示加载状态） */
 const running = ref<Set<number>>(new Set())
 
+/** 前端搜索过滤：按用例名称和测试任务描述匹配 */
 const filteredTestCases = computed(() => {
   if (!searchText.value) return testCases.value
   const search = searchText.value.toLowerCase()
@@ -96,11 +106,14 @@ const filteredTestCases = computed(() => {
   )
 })
 
+/** 格式化日期为中文本地化字符串 */
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+  return new Date(dateStr).toLocaleString('zh-CN')
 }
 
+/* ---------- 数据加载 ---------- */
+
+/** 加载该项目下所有测试用例 */
 const loadTestCases = async () => {
   loading.value = true
   try {
@@ -111,14 +124,23 @@ const loadTestCases = async () => {
   }
 }
 
+/* ---------- 操作处理 ---------- */
+
+/** 跳转到创建用例页面（自动关联当前项目） */
 const handleCreate = () => {
   router.push(`/ui-automation/test-cases/create?project=${props.projectId}`)
 }
 
+/** 点击行：跳转到用例详情页 */
 const handleRowClick = (row: UiTestCase) => {
   router.push(`/ui-automation/test-cases/${row.id}`)
 }
 
+/**
+ * 运行测试用例
+ * 调用后端 run 端点自动创建执行记录并启动测试，
+ * 成功后跳转到执行监控页面
+ */
 const handleRun = async (row: UiTestCase) => {
   if (!row.is_active) {
     ElMessage.warning('该测试用例未启用，请先启用后再执行')
@@ -127,10 +149,8 @@ const handleRun = async (row: UiTestCase) => {
 
   running.value.add(row.id)
   try {
-    // 直接调用 run 端点（自动创建执行记录并启动测试）
     const result = await uiTestCaseApi.run(row.id, { browser_mode: row.browser_mode })
     ElMessage.success(result.message || '开始执行测试')
-    // 跳转到执行监控页面
     router.push(`/ui-automation/executions/${result.execution.id}`)
   } catch (error: any) {
     console.error('Run test failed:', error)
@@ -145,10 +165,12 @@ const handleRun = async (row: UiTestCase) => {
   }
 }
 
+/** 跳转到用例编辑页 */
 const handleEdit = (row: UiTestCase) => {
   router.push(`/ui-automation/test-cases/${row.id}/edit`)
 }
 
+/** 删除用例并刷新列表 */
 const handleDelete = async (row: UiTestCase) => {
   await uiTestCaseApi.deleteTestCase(row.id)
   ElMessage.success('删除成功')

@@ -146,17 +146,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+/**
+ * 执行监控页
+ *
+ * 实时展示 UI 自动化测试执行过程：
+ * - 基本信息卡片（用例名、项目名、耗时、浏览器模式）
+ * - 实时日志面板（支持自动滚动）
+ * - 执行截图面板（支持点击预览）
+ * - 错误信息展示
+ * - 通过 WebSocket 接收实时进度推送
+ */
+
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   ArrowLeft,
-  VideoPause,
   Document,
-  Refresh
+  Refresh,
+  VideoPause
 } from '@element-plus/icons-vue'
+
 import { useUiExecutionStore } from '../../stores/execution'
-import { uiReportApi, getScreenshotUrl } from '../../api/report'
+import { getScreenshotUrl, uiReportApi } from '../../api/report'
 import type { BrowserUseReport } from '../../types/report'
 import ExecutionStatusBadge from '@ui-automation/components/ExecutionStatusBadge.vue'
 
@@ -164,57 +176,61 @@ const route = useRoute()
 const router = useRouter()
 const executionStore = useUiExecutionStore()
 
+/** 当前执行记录 ID（从路由参数获取） */
 const executionId = Number(route.params.id)
+
+/** 日志容器 DOM 引用（用于自动滚动） */
 const logContainer = ref<HTMLElement>()
+/** 是否启用自动滚动到日志底部 */
 const autoScroll = ref(true)
+/** 截图预览对话框是否显示 */
 const previewDialogVisible = ref(false)
+/** 当前预览的截图数据 */
 const previewScreenshot = ref<{ data: string; description: string } | null>(null)
 
-// 日志数据
+/** 实时日志数据 */
 const logs = ref<Array<{ time: string; message: string; type: string }>>([])
 
-// 截图数据
+/** 执行截图数据 */
 const screenshots = ref<Array<{ data: string; description: string; timestamp: string }>>([])
 
-// WebSocket 连接
+/** WebSocket 连接实例 */
 let ws: WebSocket | null = null
 
-// 返回
+/* ---------- 页面操作 ---------- */
+
+/** 返回执行记录列表 */
 const goBack = () => {
   router.push('/ui-automation/executions')
 }
 
-// 刷新数据
+/** 刷新执行数据并重新解析日志和截图 */
 const refreshData = async () => {
   await executionStore.fetchExecution(executionId)
   parseAgentHistory()
 }
 
-// 取消执行
+/** 取消当前执行（需二次确认） */
 const handleCancel = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要取消该执行吗？',
-      '取消确认',
-      {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }
-    )
+    await ElMessageBox.confirm('确定要取消该执行吗？', '取消确认', {
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
     await executionStore.cancelExecution(executionId)
     ElMessage.success('已取消执行')
     await refreshData()
   } catch {
-    // 用户取消
+    // 用户取消确认操作
   }
 }
 
-// 查看报告
+/** 跳转到关联的测试报告页面 */
 const handleViewReport = () => {
   const report = executionStore.currentExecution?.report
   if (report) {
-    // report 可能是对象或 ID
+    // report 可能是对象（嵌套序列化）或纯 ID
     const reportId = typeof report === 'object' ? report.id : report
     router.push(`/ui-automation/reports/${reportId}`)
   } else {
@@ -222,12 +238,18 @@ const handleViewReport = () => {
   }
 }
 
-// 解析Agent历史记录
+/* ---------- 日志和截图解析 ---------- */
+
+/**
+ * 解析 Agent 历史记录
+ * 将 JSON 格式的 agent_history 转换为日志列表，
+ * 同时从关联报告中加载截图数据
+ */
 const parseAgentHistory = () => {
   const execution = executionStore.currentExecution
   if (!execution) return
 
-  // 解析日志
+  // 解析执行日志
   if (execution.agent_history) {
     try {
       const history = JSON.parse(execution.agent_history)
@@ -237,6 +259,7 @@ const parseAgentHistory = () => {
         type: step.error ? 'error' : 'info'
       }))
     } catch {
+      // agent_history 不是有效 JSON，作为纯文本显示
       logs.value = [{
         time: new Date().toLocaleTimeString('zh-CN'),
         message: execution.agent_history,
@@ -245,13 +268,16 @@ const parseAgentHistory = () => {
     }
   }
 
-  // 解析截图（从报告中获取）
+  // 从关联报告中加载截图
   if (execution.report) {
     loadScreenshotsFromReport(execution.report)
   }
 }
 
-// 从报告加载截图
+/**
+ * 从 browser_use JSON 报告中提取截图数据
+ * @param report - 报告 ID 或报告对象
+ */
 const loadScreenshotsFromReport = async (report: any) => {
   try {
     const reportId = typeof report === 'object' ? report.id : report
@@ -261,6 +287,7 @@ const loadScreenshotsFromReport = async (report: any) => {
     const reportData = await uiReportApi.getReportFile(summary.json_report_path) as BrowserUseReport
     if (!reportData?.history) return
 
+    // 遍历步骤，提取包含截图路径的步骤信息
     const loaded: Array<{ data: string; description: string; timestamp: string }> = []
     for (const step of reportData.history) {
       if (step.state?.screenshot_path) {
@@ -279,13 +306,15 @@ const loadScreenshotsFromReport = async (report: any) => {
   }
 }
 
-// 预览截图
+/** 点击截图缩略图：打开预览对话框 */
 const handlePreviewScreenshot = (screenshot: { data: string; description: string }) => {
   previewScreenshot.value = screenshot
   previewDialogVisible.value = true
 }
 
-// 连接WebSocket
+/* ---------- WebSocket 实时通信 ---------- */
+
+/** 建立 WebSocket 连接，接收执行进度推送 */
 const connectWebSocket = () => {
   const wsUrl = `ws://127.0.0.1:8000/ws/ui-automation/${executionId}/`
   ws = new WebSocket(wsUrl)
@@ -297,14 +326,14 @@ const connectWebSocket = () => {
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data)
     if (data.type === 'ui_automation.progress') {
-      // 添加日志
+      // 追加日志条目
       logs.value.push({
         time: new Date(data.data.timestamp).toLocaleTimeString('zh-CN'),
         message: data.message,
         type: data.data.status === 'failed' ? 'error' : 'info'
       })
 
-      // 自动滚动到底部
+      // 自动滚动到最新日志
       if (autoScroll.value) {
         nextTick(() => {
           if (logContainer.value) {
@@ -313,13 +342,14 @@ const connectWebSocket = () => {
         })
       }
 
-      // 更新执行记录
-      if (data.data.status === 'passed' || data.data.status === 'failed' || data.data.status === 'error') {
+      // 执行结束：刷新数据并断开 WebSocket
+      const terminalStatuses = ['passed', 'failed', 'error']
+      if (terminalStatuses.includes(data.data.status)) {
         refreshData()
         disconnectWebSocket()
       }
 
-      // 处理截图
+      // 接收到新截图
       if (data.data.screenshot) {
         screenshots.value.push({
           data: data.data.screenshot,
@@ -339,7 +369,7 @@ const connectWebSocket = () => {
   }
 }
 
-// 断开WebSocket
+/** 断开 WebSocket 连接 */
 const disconnectWebSocket = () => {
   if (ws) {
     ws.close()
@@ -347,17 +377,20 @@ const disconnectWebSocket = () => {
   }
 }
 
-// 监听执行状态变化
+/* ---------- 状态变化监听 ---------- */
+
+/** 监听执行状态：变为 running 时自动建立 WebSocket 连接 */
 watch(() => executionStore.currentExecution?.status, (newStatus) => {
   if (newStatus === 'running' && !ws) {
     connectWebSocket()
   }
 })
 
+/* ---------- 生命周期 ---------- */
+
 onMounted(async () => {
   await refreshData()
-
-  // 如果正在执行，连接WebSocket
+  // 如果当前正在执行，立即建立 WebSocket 连接
   if (executionStore.currentExecution?.status === 'running') {
     connectWebSocket()
   }

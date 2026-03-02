@@ -158,12 +158,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+/**
+ * 测试用例列表页
+ *
+ * 展示所有 UI 自动化测试用例，支持：
+ * - 按项目、名称关键词、启用状态筛选
+ * - 分页浏览
+ * - 运行测试、查看详情、编辑、复制、删除等操作
+ * - 通过对话框组件快速创建/编辑用例
+ */
+
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, VideoPlay, View, Edit, Delete, DocumentCopy } from '@element-plus/icons-vue'
-import { useUiTestCaseStore } from '../../stores/testCase'
+import { Delete, DocumentCopy, Edit, Plus, Search, VideoPlay, View } from '@element-plus/icons-vue'
+
 import { useUiProjectStore } from '../../stores/project'
+import { useUiTestCaseStore } from '../../stores/testCase'
 import { uiTestCaseApi } from '../../api/testCase'
 import type { UiTestCase } from '../../types/testCase'
 import TestCaseCreateDialog from '@ui-automation/components/TestCaseCreateDialog.vue'
@@ -172,30 +183,34 @@ const router = useRouter()
 const testCaseStore = useUiTestCaseStore()
 const projectStore = useUiProjectStore()
 
-// 分页
+/* ---------- 分页配置 ---------- */
 const pagination = reactive({
   page: 1,
   pageSize: 20
 })
 
-// 筛选表单
+/* ---------- 筛选表单 ---------- */
 const filterForm = reactive({
   project: undefined as number | undefined,
   search: '',
   is_enabled: undefined as boolean | undefined
 })
 
-// 对话框
+/* ---------- 创建/编辑对话框 ---------- */
 const dialogVisible = ref(false)
+/** 编辑模式下的用例 ID，null 表示创建模式 */
 const editingId = ref<number | null>(null)
 
-// 格式化日期
+/* ---------- 工具函数 ---------- */
+
+/** 格式化日期为中文本地化字符串 */
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+  return new Date(dateStr).toLocaleString('zh-CN')
 }
 
-// 获取测试用例列表
+/* ---------- 数据加载 ---------- */
+
+/** 根据筛选条件和分页参数获取测试用例列表 */
 const fetchTestCases = async () => {
   const params: any = {
     page: pagination.page,
@@ -213,13 +228,13 @@ const fetchTestCases = async () => {
   await testCaseStore.fetchTestCases(params)
 }
 
-// 搜索
+/** 筛选条件变更：重置到第一页后重新加载 */
 const handleSearch = () => {
   pagination.page = 1
   fetchTestCases()
 }
 
-// 重置筛选
+/** 重置所有筛选条件并刷新列表 */
 const handleReset = () => {
   filterForm.project = undefined
   filterForm.search = ''
@@ -228,12 +243,17 @@ const handleReset = () => {
   fetchTestCases()
 }
 
-// 行点击
+/* ---------- 行操作 ---------- */
+
+/** 点击行：跳转到用例详情页 */
 const handleRowClick = (row: UiTestCase) => {
   router.push(`/ui-automation/test-cases/${row.id}`)
 }
 
-// 运行测试
+/**
+ * 运行测试用例
+ * 检查启用状态后调用 run 端点，成功后跳转到执行监控页面
+ */
 const handleRun = async (row: UiTestCase) => {
   if (!row.is_enabled) {
     ElMessage.warning('该测试用例未启用，请先启用后再执行')
@@ -241,10 +261,8 @@ const handleRun = async (row: UiTestCase) => {
   }
 
   try {
-    // 直接调用 run 端点（自动创建执行记录并启动测试）
     const result = await uiTestCaseApi.run(row.id, { browser_mode: row.browser_mode })
     ElMessage.success(result.message || '开始执行测试')
-    // 跳转到执行监控页面
     router.push(`/ui-automation/executions/${result.execution.id}`)
   } catch (error: any) {
     console.error('Run test failed:', error)
@@ -257,18 +275,18 @@ const handleRun = async (row: UiTestCase) => {
   }
 }
 
-// 查看详情
+/** 查看用例详情 */
 const handleView = (row: UiTestCase) => {
   router.push(`/ui-automation/test-cases/${row.id}`)
 }
 
-// 编辑
+/** 编辑用例：打开对话框 */
 const handleEdit = (row: UiTestCase) => {
   editingId.value = row.id
   dialogVisible.value = true
 }
 
-// 复制
+/** 复制用例（后端生成副本） */
 const handleCopy = async (row: UiTestCase) => {
   try {
     const newTestCase = await testCaseStore.copyTestCase(row.id)
@@ -279,7 +297,7 @@ const handleCopy = async (row: UiTestCase) => {
   }
 }
 
-// 删除
+/** 删除用例（需二次确认） */
 const handleDelete = async (row: UiTestCase) => {
   try {
     await ElMessageBox.confirm(
@@ -295,22 +313,24 @@ const handleDelete = async (row: UiTestCase) => {
     ElMessage.success('删除成功')
     fetchTestCases()
   } catch {
-    // 用户取消
+    // 用户取消确认操作
   }
 }
 
-// 打开创建对话框
+/** 打开创建用例对话框 */
 const openCreateDialog = () => {
   editingId.value = null
   dialogVisible.value = true
 }
 
-// 对话框成功回调
+/** 对话框操作成功后刷新列表 */
 const handleDialogSuccess = () => {
   fetchTestCases()
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(async () => {
+  // 先加载项目列表（用于筛选下拉），再加载用例列表
   await projectStore.fetchProjects()
   fetchTestCases()
 })
