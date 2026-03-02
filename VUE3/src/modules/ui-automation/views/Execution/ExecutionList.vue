@@ -150,10 +150,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+/**
+ * 执行记录列表页
+ *
+ * 展示所有 UI 自动化测试的执行记录，支持：
+ * - 按项目、状态、浏览器模式、创建时间筛选
+ * - 分页浏览
+ * - 查看详情、取消执行、查看报告、导出报告、删除等操作
+ */
+
+import { onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { VideoPause, View, Document, Delete, Download } from '@element-plus/icons-vue'
+import { Delete, Document, Download, VideoPause, View } from '@element-plus/icons-vue'
+
 import { useUiExecutionStore } from '../../stores/execution'
 import { useUiProjectStore } from '../../stores/project'
 import type { ExecutionStatus, UiTestExecution } from '../../types/execution'
@@ -162,13 +172,13 @@ const router = useRouter()
 const executionStore = useUiExecutionStore()
 const projectStore = useUiProjectStore()
 
-// 分页
+/* ---------- 分页配置 ---------- */
 const pagination = reactive({
   page: 1,
   pageSize: 20
 })
 
-// 筛选表单
+/* ---------- 筛选表单 ---------- */
 const filterForm = reactive({
   project: undefined as number | undefined,
   status: '',
@@ -176,39 +186,46 @@ const filterForm = reactive({
   dateRange: [] as string[]
 })
 
-// 格式化日期
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN')
+/* ---------- 状态映射（复用于模板中的标签展示） ---------- */
+
+/** 执行状态 -> El-Tag 类型映射 */
+const STATUS_TYPE_MAP: Record<ExecutionStatus, string> = {
+  pending: 'info',
+  running: 'warning',
+  passed: 'success',
+  failed: 'danger',
+  error: 'danger',
+  cancelled: 'info'
 }
 
-// 获取状态类型
+/** 执行状态 -> 中文文本映射 */
+const STATUS_TEXT_MAP: Record<ExecutionStatus, string> = {
+  pending: '待执行',
+  running: '执行中',
+  passed: '通过',
+  failed: '失败',
+  error: '错误',
+  cancelled: '已取消'
+}
+
+/** 获取状态对应的 El-Tag 类型 */
 const getStatusType = (status: ExecutionStatus) => {
-  const types: Record<ExecutionStatus, any> = {
-    pending: 'info',
-    running: 'warning',
-    passed: 'success',
-    failed: 'danger',
-    error: 'danger',
-    cancelled: 'info'
-  }
-  return types[status] || 'info'
+  return STATUS_TYPE_MAP[status] || 'info'
 }
 
-// 获取状态文本
+/** 获取状态对应的中文文本 */
 const getStatusText = (status: ExecutionStatus) => {
-  const texts: Record<ExecutionStatus, string> = {
-    pending: '待执行',
-    running: '执行中',
-    passed: '通过',
-    failed: '失败',
-    error: '错误',
-    cancelled: '已取消'
-  }
-  return texts[status] || status
+  return STATUS_TEXT_MAP[status] || status
 }
 
-// 获取执行记录列表
+/** 格式化日期为中文本地化字符串 */
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+/* ---------- 数据加载 ---------- */
+
+/** 根据当前筛选条件和分页参数获取执行记录列表 */
 const fetchExecutions = async () => {
   const params: any = {
     page: pagination.page,
@@ -230,26 +247,27 @@ const fetchExecutions = async () => {
   await executionStore.fetchExecutions(params)
 }
 
-// 搜索
+/** 筛选条件变更：重置到第一页后重新加载 */
 const handleSearch = () => {
   pagination.page = 1
   fetchExecutions()
 }
 
-// 行点击
+/* ---------- 行操作 ---------- */
+
+/** 点击行：跳转到执行监控详情页 */
 const handleRowClick = (row: UiTestExecution) => {
   router.push(`/ui-automation/executions/${row.id}`)
 }
 
-// 查看详情
+/** 查看详情按钮 */
 const handleView = (row: UiTestExecution) => {
   router.push(`/ui-automation/executions/${row.id}`)
 }
 
-// 查看报告
+/** 查看报告：跳转到报告详情页（需要有关联的 JSON 报告路径） */
 const handleViewReport = (row: UiTestExecution) => {
   if (row.json_report_path) {
-    // 使用 JSON 报告路径跳转到报告详情页
     router.push({
       path: `/ui-automation/reports/${row.id}`,
       query: { report: row.json_report_path }
@@ -259,47 +277,39 @@ const handleViewReport = (row: UiTestExecution) => {
   }
 }
 
-// 取消执行
+/** 取消正在运行的执行 */
 const handleCancel = async (row: UiTestExecution) => {
   try {
-    await ElMessageBox.confirm(
-      '确定要取消该执行吗？',
-      '取消确认',
-      {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }
-    )
+    await ElMessageBox.confirm('确定要取消该执行吗？', '取消确认', {
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
     await executionStore.cancelExecution(row.id)
     ElMessage.success('已取消执行')
     fetchExecutions()
   } catch {
-    // 用户取消
+    // 用户取消确认操作
   }
 }
 
-// 删除
+/** 删除执行记录 */
 const handleDelete = async (row: UiTestExecution) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除执行记录 #${row.id} 吗？`,
-      '删除确认',
-      {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }
-    )
+    await ElMessageBox.confirm(`确定要删除执行记录 #${row.id} 吗？`, '删除确认', {
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
     await executionStore.deleteExecution(row.id)
     ElMessage.success('删除成功')
     fetchExecutions()
   } catch {
-    // 用户取消
+    // 用户取消确认操作
   }
 }
 
-// 导出报告
+/** 导出报告为 JSON 文件并触发下载 */
 const handleExportReport = async (row: UiTestExecution) => {
   try {
     if (!row.json_report_path) {
@@ -307,7 +317,7 @@ const handleExportReport = async (row: UiTestExecution) => {
       return
     }
 
-    // 调用后端API获取报告文件
+    // 调用后端 API 获取报告文件内容
     const response = await fetch(`/api/v1/ui-automation/reports/file?path=${encodeURIComponent(row.json_report_path)}`)
     if (!response.ok) {
       throw new Error('获取报告失败')
@@ -315,7 +325,7 @@ const handleExportReport = async (row: UiTestExecution) => {
 
     const reportData = await response.json()
 
-    // 创建JSON文件并下载
+    // 构造 JSON Blob 并触发浏览器下载
     const jsonString = JSON.stringify(reportData, null, 2)
     const blob = new Blob([jsonString], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -334,10 +344,13 @@ const handleExportReport = async (row: UiTestExecution) => {
   }
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(async () => {
+  // 先加载项目列表（用于筛选下拉），再加载执行记录
   await projectStore.fetchProjects()
   fetchExecutions()
 })
+</script>
 </script>
 
 <style scoped>

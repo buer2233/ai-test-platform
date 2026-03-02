@@ -40,15 +40,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { InfoFilled, ArrowRight } from '@element-plus/icons-vue'
+/**
+ * 自然语言编辑器组件
+ *
+ * 用于编写 AI 驱动的 UI 测试任务描述。
+ * 提供编写提示和常用示例模板，帮助用户快速上手。
+ * 通过 v-model 双向绑定测试任务文本。
+ */
+
+import { computed } from 'vue'
+import { ArrowRight, InfoFilled } from '@element-plus/icons-vue'
 
 interface Props {
+  /** 绑定的文本值（v-model） */
   modelValue: string
   placeholder?: string
+  /** 文本域行数 */
   rows?: number
+  /** 最大字符数 */
   maxLength?: number
+  /** 是否显示编写提示面板 */
   showTips?: boolean
+  /** 是否显示示例模板面板 */
   showExamples?: boolean
 }
 
@@ -64,16 +77,19 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
+/** 用于 v-model 的计算属性（双向绑定） */
 const internalValue = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
 
+/** 输入事件处理：同步更新父组件的值 */
 const handleInput = (value: string) => {
   emit('update:modelValue', value)
 }
 
-// 示例任务
+/* ---------- 示例测试任务模板 ---------- */
+
 const loginExample = `1. 打开登录页面
 2. 在用户名输入框输入 "testuser"
 3. 在密码输入框输入 "password123"
@@ -98,6 +114,7 @@ const formExample = `1. 打开注册页面
 8. 验证显示注册成功提示
 9. 验证跳转到首页`
 
+/** 点击示例模板：将内容填入编辑器 */
 const useExample = (example: string) => {
   emit('update:modelValue', example)
 }

@@ -108,17 +108,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+/**
+ * 项目详情页
+ *
+ * 展示单个 UI 自动化测试项目的详细信息：
+ * - 统计概览卡片（用例数、执行次数、成功/失败次数）
+ * - 关联的测试用例列表（Tab 页）
+ * - 关联的执行记录列表（Tab 页）
+ * - 项目编辑对话框
+ */
+
+import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import {
   ArrowLeft,
-  Plus,
+  CircleCloseFilled,
   Document,
-  VideoPlay,
+  Plus,
   SuccessFilled,
-  CircleCloseFilled
+  VideoPlay
 } from '@element-plus/icons-vue'
+
 import { useUiProjectStore } from '../../stores/project'
 import type { UiProjectStatistics } from '../../types/project'
 import TestCaseListInProject from './components/TestCaseList.vue'
@@ -128,9 +139,12 @@ const route = useRoute()
 const router = useRouter()
 const projectStore = useUiProjectStore()
 
+/** 当前项目 ID（从路由参数获取） */
 const projectId = Number(route.params.id)
+/** 当前激活的 Tab 页 */
 const activeTab = ref('testCases')
 
+/** 项目统计数据 */
 const statistics = ref<UiProjectStatistics>({
   total_test_cases: 0,
   total_executions: 0,
@@ -139,7 +153,8 @@ const statistics = ref<UiProjectStatistics>({
   success_rate: 0
 })
 
-// 编辑对话框
+/* ---------- 编辑项目对话框 ---------- */
+
 const editDialogVisible = ref(false)
 const submitting = ref(false)
 const formRef = ref<FormInstance>()
@@ -155,12 +170,14 @@ const formRules: FormRules = {
   ]
 }
 
-// 返回
+/* ---------- 页面操作 ---------- */
+
+/** 返回项目列表 */
 const goBack = () => {
   router.push('/ui-automation/projects')
 }
 
-// 编辑
+/** 打开编辑对话框：回填当前项目数据 */
 const handleEdit = () => {
   if (!projectStore.currentProject) return
   formData.name = projectStore.currentProject.name
@@ -168,7 +185,7 @@ const handleEdit = () => {
   editDialogVisible.value = true
 }
 
-// 更新
+/** 提交项目更新 */
 const handleUpdate = async () => {
   if (!formRef.value) return
 
@@ -181,19 +198,21 @@ const handleUpdate = async () => {
       ElMessage.success('更新成功')
       editDialogVisible.value = false
     } catch {
-      // Error already handled
+      // 错误已由 Store 层处理
     } finally {
       submitting.value = false
     }
   })
 }
 
-// 跳转到测试用例页面
+/** 跳转到创建测试用例页面（自动关联当前项目） */
 const goToTestCases = () => {
   router.push(`/ui-automation/test-cases/create?project=${projectId}`)
 }
 
-// 加载数据
+/* ---------- 数据加载 ---------- */
+
+/** 加载项目详情和统计数据 */
 const loadData = async () => {
   await projectStore.fetchProject(projectId)
   const stats = await projectStore.fetchProjectStatistics(projectId)

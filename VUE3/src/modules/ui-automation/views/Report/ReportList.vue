@@ -143,40 +143,56 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+/**
+ * 测试报告列表页
+ *
+ * 展示所有 UI 自动化测试的执行报告，支持：
+ * - 按项目、状态、时间范围筛选
+ * - 分页浏览
+ * - 底部统计卡片（总报告数、通过数、失败数、通过率）
+ */
+
+import { onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { View } from '@element-plus/icons-vue'
-import { useUiReportStore } from '../../stores/report'
+
 import { useUiProjectStore } from '../../stores/project'
+import { useUiReportStore } from '../../stores/report'
 import type { UiTestReport } from '../../types/report'
 
 const router = useRouter()
 const reportStore = useUiReportStore()
 const projectStore = useUiProjectStore()
 
-// 分页
+/* ---------- 分页配置 ---------- */
 const pagination = reactive({
   page: 1,
   pageSize: 20
 })
 
-// 筛选表单
+/* ---------- 筛选表单 ---------- */
 const filterForm = reactive({
   project: undefined as number | undefined,
   status: '',
   dateRange: null as [string, string] | null
 })
 
-// 格式化日期
+/* ---------- 工具函数 ---------- */
+
+/**
+ * 格式化日期为中文本地化字符串
+ * 处理 null 和无效日期的边界情况
+ */
 const formatDate = (dateStr: string | null) => {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
-  // 检查日期是否有效
   if (isNaN(date.getTime())) return '-'
   return date.toLocaleString('zh-CN')
 }
 
-// 获取报告列表
+/* ---------- 数据加载 ---------- */
+
+/** 根据筛选条件和分页参数获取报告列表 */
 const fetchReports = async () => {
   const params: any = {
     page: pagination.page,
@@ -195,23 +211,27 @@ const fetchReports = async () => {
   await reportStore.fetchReports(params)
 }
 
-// 搜索
+/** 筛选条件变更：重置到第一页后重新加载 */
 const handleSearch = () => {
   pagination.page = 1
   fetchReports()
 }
 
-// 行点击
+/* ---------- 行操作 ---------- */
+
+/** 点击行：跳转到报告详情页 */
 const handleRowClick = (row: UiTestReport) => {
   router.push(`/ui-automation/reports/${row.id}`)
 }
 
-// 查看报告
+/** 查看报告按钮 */
 const handleView = (row: UiTestReport) => {
   router.push(`/ui-automation/reports/${row.id}`)
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(async () => {
+  // 先加载项目列表（用于筛选下拉），再加载报告列表
   await projectStore.fetchProjects()
   fetchReports()
 })

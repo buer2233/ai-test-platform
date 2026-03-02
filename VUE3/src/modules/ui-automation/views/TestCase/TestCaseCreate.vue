@@ -139,12 +139,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+/**
+ * 测试用例创建/编辑页
+ *
+ * 根据路由参数自动判断创建或编辑模式：
+ * - 创建模式：/ui-automation/test-cases/create
+ * - 编辑模式：/ui-automation/test-cases/:id/edit
+ *
+ * 表单字段包括：所属项目、用例名称、描述、测试任务（自然语言）、
+ * 标签、浏览器模式、超时时间、重试次数、启用状态。
+ */
+
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
-import { useUiTestCaseStore } from '../../stores/testCase'
+
 import { useUiProjectStore } from '../../stores/project'
+import { useUiTestCaseStore } from '../../stores/testCase'
 import type { UiTestCaseCreate, UiTestCaseUpdate } from '../../types/testCase'
 import NaturalLanguageEditor from '@ui-automation/components/NaturalLanguageEditor.vue'
 
@@ -153,14 +165,15 @@ const route = useRoute()
 const testCaseStore = useUiTestCaseStore()
 const projectStore = useUiProjectStore()
 
-// 判断是编辑还是创建
+/** 是否为编辑模式（路由中包含 :id 参数） */
 const isEdit = computed(() => !!route.params.id)
+/** 编辑模式下的用例 ID */
 const editingId = computed(() => isEdit.value ? Number(route.params.id) : null)
 
-// 表单
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
 
+/** 表单数据 */
 const formData = reactive({
   project: route.query.project ? Number(route.query.project) : undefined,
   name: '',
@@ -173,19 +186,13 @@ const formData = reactive({
   is_active: true
 })
 
-// 常用标签
+/** 预设的常用标签选项 */
 const commonTags = ref([
-  '登录',
-  '注册',
-  '搜索',
-  '表单提交',
-  '导航',
-  '购物车',
-  '支付',
-  '用户中心'
+  '登录', '注册', '搜索', '表单提交',
+  '导航', '购物车', '支付', '用户中心'
 ])
 
-// 表单验证规则
+/** 表单验证规则 */
 const formRules: FormRules = {
   project: [
     { required: true, message: '请选择所属项目', trigger: 'change' }
@@ -200,12 +207,14 @@ const formRules: FormRules = {
   ]
 }
 
-// 返回
+/* ---------- 页面操作 ---------- */
+
+/** 返回测试用例列表 */
 const goBack = () => {
   router.push('/ui-automation/test-cases')
 }
 
-// 提交表单
+/** 提交表单：根据模式调用创建或更新接口 */
 const handleSubmit = async () => {
   if (!formRef.value) return
 
@@ -215,6 +224,7 @@ const handleSubmit = async () => {
     submitting.value = true
     try {
       if (isEdit.value && editingId.value) {
+        // 编辑模式：仅提交可更新的字段
         const updateData: UiTestCaseUpdate = {
           name: formData.name,
           description: formData.description,
@@ -228,6 +238,7 @@ const handleSubmit = async () => {
         await testCaseStore.updateTestCase(editingId.value, updateData)
         ElMessage.success('更新成功')
       } else {
+        // 创建模式：包含所属项目
         const createData: UiTestCaseCreate = {
           project: formData.project as number,
           name: formData.name,
@@ -244,14 +255,16 @@ const handleSubmit = async () => {
       }
       goBack()
     } catch {
-      // Error already handled
+      // 错误已由 Store 层处理
     } finally {
       submitting.value = false
     }
   })
 }
 
-// 加载编辑数据
+/* ---------- 数据加载 ---------- */
+
+/** 编辑模式：加载已有用例数据填入表单 */
 const loadEditData = async () => {
   if (isEdit.value && editingId.value) {
     const testCase = await testCaseStore.fetchTestCase(editingId.value)
@@ -269,8 +282,11 @@ const loadEditData = async () => {
   }
 }
 
+/* ---------- 页面初始化 ---------- */
 onMounted(async () => {
+  // 加载项目列表（用于所属项目下拉选择）
   await projectStore.fetchProjects()
+  // 编辑模式：加载用例数据
   await loadEditData()
 })
 </script>
