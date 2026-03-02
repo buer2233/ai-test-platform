@@ -1,3 +1,15 @@
+<!--
+  TestCaseList.vue - 接口管理列表页面
+
+  管理所有 API 接口测试用例，支持以下功能：
+  - 接口表格：名称、请求方法、URL、所属项目/集合、创建人、创建时间
+  - 多维度筛选：按项目、集合、请求方法过滤，按名称/URL 搜索
+  - 创建/编辑/克隆/删除接口
+  - 批量操作：批量执行（支持并发/串行模式）、批量删除
+  - 批量导出：JSON、CSV、Excel 三种格式（Excel 含详细工作表）
+  - 内嵌 TestCaseRunner 组件支持单个接口快速执行
+  - 分页：支持自定义每页条数
+-->
 <template>
   <div class="testcase-list-container">
     <div class="page-header">

@@ -1,3 +1,15 @@
+<!--
+  TestCaseCreate.vue - 创建/编辑接口页面
+
+  使用增强编辑器创建或编辑 API 接口测试用例，包含以下功能：
+  - 基本信息：接口名称、所属项目/集合、用例标签（支持自定义创建）、描述
+  - 请求配置：内嵌 TestCaseEditor 增强编辑器，支持方法/URL/Headers/参数/请求体
+  - 断言配置：通过 AssertionConfig 组件管理断言规则
+  - 数据提取配置：通过 VariableExtraction 组件管理提取规则
+  - 支持创建和编辑两种模式（根据路由参数 id 自动判断）
+  - 编辑模式下自动加载已有配置（包括断言和提取配置）
+  - 保存时会将 headers/params 从数组格式转换为字典格式
+-->
 <template>
   <div class="testcase-create-container">
     <div class="page-header">
