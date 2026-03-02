@@ -1,21 +1,37 @@
+/**
+ * 数据驱动 Store
+ *
+ * 管理数据驱动测试配置的状态，支持多种数据源类型（JSON/CSV/Excel/数据库）。
+ * 提供数据驱动配置的增删改查、数据预览、文件导入等操作。
+ */
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { dataDriverApi } from '../api/dataDriver'
-import type { ApiDataDriver, DataDriverCreate } from '../types/dataDriver'
 import { ElMessage } from 'element-plus'
 
+import { dataDriverApi } from '../api/dataDriver'
+import type { ApiDataDriver, DataDriverCreate } from '../types/dataDriver'
+
 export const useDataDriverStore = defineStore('dataDriver', () => {
-  // 状态
+  // ==================== 状态 ====================
+
+  /** 数据驱动配置列表 */
   const dataDrivers = ref<ApiDataDriver[]>([])
+  /** 当前选中的数据驱动配置 */
   const currentDataDriver = ref<ApiDataDriver | null>(null)
+  /** 全局加载状态 */
   const loading = ref(false)
+  /** 数据总条数（分页用） */
   const total = ref(0)
 
-  // 计算属性
+  // ==================== 计算属性 ====================
+
+  /** 仅返回已激活的数据驱动配置 */
   const activeDataDrivers = computed(() => {
     return dataDrivers.value.filter(driver => driver.is_active)
   })
 
+  /** 数据源类型选项（用于表单下拉选择） */
   const dataTypes = computed(() => [
     { label: 'JSON数据', value: 'JSON' },
     { label: 'CSV文件', value: 'CSV' },
@@ -23,7 +39,9 @@ export const useDataDriverStore = defineStore('dataDriver', () => {
     { label: '数据库', value: 'DATABASE' }
   ])
 
-  // 方法
+  // ==================== 异步操作 ====================
+
+  /** 获取数据驱动配置列表 */
   const fetchDataDrivers = async (params?: any) => {
     loading.value = true
     try {

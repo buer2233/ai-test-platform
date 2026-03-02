@@ -1,26 +1,39 @@
 """
-batch_execution_service.py
+批量执行服务
 
-批量执行服务，支持按集合、项目、手动选择三种方式批量执行测试用例。
+支持按集合、项目、手动选择三种方式批量执行测试用例。
 
-核心功能：
-1. 按集合执行：执行集合中所有测试用例
-2. 按项目执行：执行项目下所有测试用例
-3. 手动选择执行：执行用户选择的测试用例
+核心流程：
+1. 获取待执行的测试用例列表
+2. 创建执行记录（ApiTestExecution）
+3. 初始化变量池和HTTP执行器
+4. 按顺序逐条执行测试用例：
+   - 构建请求（替换变量占位符）
+   - 发送HTTP请求
+   - 执行断言验证
+   - 执行数据提取（填充变量池）
+   - 保存测试结果（分级存储）
+5. 通过WebSocket实时推送执行进度
 """
+
 import logging
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from django.utils import timezone
+
 from api_automation.models import (
-    ApiProject, ApiCollection, ApiTestCase, ApiTestEnvironment,
-    ApiTestExecution, ApiTestResult
+    ApiCollection,
+    ApiProject,
+    ApiTestCase,
+    ApiTestEnvironment,
+    ApiTestExecution,
+    ApiTestResult,
 )
-from api_automation.services.http_executor import HttpExecutor
 from api_automation.services.assertion_engine import AssertionEngine
 from api_automation.services.extraction_engine import ExtractionEngine
-from api_automation.services.variable_pool_service import VariablePool
+from api_automation.services.http_executor import HttpExecutor
 from api_automation.services.result_storage_service import ResultStorageService
+from api_automation.services.variable_pool_service import VariablePool
 from api_automation.services.websocket_service import WebSocketBroadcastService
 
 logger = logging.getLogger(__name__)
@@ -29,12 +42,15 @@ logger = logging.getLogger(__name__)
 class BatchExecutionService:
     """
     批量执行服务
+
+    管理测试用例的批量执行生命周期，包括执行记录创建、
+    变量池管理、逐条用例执行、结果统计和WebSocket通知。
     """
 
     def __init__(self):
-        self.variable_pool = None
-        self.websocket = WebSocketBroadcastService()
-        self.executor = None
+        self.variable_pool = None                       # 当前执行周期的变量池
+        self.websocket = WebSocketBroadcastService()    # WebSocket广播服务
+        self.executor = None                            # HTTP执行器实例
 
     def execute_by_collection(
         self,

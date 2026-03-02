@@ -1,3 +1,15 @@
+<!--
+  KeyValueEditor.vue - 键值对编辑器组件
+
+  通用的键值对编辑组件，用于编辑请求头、查询参数、表单字段等。
+  功能特性：
+  - 支持启用/禁用单行数据
+  - 支持变量引用高亮（${变量名} 格式）
+  - 支持搜索过滤
+  - 支持常用 Header 快捷填充
+  - 自动填充常见键值（如 Content-Type、Authorization）
+  - 支持数组和对象两种数据格式的双向绑定
+-->
 <template>
   <div class="key-value-editor">
     <div class="editor-header" v-if="!disabled">

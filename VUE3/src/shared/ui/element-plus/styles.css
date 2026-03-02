@@ -1,24 +1,34 @@
+/**
+ * Element Plus 兼容层样式
+ *
+ * 本文件为自定义的 Element Plus 兼容组件提供完整的视觉样式。
+ * 所有 CSS 自定义属性（变量）定义在 :root 中，供各组件统一引用。
+ */
+
+/* ========== CSS 自定义属性（设计令牌） ========== */
 :root {
-  --ep-bg: #f5f7fb;
-  --ep-surface: #ffffff;
-  --ep-surface-soft: #f8faff;
-  --ep-border: #dbe3f2;
-  --ep-border-soft: #e8eef8;
-  --ep-text: #1e2a45;
-  --ep-text-muted: #667694;
-  --ep-primary: #5f85ff;
-  --ep-primary-soft: rgba(95, 133, 255, 0.14);
-  --ep-danger: #e05f72;
-  --ep-success: #43ad79;
-  --ep-warning: #d48e2d;
-  --ep-shadow: 0 12px 30px rgba(38, 67, 126, 0.12);
-  --ep-radius: 14px;
+  --ep-bg: #f5f7fb;                          /* 页面背景色 */
+  --ep-surface: #ffffff;                      /* 卡片/面板表面色 */
+  --ep-surface-soft: #f8faff;                 /* 柔和表面色 */
+  --ep-border: #dbe3f2;                       /* 标准边框色 */
+  --ep-border-soft: #e8eef8;                  /* 柔和边框色 */
+  --ep-text: #1e2a45;                         /* 主文字色 */
+  --ep-text-muted: #667694;                   /* 辅助文字色 */
+  --ep-primary: #5f85ff;                      /* 主题色 */
+  --ep-primary-soft: rgba(95, 133, 255, 0.14);/* 主题色（浅色） */
+  --ep-danger: #e05f72;                       /* 危险/错误色 */
+  --ep-success: #43ad79;                      /* 成功色 */
+  --ep-warning: #d48e2d;                      /* 警告色 */
+  --ep-shadow: 0 12px 30px rgba(38, 67, 126, 0.12); /* 通用阴影 */
+  --ep-radius: 14px;                          /* 通用圆角 */
 }
 
+/* ========== 配置提供者 ========== */
 .el-config-provider {
   min-height: 100%;
 }
 
+/* ========== 文本组件 ========== */
 .el-text {
   color: var(--ep-text);
 }
@@ -27,6 +37,7 @@
   color: var(--ep-text-muted);
 }
 
+/* ========== 图标组件 ========== */
 .el-icon {
   display: inline-flex;
   align-items: center;
@@ -34,6 +45,7 @@
   line-height: 0;
 }
 
+/* ========== 卡片组件 ========== */
 .el-card {
   background: var(--ep-surface);
   border: 1px solid var(--ep-border-soft);
@@ -52,6 +64,7 @@
   padding: 18px;
 }
 
+/* ========== 按钮组件 ========== */
 .el-button {
   border: 1px solid var(--ep-border);
   background: var(--ep-surface);
@@ -126,6 +139,7 @@
   }
 }
 
+/* ========== 按钮组 ========== */
 .el-button-group {
   display: inline-flex;
   border-radius: 12px;
@@ -143,6 +157,7 @@
   border-right: none;
 }
 
+/* ========== 表单组件 ========== */
 .el-form {
   display: block;
 }
@@ -166,11 +181,13 @@
   color: #506080;
 }
 
+/* ========== 输入框组件 ========== */
 .el-input {
   position: relative;
   width: 100%;
 }
 
+/* 输入框与选择器的共享包裹层样式 */
 .el-input__wrapper,
 .el-select__wrapper {
   display: flex;
@@ -219,6 +236,7 @@
   padding: 0;
 }
 
+/* ========== 选择器组件 ========== */
 .el-select {
   position: relative;
   width: 100%;
@@ -249,7 +267,7 @@
   transform: translateY(-30%) rotate(-135deg);
 }
 
-/* Select 下拉弹出菜单 */
+/* ========== 选择器下拉菜单 ========== */
 .el-select-dropdown {
   border: 1px solid rgba(95, 133, 255, 0.36);
   border-radius: 12px;
@@ -285,6 +303,7 @@
   background: rgba(95, 133, 255, 0.14);
 }
 
+/* ========== 菜单组件 ========== */
 .el-menu {
   display: flex;
   flex-direction: column;
@@ -320,6 +339,7 @@
   pointer-events: none;
 }
 
+/* ========== 下拉菜单组件 ========== */
 .el-dropdown {
   position: relative;
 }
@@ -368,6 +388,7 @@
   padding-top: 6px;
 }
 
+/* ========== 头像组件 ========== */
 .el-avatar {
   display: inline-flex;
   align-items: center;
@@ -386,6 +407,7 @@
   object-fit: cover;
 }
 
+/* ========== 标签组件 ========== */
 .el-tag {
   display: inline-flex;
   align-items: center;
@@ -418,6 +440,7 @@
   color: #5d6f8e;
 }
 
+/* ========== 对话框组件 ========== */
 .el-dialog-wrapper {
   position: fixed;
   inset: 0;
@@ -477,6 +500,7 @@
   gap: 10px;
 }
 
+/* ========== 开关组件 ========== */
 .el-switch {
   border: none;
   width: 46px;
@@ -512,6 +536,7 @@
   cursor: not-allowed;
 }
 
+/* ========== 警告提示组件 ========== */
 .el-alert {
   min-height: 44px;
   border-radius: 12px;
@@ -556,6 +581,7 @@
   background: rgba(224, 95, 114, 0.14);
 }
 
+/* ========== Toast 消息提示 ========== */
 .el-toast-container {
   position: fixed;
   right: 22px;
@@ -600,6 +626,8 @@
   background: #3f5f99;
 }
 
+/* ========== 简单占位组件通用样式 ========== */
+/* 以下组件仅提供基础文字颜色，功能由 simple() 工厂函数生成 */
 .el-empty,
 .el-table,
 .el-tabs,

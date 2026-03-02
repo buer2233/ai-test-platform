@@ -1,6 +1,13 @@
 /**
  * 报告导出工具
- * 支持 PDF、Excel、JSON、图片等多种格式导出
+ *
+ * 支持将测试报告导出为多种格式：
+ * - PDF：通过 html2canvas 截取 DOM 元素，再嵌入 jsPDF 生成多页 PDF
+ * - Excel：使用 xlsx 库生成包含概览、详细结果、失败用例三个工作表的 Excel 文件
+ * - JSON：直接将报告数据序列化为 JSON 文件
+ * - 图片（PNG/JPEG）：通过 html2canvas 将 DOM 元素导出为图片
+ * - CSV：将测试结果导出为 CSV 文件（含 BOM 头以支持中文）
+ * - 图表导出：支持将 ECharts 图表实例导出为图片或 PDF
  */
 
 import jsPDF from 'jspdf'
@@ -8,23 +15,29 @@ import html2canvas from 'html2canvas'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 
-/**
- * 导出配置接口
- */
+// ==================== 类型定义 ====================
+
+/** 导出配置选项，用于设置文件名、标题、作者等元数据 */
 export interface ExportConfig {
+  /** 导出文件名（含扩展名） */
   filename?: string
+  /** 文档标题 */
   title?: string
+  /** 文档作者 */
   author?: string
+  /** 文档主题 */
   subject?: string
+  /** 文档关键词 */
   keywords?: string
+  /** 文档创建者 */
   creator?: string
 }
 
-/**
- * 报告数据接口
- */
+/** 报告数据结构，包含报告基本信息、统计摘要和测试结果列表 */
 export interface ReportData {
+  /** 报告基本信息 */
   report: any
+  /** 测试统计摘要 */
   statistics: {
     total: number
     passed: number
@@ -32,15 +45,22 @@ export interface ReportData {
     skipped: number
     passRate: number
   }
+  /** 测试结果详情列表 */
   testResults: any[]
 }
 
+// ==================== 报告导出器 ====================
+
 /**
  * 报告导出器类
+ *
+ * 提供多种静态方法，支持将测试报告导出为不同格式。
+ * 所有方法均为静态方法，无需实例化即可调用。
  */
 export class ReportExporter {
   /**
-   * 导出为PDF
+   * 导出为 PDF 文件。
+   * 将 DOM 元素通过 html2canvas 截取为图片，再按 A4 纸张尺寸分页嵌入 PDF。
    */
   static async exportToPDF(
     element: HTMLElement,
@@ -75,23 +95,23 @@ export class ReportExporter {
         format: 'a4'
       })
 
-      // 设置PDF元数据
+      // 设置 PDF 文档元数据
       pdf.setProperties({
         title,
         author,
         subject,
-        creator
+        creator: config.creator
       })
 
-      // 添加图片
+      // 将 canvas 转为 JPEG 图片数据
       const imgData = canvas.toDataURL('image/jpeg', 0.98)
       let position = 0
 
-      // 第一页
+      // 添加第一页内容
       pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
       heightLeft -= pageHeight
 
-      // 如果内容超过一页，添加新页
+      // 内容超过一页时，循环添加新页
       while (heightLeft > 0) {
         position = heightLeft - imgHeight
         pdf.addPage()
@@ -99,16 +119,20 @@ export class ReportExporter {
         heightLeft -= pageHeight
       }
 
-      // 保存PDF
+      // 保存 PDF 文件
       pdf.save(filename)
     } catch (error) {
-      console.error('PDF export error:', error)
+      console.error('PDF 导出失败:', error)
       throw new Error('PDF导出失败')
     }
   }
 
   /**
-   * 导出为Excel
+   * 导出为 Excel 文件。
+   * 生成包含三个工作表的 Excel 文件：
+   * 1. 概览：报告基本信息和统计数据
+   * 2. 详细结果：所有测试用例的执行结果
+   * 3. 失败用例：仅包含失败的测试用例及其断言详情
    */
   static exportToExcel(
     data: ReportData,
@@ -120,10 +144,10 @@ export class ReportExporter {
     } = config
 
     try {
-      // 创建工作簿
+      // 创建 Excel 工作簿
       const workbook = XLSX.utils.book_new()
 
-      // 1. 概览工作表
+      // 工作表 1：概览信息
       const overviewData = [
         ['测试报告概览'],
         ['报告名称', data.report?.name || '未命名'],
@@ -145,7 +169,7 @@ export class ReportExporter {
 
       XLSX.utils.book_append_sheet(workbook, overviewSheet, '概览')
 
-      // 2. 详细结果工作表
+      // 工作表 2：详细测试结果
       if (data.testResults && data.testResults.length > 0) {
         const resultsData = [
           [
@@ -192,7 +216,7 @@ export class ReportExporter {
 
         XLSX.utils.book_append_sheet(workbook, resultsSheet, '详细结果')
 
-        // 3. 失败用例工作表（如果有）
+        // 工作表 3：失败用例（仅在有失败时生成）
         const failedCases = data.testResults.filter(r => r.status === 'FAILED')
         if (failedCases.length > 0) {
           const failedData = [
@@ -221,16 +245,17 @@ export class ReportExporter {
         }
       }
 
-      // 导出
+      // 导出 Excel 文件
       XLSX.writeFile(workbook, filename)
     } catch (error) {
-      console.error('Excel export error:', error)
+      console.error('Excel 导出失败:', error)
       throw new Error('Excel导出失败')
     }
   }
 
   /**
-   * 导出为JSON
+   * 导出为 JSON 文件。
+   * 将报告数据序列化为格式化的 JSON 字符串并保存。
    */
   static exportToJSON(
     data: ReportData,
@@ -243,13 +268,14 @@ export class ReportExporter {
       const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' })
       saveAs(blob, filename)
     } catch (error) {
-      console.error('JSON export error:', error)
+      console.error('JSON 导出失败:', error)
       throw new Error('JSON导出失败')
     }
   }
 
   /**
-   * 导出为图片 (PNG/JPEG)
+   * 导出为图片（PNG 或 JPEG）。
+   * 通过 html2canvas 将指定 DOM 元素渲染为图片并下载。
    */
   static async exportToImage(
     element: HTMLElement,
@@ -275,13 +301,14 @@ export class ReportExporter {
         }
       }, `image/${format}`, quality)
     } catch (error) {
-      console.error('Image export error:', error)
+      console.error('图片导出失败:', error)
       throw new Error('图片导出失败')
     }
   }
 
   /**
-   * 导出为CSV (仅测试结果)
+   * 导出为 CSV 文件（仅测试结果数据）。
+   * 自动添加 UTF-8 BOM 头以确保 Excel 中正确显示中文。
    */
   static exportToCSV(
     data: ReportData,
@@ -294,7 +321,7 @@ export class ReportExporter {
         throw new Error('没有测试结果数据')
       }
 
-      // CSV头
+      // CSV 表头
       const headers = [
         '用例名称',
         '请求方法',
@@ -307,7 +334,7 @@ export class ReportExporter {
         '错误信息'
       ]
 
-      // CSV数据
+      // CSV 数据行（双引号转义处理）
       const rows = data.testResults.map(result => [
         `"${(result.test_case_name || '').replace(/"/g, '""')}"`,
         `"${(result.test_case_method || '').replace(/"/g, '""')}"`,
@@ -320,24 +347,25 @@ export class ReportExporter {
         `"${(result.error_message || '').replace(/"/g, '""')}"`
       ])
 
-      // 组合CSV内容
+      // 组合完整的 CSV 内容
       const csvContent = [
         headers.join(','),
         ...rows.map(row => row.join(','))
       ].join('\n')
 
-      // 添加BOM以支持中文
+      // 添加 UTF-8 BOM 头以确保中文在 Excel 中正确显示
       const BOM = '\uFEFF'
       const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' })
       saveAs(blob, filename)
     } catch (error) {
-      console.error('CSV export error:', error)
+      console.error('CSV 导出失败:', error)
       throw new Error('CSV导出失败')
     }
   }
 
   /**
-   * 导出统计图表为图片
+   * 将 ECharts 图表实例导出为图片。
+   * 调用图表实例的 getDataURL 方法获取 base64 数据，再转换为 Blob 下载。
    */
   static async exportChartToImage(
     chartInstance: any,
@@ -350,13 +378,14 @@ export class ReportExporter {
     } = config
 
     try {
+      // 从图表实例获取 base64 编码的图片数据
       const url = chartInstance.getDataURL({
         type: format,
         pixelRatio: 2,
         backgroundColor: '#fff'
       })
 
-      // 将base64转换为blob
+      // 将 base64 数据转换为 Blob 对象
       const arr = url.split(',')
       const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png'
       const bstr = atob(arr[1])
@@ -370,13 +399,14 @@ export class ReportExporter {
       const blob = new Blob([u8arr], { type: mime })
       saveAs(blob, filename)
     } catch (error) {
-      console.error('Chart export error:', error)
+      console.error('图表导出失败:', error)
       throw new Error('图表导出失败')
     }
   }
 
   /**
-   * 导出所有图表为PDF
+   * 将多个图表容器导出为横向 A4 的 PDF 文件。
+   * 每个图表容器占一页，通过 html2canvas 逐一截取并嵌入 PDF。
    */
   static async exportChartsToPDF(
     chartContainers: HTMLElement[],
@@ -397,9 +427,9 @@ export class ReportExporter {
       pdf.setProperties({ title, author: 'API自动化测试平台' })
 
       let position = 0
-      const pageWidth = 297 // A4横向宽度
-      const pageHeight = 210 // A4横向高度
-      const margin = 10
+      const pageWidth = 297  // A4 横向宽度（mm）
+      const pageHeight = 210 // A4 横向高度（mm）
+      const margin = 10      // 页面边距（mm）
 
       for (let i = 0; i < chartContainers.length; i++) {
         const container = chartContainers[i]
@@ -414,7 +444,7 @@ export class ReportExporter {
         const imgWidth = pageWidth - 2 * margin
         const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-        // 如果不是第一页，添加新页
+        // 非第一页时添加新页
         if (i > 0) {
           pdf.addPage()
         }
@@ -427,15 +457,15 @@ export class ReportExporter {
 
       pdf.save(filename)
     } catch (error) {
-      console.error('Charts PDF export error:', error)
+      console.error('图表 PDF 导出失败:', error)
       throw new Error('图表PDF导出失败')
     }
   }
 }
 
-/**
- * 默认导出配置
- */
+// ==================== 导出工具函数 ====================
+
+/** 默认导出配置 */
 export const defaultExportConfig: ExportConfig = {
   filename: `report_${Date.now()}`,
   title: 'API测试报告',
@@ -444,14 +474,10 @@ export const defaultExportConfig: ExportConfig = {
   creator: 'API自动化测试平台'
 }
 
-/**
- * 导出格式类型
- */
+/** 支持的导出格式类型 */
 export type ExportFormat = 'pdf' | 'excel' | 'json' | 'png' | 'jpeg' | 'csv'
 
-/**
- * 获取导出文件扩展名
- */
+/** 根据导出格式获取对应的文件扩展名 */
 export function getExportExtension(format: ExportFormat): string {
   const extensions: Record<ExportFormat, string> = {
     pdf: '.pdf',
@@ -464,9 +490,7 @@ export function getExportExtension(format: ExportFormat): string {
   return extensions[format] || '.pdf'
 }
 
-/**
- * 生成导出文件名
- */
+/** 根据导出格式和前缀生成带时间戳的文件名 */
 export function generateExportFilename(
   format: ExportFormat,
   prefix: string = 'report'

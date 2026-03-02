@@ -1,3 +1,14 @@
+<!--
+  KeyValueViewer.vue - 键值对只读查看器组件
+
+  用于展示 HTTP 响应头、Cookie 等只读键值对数据：
+  - 搜索过滤功能
+  - 一键复制单个值或全部内容
+  - JSON 值自动识别和格式化展示
+  - URL 值自动识别并提供链接跳转
+  - 值详情弹窗（长文本、JSON 格式化）
+  - 数据导出为 JSON 文件
+-->
 <template>
   <div class="key-value-viewer">
     <div class="viewer-header">

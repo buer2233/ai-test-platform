@@ -1,6 +1,18 @@
+/**
+ * 路由配置
+ *
+ * 定义 API 自动化测试模块的所有路由，包括：
+ * - 登录页（无需认证）
+ * - 主布局下的子路由（需认证）：仪表盘、项目、集合、测试用例、
+ *   环境、HTTP 执行器、报告、数据驱动、回收站等
+ *
+ * 所有视图组件均采用懒加载，按需加载以优化首屏性能。
+ */
+
 import type { RouteRecordRaw } from 'vue-router'
 
-// 懒加载视图组件
+// ==================== 懒加载视图组件 ====================
+
 const Layout = () => import('../components/Layout/index.vue')
 const Dashboard = () => import('../views/Dashboard/index.vue')
 const ProjectList = () => import('../views/Project/ProjectList.vue')
@@ -19,6 +31,8 @@ const HttpExecutor = () => import('../views/HttpExecutor/HttpExecutor.vue')
 const HttpExecutionRecords = () => import('../views/HttpExecutor/HttpExecutionRecords.vue')
 const RecycleBin = () => import('../views/RecycleBin/index.vue')
 const Login = () => import('../views/Auth/Login.vue')
+
+// ==================== 路由表 ====================
 
 export const routes: RouteRecordRaw[] = [
   {

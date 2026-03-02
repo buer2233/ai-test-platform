@@ -66,16 +66,37 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 4.commit全部代码并push到远端
 ```
 
+```text
+使用技能:code-simplifier,帮我分析并重构整个项目的所有代码,包括前端和后端,要求如下:
+1. 重构后的代码需要简洁、易读、方便维护，并且包含详细的注释
+2. 重试完成后需要进行全部的测试，包含接口测试和前端的UI自动化测试（使用playwright进行端到端测试），确保所有接口和前端功能都正常，不正常则需要修改并重新测试
+3. 确保所有文件都成功重构，并且所有测试都完成后才结束，未完成前请一直执行，不要询问我
+4. 所有重构和测试完成后结束任务，等待我手动进行测试并确定是否commit并push代码
+```
+
+```text
+全自动危险模式的开启命令
+claude --dangerously-skip-permissions
+
+```
+
+```text
+本地搞一个向量数据库
+给接口自动化添加识别接口文档和功能文档,并存储向量数据库实现AI生成接口自动化用例,并执行
+
+```
+
 
 
 ## AI驱动UI自动化通用提示词
 
 ```text
 参考UI自动化的项目说明文档:ui_project_info.md,开始进行下一阶段的开发,开发完成后按照功能进行详细的测试,开发和测试要求如下:
-1.使用tdd-workflow技能进行如下开发,Python规则遵循python-patterns技能,测试可选择使用python-testing技能
-2.后端开发使用技能:django-tdd,前端开发使用技能:frontend-design、frontend-patterns、canvas-design
-3.UI测试可以使用mcp进行端到端的测试:playwright-mcp
-4.开发和测试完成后，按照当前的开发和测试进度，计划下一步的开发和测试计划并更新写入ui_project_info.md
+1. 使用tdd-workflow技能进行如下开发,Python规则遵循python-patterns技能,测试可选择使用python-testing技能
+2. 后端开发使用技能:django-tdd,前端开发使用技能:frontend-design、frontend-patterns、canvas-design
+3. UI测试可以使用mcp进行端到端的测试:playwright-mcp
+4. 开发和测试完成后，按照当前的开发和测试进度，计划下一步的开发和测试计划并更新写入ui_project_info.md
+5. 按照自动提交和推送规则提交代码到GitHub远端
 ```
 
 ```text

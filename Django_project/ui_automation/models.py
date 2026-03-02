@@ -1,62 +1,69 @@
 """
-UI自动化测试数据模型
+UI 自动化测试模块 - 数据模型
 
-本模块定义了UI自动化测试的核心数据结构:
-- UiTestProject: UI测试项目
-- UiTestCase: 自然语言测试用例
-- UiTestExecution: 测试执行记录
-- UiTestReport: 测试报告
+定义 UI 自动化测试的核心数据结构，所有表使用 ui_ 前缀，与 api_automation 模块完全隔离。
 
-所有表使用 ui_ 前缀，与 api_automation 模块完全隔离。
+模型清单:
+    UiTestProject   - 测试项目，组织和管理测试用例的顶层容器
+    UiTestCase      - 测试用例，使用自然语言描述的 UI 测试步骤
+    UiTestExecution  - 执行记录，记录每次测试运行的状态和结果
+    UiTestReport    - 测试报告，存储 Agent 执行历史和统计信息
+    UiScreenshot    - 测试截图，存储执行过程中的截图文件
 """
 
-from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import URLValidator
-import json
-import os
-
-
-def empty_list():
-    """返回空列表，用于JSONField的默认值"""
-    return []
-
-
-def empty_dict():
-    """返回空字典，用于JSONField的默认值"""
-    return {}
+from django.db import models
 
 
 def get_report_upload_path(instance, filename):
-    """生成报告文件存储路径"""
+    """
+    生成报告文件的存储路径。
+
+    路径格式: ui_reports/<项目ID>/<执行ID>/<文件名>
+
+    Args:
+        instance: UiTestReport 实例
+        filename: 原始文件名
+    """
     return f'ui_reports/{instance.execution.project.id}/{instance.execution.id}/{filename}'
 
 
 def get_screenshot_upload_path(instance, filename):
-    """生成截图文件存储路径"""
+    """
+    生成截图文件的存储路径。
+
+    路径格式: ui_screenshots/<项目ID>/<执行ID>/<文件名>
+
+    Args:
+        instance: UiScreenshot 实例
+        filename: 原始文件名
+    """
     return f'ui_screenshots/{instance.execution.project.id}/{instance.execution.id}/{filename}'
 
 
 class UiTestProject(models.Model):
     """
-    UI测试项目模型
+    UI 测试项目模型。
 
-    用于组织和管理UI自动化测试项目，一个项目包含多个测试用例。
+    作为测试用例的顶层组织容器，一个项目包含多个测试用例。
+    支持软删除，删除后不会从数据库中物理移除。
+
+    关联关系:
+        -> UiTestCase (一对多): 项目下的测试用例
+        -> UiTestExecution (一对多): 项目下的执行记录
     """
 
-    # 基础信息
+    # ---- 基础信息 ----
     name = models.CharField(max_length=200, verbose_name='项目名称', help_text='项目名称')
     description = models.TextField(blank=True, verbose_name='项目描述', help_text='项目描述')
 
-    # 测试配置
+    # ---- 测试配置 ----
     base_url = models.URLField(
         max_length=500,
         blank=True,
         verbose_name='基础URL',
         help_text='被测应用的基础URL，例如: https://www.example.com'
     )
-
-    # 默认浏览器配置
     default_browser_mode = models.CharField(
         max_length=20,
         choices=[
@@ -68,7 +75,7 @@ class UiTestProject(models.Model):
         help_text='执行测试时的默认浏览器模式'
     )
 
-    # 元数据
+    # ---- 元数据 ----
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -78,7 +85,7 @@ class UiTestProject(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
 
-    # 软删除
+    # ---- 软删除 ----
     is_deleted = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
@@ -96,19 +103,25 @@ class UiTestProject(models.Model):
         return self.name
 
     def delete(self, using=None, keep_parents=False):
-        """软删除"""
+        """软删除：将 is_deleted 标记为 True，而非物理删除记录。"""
         self.is_deleted = True
         self.save()
 
 
 class UiTestCase(models.Model):
     """
-    UI测试用例模型
+    UI 测试用例模型。
 
-    使用自然语言描述的UI测试用例，由 browser_use Agent 执行。
+    使用自然语言描述的 UI 测试用例，由 browser_use Agent 执行。
+    核心字段 natural_language_task 存储用户编写的自然语言测试步骤，
+    AI 引擎会自动解析并执行这些步骤。
+
+    关联关系:
+        <- UiTestProject (多对一): 所属项目
+        -> UiTestExecution (一对多): 用例的执行记录
     """
 
-    # 关联项目
+    # ---- 关联项目 ----
     project = models.ForeignKey(
         UiTestProject,
         on_delete=models.CASCADE,
@@ -116,23 +129,21 @@ class UiTestCase(models.Model):
         verbose_name='所属项目'
     )
 
-    # 基础信息
+    # ---- 基础信息 ----
     name = models.CharField(max_length=200, verbose_name='用例名称', help_text='测试用例名称')
-
-    # 用例描述
     description = models.TextField(
         blank=True,
         verbose_name='用例描述',
         help_text='测试用例的详细描述'
     )
 
-    # 核心字段：自然语言任务描述
+    # ---- 核心字段：自然语言任务描述（AI 引擎根据此内容自动执行操作） ----
     natural_language_task = models.TextField(
         verbose_name='自然语言任务描述',
         help_text='用自然语言描述测试任务，AI将自动理解并执行。例如: 打开首页，点击登录按钮，输入用户名和密码，验证登录成功'
     )
 
-    # 执行配置（用例级别）
+    # ---- 执行配置（用例级别，可覆盖项目默认值） ----
     browser_mode = models.CharField(
         max_length=20,
         choices=[
@@ -156,14 +167,14 @@ class UiTestCase(models.Model):
         help_text='失败后的重试次数'
     )
 
-    # 预期结果
+    # ---- 预期结果 ----
     expected_result = models.TextField(
         blank=True,
         verbose_name='预期结果',
         help_text='测试的预期结果描述'
     )
 
-    # 标签（JSON存储，使用TextField兼容SQLite）
+    # ---- 标签（JSON 字符串存储，使用 TextField 兼容 SQLite） ----
     tags = models.TextField(
         default='[]',
         blank=True,
@@ -171,7 +182,7 @@ class UiTestCase(models.Model):
         help_text='测试用例标签，用于分类管理'
     )
 
-    # 优先级
+    # ---- 优先级 ----
     priority = models.CharField(
         max_length=20,
         choices=[
@@ -184,14 +195,14 @@ class UiTestCase(models.Model):
         verbose_name='优先级'
     )
 
-    # 是否启用
+    # ---- 启用状态 ----
     is_enabled = models.BooleanField(default=True, verbose_name='是否启用')
 
-    # 元数据
+    # ---- 元数据 ----
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
 
-    # 软删除
+    # ---- 软删除 ----
     is_deleted = models.BooleanField(default=False, verbose_name='是否删除')
 
     class Meta:
@@ -211,19 +222,30 @@ class UiTestCase(models.Model):
         return f'{self.project.name} - {self.name}'
 
     def delete(self, using=None, keep_parents=False):
-        """软删除"""
+        """软删除：将 is_deleted 标记为 True，而非物理删除记录。"""
         self.is_deleted = True
         self.save()
 
 
 class UiTestExecution(models.Model):
     """
-    UI测试执行记录模型
+    UI 测试执行记录模型。
 
-    记录每次测试执行的详细信息。
+    记录每次测试执行的详细信息，包括执行状态、时间、结果等。
+    一个测试用例可以被执行多次，每次执行产生一条记录。
+
+    状态流转:
+        pending -> running -> passed / failed / error
+        pending / running -> cancelled
+
+    关联关系:
+        <- UiTestProject (多对一): 所属项目
+        <- UiTestCase (多对一): 关联的测试用例
+        -> UiTestReport (一对一): 执行报告
+        -> UiScreenshot (一对多): 执行截图
     """
 
-    # 关联项目和用例
+    # ---- 关联项目和用例 ----
     project = models.ForeignKey(
         UiTestProject,
         on_delete=models.CASCADE,
@@ -237,7 +259,7 @@ class UiTestExecution(models.Model):
         verbose_name='测试用例'
     )
 
-    # 执行状态
+    # ---- 执行状态 ----
     status = models.CharField(
         max_length=20,
         choices=[
@@ -252,7 +274,7 @@ class UiTestExecution(models.Model):
         verbose_name='执行状态'
     )
 
-    # 执行配置
+    # ---- 执行配置 ----
     browser_mode = models.CharField(
         max_length=20,
         choices=[
@@ -263,16 +285,16 @@ class UiTestExecution(models.Model):
         verbose_name='浏览器模式'
     )
 
-    # 时间信息
+    # ---- 时间信息 ----
     started_at = models.DateTimeField(null=True, blank=True, verbose_name='开始时间')
     completed_at = models.DateTimeField(null=True, blank=True, verbose_name='完成时间')
     duration_seconds = models.IntegerField(null=True, blank=True, verbose_name='执行时长(秒)')
 
-    # 执行结果
+    # ---- 执行结果 ----
     final_result = models.TextField(blank=True, verbose_name='最终结果')
     error_message = models.TextField(blank=True, verbose_name='错误信息')
 
-    # 执行人
+    # ---- 执行人 ----
     executed_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -282,7 +304,7 @@ class UiTestExecution(models.Model):
         verbose_name='执行人'
     )
 
-    # 元数据
+    # ---- 元数据 ----
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
 
@@ -304,7 +326,7 @@ class UiTestExecution(models.Model):
 
     @property
     def duration_display(self):
-        """格式化显示执行时长"""
+        """将执行时长格式化为易读的中文字符串（如: '2分30秒'）。"""
         if self.duration_seconds is None:
             return '-'
         if self.duration_seconds < 60:
@@ -316,12 +338,16 @@ class UiTestExecution(models.Model):
 
 class UiTestReport(models.Model):
     """
-    UI测试报告模型
+    UI 测试报告模型。
 
-    存储测试执行的详细报告和截图信息。
+    存储测试执行的详细报告，包括 Agent 执行历史、步骤统计、截图路径等。
+    每个执行记录最多关联一份报告（OneToOne 关系）。
+
+    关联关系:
+        <- UiTestExecution (一对一): 关联的执行记录
     """
 
-    # 关联执行记录
+    # ---- 关联执行记录 ----
     execution = models.OneToOneField(
         UiTestExecution,
         on_delete=models.CASCADE,
@@ -329,7 +355,7 @@ class UiTestReport(models.Model):
         verbose_name='执行记录'
     )
 
-    # browser_use Agent 执行历史（JSON存储，使用TextField兼容SQLite）
+    # ---- browser_use Agent 执行历史（JSON 字符串，使用 TextField 兼容 SQLite） ----
     agent_history = models.TextField(
         null=True,
         blank=True,
@@ -337,12 +363,12 @@ class UiTestReport(models.Model):
         help_text='browser_use Agent 的完整执行步骤历史'
     )
 
-    # 步骤统计
+    # ---- 步骤统计 ----
     total_steps = models.IntegerField(default=0, verbose_name='总步骤数')
     completed_steps = models.IntegerField(default=0, verbose_name='已完成步骤数')
     failed_steps = models.IntegerField(default=0, verbose_name='失败步骤数')
 
-    # 截图文件路径列表（JSON存储，使用TextField兼容SQLite）
+    # ---- 截图文件路径列表（JSON 字符串，使用 TextField 兼容 SQLite） ----
     screenshot_paths = models.TextField(
         default='[]',
         blank=True,
@@ -350,7 +376,7 @@ class UiTestReport(models.Model):
         help_text='执行过程中产生的截图文件路径'
     )
 
-    # 报告文件
+    # ---- 报告文件（HTML 格式） ----
     report_file = models.FileField(
         upload_to=get_report_upload_path,
         null=True,
@@ -359,7 +385,7 @@ class UiTestReport(models.Model):
         help_text='生成的HTML格式测试报告文件'
     )
 
-    # JSON 报告路径（browser-use 生成的 JSON 报告文件路径）
+    # ---- JSON 报告路径（browser-use 生成的原始 JSON 报告文件路径） ----
     json_report_path = models.CharField(
         max_length=500,
         null=True,
@@ -368,10 +394,10 @@ class UiTestReport(models.Model):
         help_text='browser-use Agent 生成的 JSON 格式执行报告文件路径'
     )
 
-    # 报告摘要
+    # ---- 报告摘要 ----
     summary = models.TextField(blank=True, verbose_name='报告摘要')
 
-    # 元数据
+    # ---- 元数据 ----
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:
@@ -390,12 +416,15 @@ class UiTestReport(models.Model):
 
 class UiScreenshot(models.Model):
     """
-    UI测试截图模型
+    UI 测试截图模型。
 
-    存储测试执行过程中的截图信息。
+    存储测试执行过程中每个步骤的截图文件及其描述信息。
+
+    关联关系:
+        <- UiTestExecution (多对一): 关联的执行记录
     """
 
-    # 关联执行记录
+    # ---- 关联执行记录 ----
     execution = models.ForeignKey(
         UiTestExecution,
         on_delete=models.CASCADE,
@@ -403,13 +432,13 @@ class UiScreenshot(models.Model):
         verbose_name='执行记录'
     )
 
-    # 截图文件
+    # ---- 截图文件 ----
     image_file = models.ImageField(
         upload_to=get_screenshot_upload_path,
         verbose_name='截图文件'
     )
 
-    # 截图描述
+    # ---- 截图描述 ----
     description = models.CharField(
         max_length=500,
         blank=True,
@@ -417,10 +446,10 @@ class UiScreenshot(models.Model):
         help_text='截图对应的操作步骤描述'
     )
 
-    # 步骤序号
+    # ---- 步骤序号 ----
     step_number = models.IntegerField(verbose_name='步骤序号')
 
-    # 元数据
+    # ---- 元数据 ----
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     class Meta:

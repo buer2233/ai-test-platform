@@ -1,3 +1,14 @@
+<!--
+  EnvironmentForm.vue - 环境配置表单组件
+
+  用于创建和编辑测试环境的表单：
+  - 基本信息：环境名称、所属项目、描述、Base URL（带协议选择器）
+  - 开关选项：默认环境、启用状态
+  - 全局请求头配置（使用 KeyValueEditor 组件）
+  - 全局变量配置（使用 KeyValueEditor 组件，支持描述字段）
+  - 表单验证：名称必填、URL 格式校验
+  - 数据格式转换：内部使用数组格式编辑，提交时转为对象格式
+-->
 <template>
   <div class="environment-form">
     <el-form

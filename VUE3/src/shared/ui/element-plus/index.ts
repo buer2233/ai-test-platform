@@ -1,3 +1,17 @@
+/**
+ * Element Plus 兼容层
+ *
+ * 本模块为项目提供了一套轻量化的 Element Plus 组件替代实现，
+ * 目的是在不引入完整 Element Plus 库的情况下，提供必要的 UI 组件功能。
+ *
+ * 主要包含：
+ * 1. 消息/通知/对话框 API（ElMessage、ElNotification、ElMessageBox）
+ * 2. 表单相关组件（ElForm、ElFormItem、ElInput、ElSelect 等）
+ * 3. 布局组件（ElRow、ElCol、ElCard、ElDialog 等）
+ * 4. 导航组件（ElMenu、ElMenuItem、ElDropdown 等）
+ * 5. 简单占位组件（通过 simple() 工厂函数批量生成）
+ * 6. Vue 插件安装器（全局注册所有组件、指令和全局属性）
+ */
 import {
   computed,
   defineComponent,
@@ -16,14 +30,19 @@ import { useRouter } from 'vue-router'
 
 import './styles.css'
 
+/* ========== 类型定义 ========== */
+
+/** 表单规则验证器函数签名 */
 type RuleValidator = (
   rule: Record<string, any>,
   value: unknown,
   callback: (error?: Error) => void
 ) => void | Promise<void>
 
+/** 表单规则集合，键为字段名，值为该字段的验证规则数组 */
 export type FormRules = Record<string, Array<Record<string, any> & { validator?: RuleValidator }>>
 
+/** 表单实例方法接口，与 Element Plus ElForm 的 ref 方法保持一致 */
 export interface FormInstance {
   validate: (callback?: (valid: boolean, fields?: Record<string, string>) => void) => Promise<boolean>
   validateField: (prop: string | string[], callback?: (errorMessage?: string) => void) => Promise<boolean>
@@ -31,10 +50,14 @@ export interface FormInstance {
   clearValidate: (props?: string | string[]) => void
 }
 
+/* ========== 内部工具函数 ========== */
+
+/** 将 PascalCase 转换为 kebab-case（如 ElButton -> el-button） */
 function toKebab(input: string): string {
   return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
+/** 判断值是否为空（空字符串、null、undefined 或空数组） */
 function isEmpty(value: unknown): boolean {
   if (Array.isArray(value)) {
     return value.length === 0
@@ -42,6 +65,12 @@ function isEmpty(value: unknown): boolean {
   return value === '' || value === null || value === undefined
 }
 
+/**
+ * 执行单条表单验证规则
+ *
+ * 按优先级依次检查：必填 -> 长度范围 -> 正则 -> 邮箱格式 -> 自定义验证器
+ * 验证失败时抛出 Error，由调用方捕获
+ */
 async function runRule(rule: Record<string, any>, value: unknown) {
   if (rule.required && isEmpty(value)) {
     throw new Error(rule.message || '请填写必填项')
@@ -78,8 +107,12 @@ async function runRule(rule: Record<string, any>, value: unknown) {
   }
 }
 
+/* ========== Toast 消息提示系统 ========== */
+
+/** Toast 容器的 DOM ID */
 const ToastContainerId = '__el_compat_toasts__'
 
+/** 获取或创建 Toast 容器 DOM 节点（固定在页面右上角） */
 function toastContainer(): HTMLElement {
   let node = document.getElementById(ToastContainerId)
   if (!node) {
@@ -91,6 +124,7 @@ function toastContainer(): HTMLElement {
   return node
 }
 
+/** 创建并显示一条 Toast 消息，到达 duration 后自动关闭 */
 function pushToast(type: string, message: string, duration = 2500) {
   if (typeof window === 'undefined') {
     return
@@ -123,16 +157,20 @@ function pushToast(type: string, message: string, duration = 2500) {
   }
 }
 
+/** 消息参数类型：支持纯字符串或包含 type/duration 的对象 */
 type MessageParams = string | { message: string; type?: string; duration?: number }
 
+/** 消息处理器，提供 close 方法用于手动关闭 */
 interface MessageHandler {
   close: () => void
 }
 
+/** 创建空操作的消息处理器（用于参数异常时的安全返回） */
 function createNoopMessageHandler(): MessageHandler {
   return { close: () => undefined }
 }
 
+/** 消息工厂函数，根据默认类型创建消息调用方法 */
 function createMessage(typeFallback: string) {
   return (...args: any[]): MessageHandler => {
     const params = args[0] as MessageParams | undefined
@@ -146,6 +184,7 @@ function createMessage(typeFallback: string) {
   }
 }
 
+/** 消息 API 接口，支持 ElMessage('text') 和 ElMessage.success('text') 两种调用方式 */
 interface MessageApi {
   (params?: MessageParams, ...args: any[]): MessageHandler
   success: (params?: MessageParams, ...args: any[]) => MessageHandler
@@ -154,6 +193,9 @@ interface MessageApi {
   error: (params?: MessageParams, ...args: any[]) => MessageHandler
 }
 
+/* ========== 对外暴露的消息 API ========== */
+
+/** 消息提示（轻量 Toast），兼容 Element Plus 的 ElMessage 接口 */
 export const ElMessage: MessageApi = Object.assign(createMessage('info'), {
   success: createMessage('success'),
   warning: createMessage('warning'),
@@ -161,6 +203,7 @@ export const ElMessage: MessageApi = Object.assign(createMessage('info'), {
   error: createMessage('error')
 }) as MessageApi
 
+/** 通知提示，兼容 Element Plus 的 ElNotification 接口 */
 export const ElNotification = {
   success: createMessage('success'),
   warning: createMessage('warning'),
@@ -168,6 +211,7 @@ export const ElNotification = {
   error: createMessage('error')
 }
 
+/** 消息弹框，使用浏览器原生 confirm/alert/prompt 实现 */
 export const ElMessageBox = {
   confirm(message: string, title = '提示', _options?: Record<string, any>) {
     return new Promise<'confirm'>((resolve, reject) => {
@@ -195,6 +239,9 @@ export const ElMessageBox = {
   }
 }
 
+/* ========== 基础 UI 组件 ========== */
+
+/** 配置提供者组件（透传容器） */
 const ElConfigProvider = defineComponent({
   name: 'ElConfigProvider',
   setup(_, { slots }) {
@@ -202,6 +249,7 @@ const ElConfigProvider = defineComponent({
   }
 })
 
+/** 文本组件，支持 type 属性控制文字语义色 */
 const ElText = defineComponent({
   name: 'ElText',
   props: { type: { type: String, default: '' } },
@@ -210,6 +258,7 @@ const ElText = defineComponent({
   }
 })
 
+/** 图标容器组件 */
 const ElIcon = defineComponent({
   name: 'ElIcon',
   setup(_, { slots }) {
@@ -217,8 +266,10 @@ const ElIcon = defineComponent({
   }
 })
 
+/* ========== 按钮组件 ========== */
+
+/** 按钮组件，支持类型、尺寸、加载状态、链接模式等 */
 const ElButton = defineComponent({
-  name: 'ElButton',
   props: {
     type: { type: String, default: 'default' },
     size: { type: String, default: 'default' },
@@ -251,6 +302,7 @@ const ElButton = defineComponent({
   }
 })
 
+/** 按钮组容器 */
 const ElButtonGroup = defineComponent({
   name: 'ElButtonGroup',
   setup(_, { slots }) {
@@ -258,6 +310,9 @@ const ElButtonGroup = defineComponent({
   }
 })
 
+/* ========== 卡片组件 ========== */
+
+/** 卡片组件，支持 header 插槽和 default 内容区 */
 const ElCard = defineComponent({
   name: 'ElCard',
   setup(_, { slots, attrs }) {
@@ -269,10 +324,18 @@ const ElCard = defineComponent({
   }
 })
 
+/* ========== 表单组件 ========== */
+
+/** 表单上下文注入键，用于 ElForm 与 ElFormItem 之间的通信 */
 const FormContextKey = Symbol('el-form')
 
+/**
+ * 表单组件
+ *
+ * 提供表单验证（validate/validateField）、重置（resetFields）、清除验证（clearValidate）等方法。
+ * 通过 provide 向子组件注入表单数据模型和验证规则。
+ */
 const ElForm = defineComponent({
-  name: 'ElForm',
   props: {
     model: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
     rules: { type: Object as PropType<FormRules>, default: () => ({}) },
@@ -354,6 +417,7 @@ const ElForm = defineComponent({
   }
 })
 
+/** 表单项组件，包含标签和内容区 */
 const ElFormItem = defineComponent({
   name: 'ElFormItem',
   props: { label: { type: String, default: '' } },
@@ -366,8 +430,15 @@ const ElFormItem = defineComponent({
   }
 })
 
+/* ========== 输入框组件 ========== */
+
+/**
+ * 输入框组件
+ *
+ * 支持 text/password/textarea 类型，以及 clearable、showPassword 等增强功能。
+ * 通过 prefix/suffix/append 插槽支持前缀、后缀和追加内容。
+ */
 const ElInput = defineComponent({
-  name: 'ElInput',
   props: {
     modelValue: { type: [String, Number], default: '' },
     placeholder: { type: String, default: '' },
@@ -465,14 +536,19 @@ const ElInput = defineComponent({
   }
 })
 
+/* ========== 选择器组件 ========== */
+
+/** 选择器上下文注入键，用于 ElSelect 与 ElOption 之间的通信 */
 const SelectContextKey = Symbol('el-select')
 
+/** 选择器选项数据结构 */
 interface SelectOptionItem {
   value: any
   label: string
   disabled: boolean
 }
 
+/** 选项组件，通过 inject 向父级 ElSelect 注册自身数据 */
 const ElOption = defineComponent({
   name: 'ElOption',
   props: {
@@ -494,8 +570,13 @@ const ElOption = defineComponent({
   }
 })
 
+/**
+ * 选择器组件
+ *
+ * 自定义下拉菜单实现，支持单选/多选、清除、禁用等功能。
+ * 通过 provide/inject 与 ElOption 子组件配合收集选项数据。
+ */
 const ElSelect = defineComponent({
-  name: 'ElSelect',
   props: {
     modelValue: { type: [String, Number, Boolean, Array] as PropType<any>, default: '' },
     placeholder: { type: String, default: '请选择' },
@@ -568,7 +649,7 @@ const ElSelect = defineComponent({
     }
 
     return () => {
-      // Render slot content invisibly so ElOption registers
+      // 隐藏渲染默认插槽内容，使 ElOption 子组件能执行 setup 完成注册
       const hiddenSlot = h('div', { style: 'display:none' }, slots.default?.())
 
       const triggerText = selectedLabel.value || props.placeholder
@@ -623,8 +704,12 @@ const ElSelect = defineComponent({
   }
 })
 
+/* ========== 菜单导航组件 ========== */
+
+/** 菜单上下文注入键 */
 const MenuContextKey = Symbol('el-menu')
 
+/** 菜单组件，支持折叠模式和路由模式 */
 const ElMenu = defineComponent({
   name: 'ElMenu',
   props: { defaultActive: { type: String, default: '' }, collapse: { type: Boolean, default: false }, router: { type: Boolean, default: false } },
@@ -636,6 +721,7 @@ const ElMenu = defineComponent({
   }
 })
 
+/** 菜单项组件，点击时激活并可选路由跳转 */
 const ElMenuItem = defineComponent({
   name: 'ElMenuItem',
   props: { index: { type: String, required: true } },
@@ -666,8 +752,12 @@ const ElMenuItem = defineComponent({
   }
 })
 
+/* ========== 下拉菜单组件 ========== */
+
+/** 下拉菜单上下文注入键 */
 const DropdownContextKey = Symbol('el-dropdown')
 
+/** 下拉菜单组件，点击触发器显示/隐藏下拉内容 */
 const ElDropdown = defineComponent({
   name: 'ElDropdown',
   emits: ['command'],
@@ -700,6 +790,7 @@ const ElDropdown = defineComponent({
   }
 })
 
+/** 下拉菜单面板容器 */
 const ElDropdownMenu = defineComponent({
   name: 'ElDropdownMenu',
   setup(_, { slots, attrs }) {
@@ -707,6 +798,7 @@ const ElDropdownMenu = defineComponent({
   }
 })
 
+/** 下拉菜单项，点击时触发 command 事件 */
 const ElDropdownItem = defineComponent({
   name: 'ElDropdownItem',
   props: { command: { type: String, default: '' }, divided: { type: Boolean, default: false }, disabled: { type: Boolean, default: false } },
@@ -716,6 +808,9 @@ const ElDropdownItem = defineComponent({
   }
 })
 
+/* ========== 数据展示组件 ========== */
+
+/** 头像组件，支持图片 src 或文字回退 */
 const ElAvatar = defineComponent({
   name: 'ElAvatar',
   props: { size: { type: [String, Number], default: 32 }, src: { type: String, default: '' } },
@@ -724,6 +819,9 @@ const ElAvatar = defineComponent({
   }
 })
 
+/* ========== 开关组件 ========== */
+
+/** 开关组件，支持 v-model 双向绑定和禁用状态 */
 const ElSwitch = defineComponent({
   name: 'ElSwitch',
   props: { modelValue: { type: Boolean, default: false }, disabled: { type: Boolean, default: false } },
@@ -733,6 +831,9 @@ const ElSwitch = defineComponent({
   }
 })
 
+/* ========== 对话框组件 ========== */
+
+/** 模态对话框组件，支持标题、宽度、点击遮罩关闭、header/footer 插槽 */
 const ElDialog = defineComponent({
   name: 'ElDialog',
   props: { modelValue: { type: Boolean, default: false }, title: { type: String, default: '' }, width: { type: [String, Number], default: '560px' }, closeOnClickModal: { type: Boolean, default: true } },
@@ -751,6 +852,18 @@ const ElDialog = defineComponent({
   }
 })
 
+/* ========== 简单占位组件工厂 ========== */
+
+/**
+ * 创建简单的透传组件
+ *
+ * 用于那些只需要提供基础 DOM 结构和 CSS 类名的组件（如 ElEmpty、ElTag 等），
+ * 避免为每个组件编写重复的 defineComponent 模板代码。
+ *
+ * @param name - 组件注册名称
+ * @param tag - 渲染的 HTML 标签，默认 'div'
+ * @param className - CSS 类名，默认由组件名自动转换为 kebab-case
+ */
 function simple(name: string, tag = 'div', className = '') {
   return defineComponent({
     name,
@@ -760,6 +873,7 @@ function simple(name: string, tag = 'div', className = '') {
   })
 }
 
+/* 通过工厂函数批量生成的简单组件 */
 const ElEmpty = simple('ElEmpty', 'div', 'el-empty')
 const ElBadge = simple('ElBadge', 'span', 'el-badge')
 const ElBreadcrumb = simple('ElBreadcrumb', 'nav', 'el-breadcrumb')
@@ -779,6 +893,17 @@ const ElRadio = simple('ElRadio', 'label', 'el-radio')
 const ElRadioButton = simple('ElRadioButton', 'label', 'el-radio-button')
 const ElRadioGroup = simple('ElRadioGroup', 'div', 'el-radio-group')
 const ElResult = simple('ElResult', 'section', 'el-result')
+
+/* ========== 栅格布局组件 ========== */
+
+/**
+ * 行组件（ElRow）
+ *
+ * 基于 Flexbox 实现的栅格行容器，支持：
+ * - gutter: 列间距（通过 provide 传递给子 ElCol）
+ * - justify: 水平对齐方式
+ * - align: 垂直对齐方式
+ */
 const ElRow = defineComponent({
   name: 'ElRow',
   props: {
@@ -810,8 +935,13 @@ const ElRow = defineComponent({
   }
 })
 
+/**
+ * 列组件（ElCol）
+ *
+ * 24 等分栅格系统的列组件，通过 inject 获取父级 ElRow 的 gutter 值。
+ * 支持 span（占据列数）和 offset（左侧偏移列数）。
+ */
 const ElCol = defineComponent({
-  name: 'ElCol',
   props: {
     span: { type: Number, default: 24 },
     offset: { type: Number, default: 0 },
@@ -844,6 +974,7 @@ const ElSlider = simple('ElSlider', 'input', 'el-slider')
 const ElSpace = simple('ElSpace', 'div', 'el-space')
 const ElStatistic = simple('ElStatistic', 'div', 'el-statistic')
 const ElTable = simple('ElTable', 'div', 'el-table')
+/** 表格列组件（占位，不渲染 DOM） */
 const ElTableColumn = defineComponent({
   name: 'ElTableColumn',
   setup() {
@@ -865,6 +996,9 @@ const ElCollapseItem = simple('ElCollapseItem', 'div', 'el-collapse-item')
 const ElCollapseTransition = simple('ElCollapseTransition', 'div', 'el-collapse-transition')
 const ElPagination = simple('ElPagination', 'div', 'el-pagination')
 
+/* ========== 组件注册表 ========== */
+
+/** 所有兼容组件的集合，用于 Vue 插件全局注册 */
 const components: Record<string, any> = {
   ElAlert: simple('ElAlert', 'div', 'el-alert'),
   ElAvatar,
@@ -929,6 +1063,16 @@ const components: Record<string, any> = {
   ElUpload
 }
 
+/* ========== Vue 插件安装器 ========== */
+
+/**
+ * Element Plus 兼容层插件
+ *
+ * 安装时执行以下操作：
+ * 1. 全局注册所有组件（同时注册 PascalCase 和 kebab-case 两种名称）
+ * 2. 挂载 $message/$notify/$msgbox 到全局属性
+ * 3. 注册 v-loading 指令
+ */
 const ElementPlusCompat = {
   install(app: App) {
     Object.entries(components).forEach(([name, component]) => {
@@ -956,6 +1100,8 @@ const ElementPlusCompat = {
     })
   }
 }
+
+/* ========== 模块导出 ========== */
 
 export default ElementPlusCompat
 

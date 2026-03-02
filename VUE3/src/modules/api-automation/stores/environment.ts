@@ -1,17 +1,32 @@
+/**
+ * 测试环境 Store
+ *
+ * 管理测试环境的状态：环境列表、当前选中环境、默认环境等。
+ * 提供环境的增删改查、设为默认、连接测试等操作。
+ */
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { environmentApi } from '../api/environment'
-import type { ApiTestEnvironment, EnvironmentCreate } from '../types/environment'
 import { ElMessage } from 'element-plus'
 
+import { environmentApi } from '../api/environment'
+import type { ApiTestEnvironment, EnvironmentCreate } from '../types/environment'
+
 export const useEnvironmentStore = defineStore('environment', () => {
-  // 状态
+  // ==================== 状态 ====================
+
+  /** 环境列表 */
   const environments = ref<ApiTestEnvironment[]>([])
+  /** 当前选中的环境 */
   const currentEnvironment = ref<ApiTestEnvironment | null>(null)
+  /** 全局加载状态 */
   const loading = ref(false)
+  /** 数据总条数（分页用） */
   const total = ref(0)
 
-  // 计算属性
+  // ==================== 计算属性 ====================
+
+  /** 转换为下拉选项格式（用于表单选择器） */
   const environmentOptions = computed(() => {
     return environments.value.map(env => ({
       label: env.name,
@@ -20,11 +35,12 @@ export const useEnvironmentStore = defineStore('environment', () => {
     }))
   })
 
+  /** 获取当前项目的默认环境 */
   const defaultEnvironment = computed(() => {
     return environments.value.find(env => env.is_default) || null
   })
 
-  // 方法
+  // ==================== 异步操作 ====================
   const fetchEnvironments = async (params?: any) => {
     loading.value = true
     try {

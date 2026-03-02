@@ -1,3 +1,18 @@
+<!--
+  HttpRequestEditor.vue - HTTP 请求编辑器主组件
+
+  提供完整的 HTTP 请求构建和发送功能：
+  - 请求方法和 URL 输入（支持 Base URL + Path 拼接）
+  - 查询参数编辑（KeyValueEditor）
+  - 请求头编辑（KeyValueEditor，含常用 Header 快捷填充）
+  - 请求体编辑（支持 JSON / 表单 / 原始文本 / 文件上传四种类型）
+  - 变量配置（VariableEditor，支持 ${变量名} 语法）
+  - 高级设置（超时、重定向、SSL 验证）
+  - 响应结果展示（响应体、响应头、Cookie、测试断言结果）
+  - 保存为测试用例功能
+
+  请求通过后端代理接口发送，避免浏览器 CORS 限制。
+-->
 <template>
   <div class="http-request-editor">
     <el-card class="request-card">

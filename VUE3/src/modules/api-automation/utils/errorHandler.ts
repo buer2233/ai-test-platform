@@ -1,14 +1,18 @@
 /**
- * API Automation - Error Handler
  * 统一错误处理工具
+ *
+ * 提供 API 错误的标准化处理流程：
+ * 1. 将各种错误类型（Axios、原生 Error、未知错误）统一转换为 APIError
+ * 2. 根据错误码选择合适的 UI 提示方式（通知 / 消息）
+ * 3. 提供网络错误、超时、请求取消等场景的判断方法
  */
 
 import { ElMessage, ElNotification } from 'element-plus'
 import type { AxiosError } from 'axios'
 
-/**
- * 标准错误响应接口
- */
+// ==================== 错误类型定义 ====================
+
+/** 后端标准错误响应结构 */
 export interface ErrorResponse {
   code: number
   message: string
@@ -16,9 +20,7 @@ export interface ErrorResponse {
   timestamp: string
 }
 
-/**
- * API 错误类
- */
+/** 自定义 API 错误类，封装后端返回的错误信息 */
 export class APIError extends Error {
   code: number
   details?: Record<string, unknown>
@@ -31,11 +33,13 @@ export class APIError extends Error {
   }
 }
 
+// ==================== 核心错误处理 ====================
+
 /**
- * 处理 API 错误
- * @param error Axios 错误对象
- * @param showMessage 是否显示错误消息（默认 true）
- * @returns APIError 实例
+ * 处理 API 错误：将各种错误统一转换为 APIError 并可选地显示 UI 提示。
+ * @param error - 任意类型的错误对象
+ * @param showMessage - 是否显示 UI 错误提示（默认 true）
+ * @returns 标准化的 APIError 实例
  */
 export function handleApiError(error: unknown, showMessage = true): APIError {
   let apiError: APIError
@@ -63,20 +67,18 @@ export function handleApiError(error: unknown, showMessage = true): APIError {
     })
   }
 
-  // 显示错误消息
   if (showMessage) {
     showErrorNotification(apiError)
   }
 
-  // 记录错误到控制台
   console.error('[API Error]', apiError)
 
   return apiError
 }
 
-/**
- * 判断是否为 Axios 错误
- */
+// ==================== 内部辅助函数 ====================
+
+/** 判断是否为 Axios 错误（通过检查对象特征属性） */
 function isAxiosError(error: unknown): error is AxiosError<ErrorResponse> {
   return (
     typeof error === 'object' &&
@@ -87,13 +89,16 @@ function isAxiosError(error: unknown): error is AxiosError<ErrorResponse> {
 }
 
 /**
- * 显示错误通知
+ * 根据错误码选择合适的 UI 提示方式：
+ * - 5xx 服务端错误：使用 Notification 强提示
+ * - 401 未授权：提示登录
+ * - 403 权限不足 / 404 资源不存在：使用 Message 轻提示
+ * - 其他错误：使用 Message 通用提示
  */
 function showErrorNotification(error: APIError): void {
   const title = getErrorTitle(error.code)
   const message = error.message
 
-  // 根据错误类型选择不同的显示方式
   if (error.code >= 500) {
     ElNotification({
       title,
@@ -129,9 +134,7 @@ function showErrorNotification(error: APIError): void {
   }
 }
 
-/**
- * 根据错误码获取错误标题
- */
+/** 根据 HTTP 状态码返回对应的中文错误标题 */
 function getErrorTitle(code: number): string {
   const titles: Record<number, string> = {
     400: '请求错误',
@@ -145,9 +148,9 @@ function getErrorTitle(code: number): string {
   return titles[code] || '错误'
 }
 
-/**
- * 判断错误是否为网络错误
- */
+// ==================== 错误类型判断工具 ====================
+
+/** 判断是否为网络连接错误（如断网、DNS 解析失败等） */
 export function isNetworkError(error: unknown): boolean {
   if (isAxiosError(error)) {
     return !error.response && !!error.message
@@ -155,9 +158,7 @@ export function isNetworkError(error: unknown): boolean {
   return false
 }
 
-/**
- * 判断错误是否为超时错误
- */
+/** 判断是否为请求超时错误 */
 export function isTimeoutError(error: unknown): boolean {
   if (isAxiosError(error)) {
     return error.code === 'ECONNABORTED'
@@ -165,9 +166,7 @@ export function isTimeoutError(error: unknown): boolean {
   return false
 }
 
-/**
- * 判断错误是否为取消请求
- */
+/** 判断是否为手动取消的请求 */
 export function isCancelError(error: unknown): boolean {
   if (isAxiosError(error)) {
     return error.code === 'ERR_CANCELED'
