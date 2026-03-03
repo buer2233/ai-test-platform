@@ -21,6 +21,9 @@
         <h1 class="page-title">{{ project?.name || '加载中...' }}</h1>
       </div>
       <div class="header-right">
+        <el-button type="primary" plain @click="handleTrafficCapture">
+          流量录制生成
+        </el-button>
         <el-button type="success" @click="handleExecuteProject">
           <el-icon><VideoPlay /></el-icon>
           执行全部测试
@@ -460,6 +463,11 @@ const handleExecuteTestCase = (testCase: ApiTestCaseList) => {
 // 编辑项目
 const handleEditProject = () => {
   ElMessage.info('请在项目列表页面编辑')
+}
+
+// 进入流量录制生成
+const handleTrafficCapture = () => {
+  router.push(`/projects/${projectId.value}/traffic-capture`)
 }
 
 // 执行项目全部测试

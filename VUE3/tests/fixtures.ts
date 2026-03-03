@@ -28,6 +28,63 @@ const paged = <T>(results: T[]) => ({
 async function setupApiMocks(page: Page, options: MockApiOptions = {}) {
   const { authed = false } = options
 
+  const trafficState = {
+    captures: [
+      {
+        id: 901,
+        project: 1,
+        name: '录制-示例.json',
+        status: 'PARSED',
+        total_entries: 2,
+        filtered_entries: 2,
+        sessions_count: 1
+      }
+    ],
+    sessions: [
+      {
+        id: 902,
+        project: 1,
+        capture: 901,
+        session_key: 'session-901',
+        entry_count: 2,
+        status: 'READY',
+        start_time: '2026-02-12T08:00:00Z',
+        end_time: '2026-02-12T08:00:05Z',
+        duration_ms: 5000
+      }
+    ],
+    artifacts: [
+      {
+        id: 903,
+        project: 1,
+        source_type: 'TRAFFIC',
+        source_id: 902,
+        artifact_type: 'SCENARIO',
+        name: '流量生成场景-902',
+        status: 'DRAFT',
+        payload: {
+          steps: [
+            {
+              step_order: 1,
+              name: 'POST /api/login',
+              assertions: [{ assertion_type: 'status_code', operator: 'equals', expected_value: 200 }]
+            }
+          ],
+          variables: [
+            {
+              variable_name: 'token',
+              source_type: 'JSONPATH',
+              expression: '$.token',
+              target_scope: 'SCENARIO'
+            }
+          ],
+          conflicts: []
+        },
+        preview_diff: {}
+      }
+    ]
+  }
+
   await page.route('**/api/**', async (route) => {
     const request = route.request()
     const url = new URL(request.url())
@@ -166,6 +223,141 @@ async function setupApiMocks(page: Page, options: MockApiOptions = {}) {
         expected_status_code: 200,
         assertions: []
       })
+    }
+
+    if (pathname.endsWith('/api/v1/api-automation/traffic-captures/')) {
+      if (request.method() === 'POST') {
+        const created = {
+          id: 900 + trafficState.captures.length + 1,
+          project: 1,
+          name: '录制-上传文件.json',
+          status: 'UPLOADED',
+          total_entries: 0,
+          filtered_entries: 0,
+          sessions_count: 0
+        }
+        trafficState.captures.unshift(created)
+        return jsonResponse(route, created)
+      }
+      return jsonResponse(route, paged(trafficState.captures))
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/traffic-captures\/\d+\/parse\//)) {
+      const id = Number(pathname.split('/').slice(-3, -2)[0])
+      const capture = trafficState.captures.find(item => item.id === id)
+      if (capture) {
+        capture.status = 'PARSED'
+        capture.total_entries = 2
+        capture.filtered_entries = 2
+        capture.sessions_count = 1
+      }
+      return jsonResponse(route, {
+        capture_id: id,
+        sessions_count: 1,
+        total_entries: 2,
+        filtered_entries: 2,
+        message: '解析成功'
+      })
+    }
+
+    if (pathname.endsWith('/api/v1/api-automation/traffic-sessions/')) {
+      return jsonResponse(route, paged(trafficState.sessions))
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/traffic-sessions\/\d+\/generate\//)) {
+      const sessionId = Number(pathname.split('/').slice(-3, -2)[0])
+      const created = {
+        id: 900 + trafficState.artifacts.length + 1,
+        project: 1,
+        source_type: 'TRAFFIC',
+        source_id: sessionId,
+        artifact_type: 'SCENARIO',
+        name: `流量生成场景-${sessionId}`,
+        status: 'DRAFT',
+        payload: {
+          steps: [
+            {
+              step_order: 1,
+              name: 'POST /api/login',
+              assertions: [{ assertion_type: 'status_code', operator: 'equals', expected_value: 200 }]
+            }
+          ],
+          variables: [
+            {
+              variable_name: 'token',
+              source_type: 'JSONPATH',
+              expression: '$.token',
+              target_scope: 'SCENARIO'
+            }
+          ],
+          conflicts: []
+        },
+        preview_diff: {}
+      }
+      trafficState.artifacts.unshift(created)
+      return jsonResponse(route, created)
+    }
+
+    if (pathname.endsWith('/api/v1/api-automation/generated-artifacts/')) {
+      return jsonResponse(route, paged(trafficState.artifacts))
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/generated-artifacts\/\d+\/preview\//)) {
+      const id = Number(pathname.split('/').slice(-3, -2)[0])
+      const artifact = trafficState.artifacts.find(item => item.id === id)
+      return jsonResponse(route, {
+        payload: artifact?.payload || { steps: [], variables: [] }
+      })
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/generated-artifacts\/\d+\/$/)) {
+      const id = Number(pathname.split('/').slice(-2, -1)[0])
+      const artifact = trafficState.artifacts.find(item => item.id === id)
+      if (!artifact) {
+        return jsonResponse(route, { detail: 'Not found' }, 404)
+      }
+      if (request.method() === 'PATCH' || request.method() === 'PUT') {
+        const body = request.postDataJSON() as Record<string, unknown>
+        if (body.payload) {
+          artifact.payload = body.payload as Record<string, unknown>
+        }
+        return jsonResponse(route, artifact)
+      }
+      return jsonResponse(route, artifact)
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/generated-artifacts\/\d+\/trial_run\//)) {
+      const id = Number(pathname.split('/').slice(-3, -2)[0])
+      const artifact = trafficState.artifacts.find(item => item.id === id)
+      if (!artifact) {
+        return jsonResponse(route, { detail: 'Not found' }, 404)
+      }
+      const body = request.postDataJSON() as { passed?: boolean, error_info?: string }
+      if (body.passed) {
+        artifact.status = 'READY'
+        artifact.preview_diff = {}
+      } else {
+        artifact.status = 'DRAFT'
+        artifact.preview_diff = { error_info: body.error_info || '试运行失败' }
+      }
+      return jsonResponse(route, artifact)
+    }
+
+    if (pathname.match(/\/api\/v1\/api-automation\/generated-artifacts\/\d+\/commit\//)) {
+      const id = Number(pathname.split('/').slice(-3, -2)[0])
+      const artifact = trafficState.artifacts.find(item => item.id === id)
+      if (!artifact) {
+        return jsonResponse(route, { detail: 'Not found' }, 404)
+      }
+      if (artifact.status !== 'READY') {
+        return jsonResponse(route, { error: '试运行未通过，禁止提交' }, 400)
+      }
+      artifact.status = 'COMMITTED'
+      return jsonResponse(route, {
+        artifact_id: id,
+        scenario_id: 1001,
+        test_case_count: 1
+      }, 201)
     }
 
     if (pathname.endsWith('/api/v1/api-automation/reports/')) {

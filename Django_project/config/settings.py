@@ -9,6 +9,7 @@ Django 项目配置文件
 """
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -149,6 +150,15 @@ DATABASES = {
         },
     }
 }
+
+# 测试环境使用 SQLite，避免依赖外部 MySQL
+if os.environ.get('DJANGO_TEST_MODE') == '1' or 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
 
 # ============================================================
 # 密码验证规则

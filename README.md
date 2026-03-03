@@ -27,7 +27,7 @@
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
-| API 自动化 | 可用（主成熟模块） | 覆盖项目/集合/用例/环境/执行/报告/回收站 |
+| API 自动化 | 可用（主成熟模块） | 覆盖项目/集合/用例/环境/执行/报告/回收站 + 流量录制回放生成用例 |
 | UI 自动化 | 可用并持续迭代 | 基于 browser_use，支持执行与报告闭环 |
 | AI 独立模块 | 规划中 | 尚未形成独立业务子系统 |
 
@@ -86,6 +86,21 @@ cd VUE3
 npx playwright test
 ```
 
+流量录制专项 E2E：
+
+```bash
+cd VUE3
+npx playwright test tests/06-traffic-generation.spec.ts
+```
+
+后端流量录制专项测试：
+
+```bash
+cd Django_project
+python -m pytest api_automation/tests/test_traffic_services.py
+RUN_DJANGO_TESTS=1 python manage.py test api_automation.tests.test_traffic_api_django
+```
+
 ## 功能地图
 
 ### API 自动化
@@ -96,6 +111,7 @@ npx playwright test
 - 批量执行、重试、取消
 - 报告详情与仪表盘统计
 - 回收站恢复与永久删除
+- 流量录制回放生成：上传抓包 -> 解析会话 -> 生成草稿 -> 预览编辑 -> 试运行门禁 -> 提交落库
 
 ### UI 自动化
 

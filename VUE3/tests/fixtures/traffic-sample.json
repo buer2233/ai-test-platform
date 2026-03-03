@@ -1,0 +1,31 @@
+[
+  {
+    "request_method": "POST",
+    "request_url": "https://example.com/api/login",
+    "request_headers": {
+      "content-type": "application/json"
+    },
+    "request_body": {
+      "username": "admin",
+      "password": "secret"
+    },
+    "response_status": 200,
+    "response_body": {
+      "token": "token-abc",
+      "userId": 99
+    },
+    "response_time_ms": 120
+  },
+  {
+    "request_method": "GET",
+    "request_url": "https://example.com/api/profile?userId=99",
+    "request_params": {
+      "userId": 99
+    },
+    "response_status": 200,
+    "response_body": {
+      "name": "admin"
+    },
+    "response_time_ms": 80
+  }
+]
