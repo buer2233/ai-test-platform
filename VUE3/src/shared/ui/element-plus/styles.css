@@ -629,7 +629,6 @@
 /* ========== 简单占位组件通用样式 ========== */
 /* 以下组件仅提供基础文字颜色，功能由 simple() 工厂函数生成 */
 .el-empty,
-.el-table,
 .el-tabs,
 .el-timeline,
 .el-transfer,
@@ -654,4 +653,58 @@
 .el-upload,
 .el-pagination {
   color: var(--ep-text);
+}
+
+/* ========== 表格组件 ========== */
+.el-table {
+  width: 100%;
+  color: var(--ep-text);
+  font-size: 14px;
+  overflow-x: auto;
+}
+
+.el-table__inner {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.el-table__header .el-table__cell {
+  background: var(--ep-surface-soft);
+  border-bottom: 2px solid var(--ep-border);
+  color: var(--ep-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.el-table__body .el-table__cell {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ep-border-soft);
+  vertical-align: middle;
+}
+
+.el-table__row:hover .el-table__cell {
+  background: rgba(95, 133, 255, 0.04);
+}
+
+.el-table__row.is-selected .el-table__cell {
+  background: rgba(95, 133, 255, 0.08);
+}
+
+.el-table__cell--selection {
+  width: 55px;
+  text-align: center;
+}
+
+.el-table__cell.is-center {
+  text-align: center;
+}
+
+.el-table__empty-cell {
+  padding: 32px;
+  text-align: center;
+  color: var(--ep-text-muted);
 }

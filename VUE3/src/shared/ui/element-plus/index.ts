@@ -973,10 +973,124 @@ const ElScrollbar = simple('ElScrollbar', 'div', 'el-scrollbar')
 const ElSlider = simple('ElSlider', 'input', 'el-slider')
 const ElSpace = simple('ElSpace', 'div', 'el-space')
 const ElStatistic = simple('ElStatistic', 'div', 'el-statistic')
-const ElTable = simple('ElTable', 'div', 'el-table')
-/** 表格列组件（占位，不渲染 DOM） */
+/** 表格组件 - 通过解析子 VNode 列定义来渲染数据，支持多选 */
+const ElTable = defineComponent({
+  name: 'ElTable',
+  props: {
+    data: { type: Array as PropType<any[]>, default: () => [] },
+    rowKey: [String, Function] as PropType<string | ((row: any) => any)>,
+    size: String,
+  },
+  emits: ['selection-change', 'row-click'],
+  setup(props, { slots, emit }) {
+    const selectedRows = ref<any[]>([])
+
+    const isSelected = (row: any) => selectedRows.value.includes(row)
+
+    const toggleSelect = (row: any) => {
+      if (isSelected(row)) {
+        selectedRows.value = selectedRows.value.filter(r => r !== row)
+      } else {
+        selectedRows.value = [...selectedRows.value, row]
+      }
+      emit('selection-change', [...selectedRows.value])
+    }
+
+    const toggleSelectAll = (checked: boolean) => {
+      selectedRows.value = checked ? [...(props.data as any[])] : []
+      emit('selection-change', [...selectedRows.value])
+    }
+
+    return () => {
+      const data = props.data as any[]
+
+      // 从默认 slot 中读取列 VNode，支持 Fragment 包装场景
+      const rawVnodes = slots.default?.() || []
+      const columns = rawVnodes
+        .flatMap((vnode: any) => Array.isArray(vnode.children) ? vnode.children : [vnode])
+        .filter((vnode: any) => vnode && vnode.type && typeof vnode.type === 'object')
+
+      const allSelected = data.length > 0 && data.every(row => isSelected(row))
+
+      // 渲染表头单元格
+      const headerCells = columns.map((col: any) => {
+        const cp = col.props || {}
+        if (cp.type === 'selection') {
+          return h('th', { class: 'el-table__cell el-table__cell--selection' }, [
+            h('input', {
+              type: 'checkbox',
+              checked: allSelected,
+              onChange: (e: Event) => toggleSelectAll((e.target as HTMLInputElement).checked)
+            })
+          ])
+        }
+        const style: Record<string, string> = {}
+        if (cp.width) style.width = typeof cp.width === 'number' ? `${cp.width}px` : cp.width
+        if (cp.minWidth) style.minWidth = typeof cp.minWidth === 'number' ? `${cp.minWidth}px` : cp.minWidth
+        return h('th', { class: 'el-table__cell', style }, cp.label || '')
+      })
+
+      // 渲染表体行
+      const bodyRows = data.length === 0
+        ? [h('tr', {}, [h('td', { colspan: columns.length, class: 'el-table__empty-cell' }, '暂无数据')])]
+        : data.map((row: any, rowIndex: number) => {
+          const key = props.rowKey
+            ? (typeof props.rowKey === 'function' ? props.rowKey(row) : row[props.rowKey as string])
+            : rowIndex
+
+          const cells = columns.map((col: any) => {
+            const cp = col.props || {}
+            const cs = col.children || {}
+
+            if (cp.type === 'selection') {
+              return h('td', { class: 'el-table__cell el-table__cell--selection' }, [
+                h('input', {
+                  type: 'checkbox',
+                  checked: isSelected(row),
+                  onChange: () => toggleSelect(row)
+                })
+              ])
+            }
+
+            // 优先使用列的 #default 作用域插槽渲染单元格，否则取 prop 字段
+            const content = typeof cs.default === 'function'
+              ? cs.default({ row, $index: rowIndex })
+              : (cp.prop ? (row[cp.prop] ?? '') : '')
+
+            return h('td', {
+              class: ['el-table__cell', cp.align ? `is-${cp.align}` : '']
+            }, [content])
+          })
+
+          return h('tr', {
+            key,
+            class: ['el-table__row', isSelected(row) ? 'is-selected' : '']
+          }, cells)
+        })
+
+      return h('div', { class: 'el-table' }, [
+        h('table', { class: 'el-table__inner' }, [
+          h('thead', { class: 'el-table__header' }, [h('tr', {}, headerCells)]),
+          h('tbody', { class: 'el-table__body' }, bodyRows)
+        ])
+      ])
+    }
+  }
+})
+
+/** 表格列组件 - 仅作为列定义载体（props + 作用域插槽），渲染由父 ElTable 接管 */
 const ElTableColumn = defineComponent({
   name: 'ElTableColumn',
+  props: {
+    type: String,
+    prop: String,
+    label: String,
+    width: [String, Number],
+    minWidth: [String, Number],
+    fixed: [String, Boolean],
+    showOverflowTooltip: Boolean,
+    align: String,
+  },
   setup() {
     return () => null
   }
