@@ -899,3 +899,266 @@ class ApiHttpExecutionRecord(models.Model):
 
     def __str__(self):
         return f"{self.request_method} {self.request_url} - {self.status}"
+
+
+# =============================================================================
+# 流量录制回放生成用例（方案A）
+# =============================================================================
+
+
+class ApiTestScenario(models.Model):
+    """
+    API场景用例 -- 由多个接口用例按顺序组成的执行场景。
+    """
+
+    name = models.CharField(max_length=200, verbose_name='场景名称')
+    description = models.TextField(blank=True, null=True, verbose_name='场景描述')
+    project = models.ForeignKey(
+        ApiProject,
+        on_delete=models.CASCADE,
+        related_name='test_scenarios',
+        verbose_name='所属项目'
+    )
+    steps = JSONField(default=list, blank=True, verbose_name='场景步骤')
+    status = models.CharField(
+        max_length=20,
+        choices=[('DRAFT', '草稿'), ('ACTIVE', '启用'), ('DISABLED', '禁用')],
+        default='DRAFT',
+        verbose_name='状态'
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_test_scenarios',
+        verbose_name='创建者'
+    )
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    is_deleted = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        db_table = 'api_test_scenarios'
+        verbose_name = 'API场景用例'
+        verbose_name_plural = 'API场景用例'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.project.name} - {self.name}"
+
+
+class ApiTrafficCapture(models.Model):
+    """
+    流量录制任务 -- 记录上传的抓包文件与解析状态。
+    """
+
+    project = models.ForeignKey(
+        ApiProject,
+        on_delete=models.CASCADE,
+        related_name='traffic_captures',
+        verbose_name='所属项目'
+    )
+    name = models.CharField(max_length=200, verbose_name='录制名称')
+    description = models.TextField(blank=True, null=True, verbose_name='录制描述')
+    capture_type = models.CharField(
+        max_length=20,
+        choices=[('PROXY_UPLOAD', '代理上传'), ('PROXY_LIVE', '代理实时')],
+        default='PROXY_UPLOAD'
+    )
+    file_path = models.CharField(max_length=500, blank=True, null=True, verbose_name='文件路径')
+    file_format = models.CharField(max_length=20, default='JSON', verbose_name='文件格式')
+    file_size = models.IntegerField(null=True, blank=True, verbose_name='文件大小')
+    content_hash = models.CharField(max_length=64, blank=True, null=True, verbose_name='文件哈希')
+    status = models.CharField(
+        max_length=20,
+        choices=[('UPLOADED', '已上传'), ('PARSING', '解析中'), ('PARSED', '已解析'), ('FAILED', '解析失败')],
+        default='UPLOADED'
+    )
+    total_entries = models.IntegerField(default=0, verbose_name='原始条目数')
+    filtered_entries = models.IntegerField(default=0, verbose_name='过滤后条目数')
+    sessions_count = models.IntegerField(default=0, verbose_name='会话数')
+    error_info = JSONField(default=dict, blank=True, verbose_name='错误信息')
+    processing_config = JSONField(default=dict, blank=True, verbose_name='处理配置')
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='traffic_captures',
+        verbose_name='创建者'
+    )
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    is_deleted = models.BooleanField(default=False, verbose_name='是否删除')
+
+    class Meta:
+        db_table = 'api_traffic_captures'
+        verbose_name = 'API流量录制'
+        verbose_name_plural = 'API流量录制'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.project.name} - {self.name}"
+
+
+class ApiTrafficSession(models.Model):
+    """
+    流量会话摘要 -- 记录一次录制中的会话切分结果。
+    """
+
+    project = models.ForeignKey(
+        ApiProject,
+        on_delete=models.CASCADE,
+        related_name='traffic_sessions',
+        verbose_name='所属项目'
+    )
+    capture = models.ForeignKey(
+        ApiTrafficCapture,
+        on_delete=models.CASCADE,
+        related_name='sessions',
+        verbose_name='录制任务'
+    )
+    session_key = models.CharField(max_length=128, db_index=True, verbose_name='会话标识')
+    start_time = models.DateTimeField(verbose_name='开始时间')
+    end_time = models.DateTimeField(verbose_name='结束时间')
+    duration_ms = models.IntegerField(default=0, verbose_name='持续时间')
+    entry_count = models.IntegerField(default=0, verbose_name='条目数量')
+    status = models.CharField(
+        max_length=20,
+        choices=[('READY', '可生成'), ('FILTERED', '已过滤'), ('FAILED', '失败')],
+        default='READY'
+    )
+    tags = JSONField(default=list, blank=True, verbose_name='标签')
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        db_table = 'api_traffic_sessions'
+        verbose_name = 'API流量会话'
+        verbose_name_plural = 'API流量会话'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.project.name} - {self.session_key}"
+
+
+class ApiTrafficEntry(models.Model):
+    """
+    标准化请求/响应条目。
+    """
+
+    session = models.ForeignKey(
+        ApiTrafficSession,
+        on_delete=models.CASCADE,
+        related_name='entries',
+        verbose_name='所属会话'
+    )
+    request_method = models.CharField(max_length=10, verbose_name='请求方法')
+    request_url = models.TextField(verbose_name='请求URL')
+    request_headers = JSONField(default=dict, blank=True, verbose_name='请求头')
+    request_params = JSONField(default=dict, blank=True, verbose_name='请求参数')
+    request_body = JSONField(default=dict, blank=True, verbose_name='请求体')
+    response_status = models.IntegerField(null=True, blank=True, verbose_name='响应状态码')
+    response_headers = JSONField(default=dict, blank=True, verbose_name='响应头')
+    response_body = JSONField(default=dict, blank=True, verbose_name='响应体')
+    response_time_ms = models.IntegerField(default=0, verbose_name='响应耗时')
+    error_info = JSONField(default=dict, blank=True, verbose_name='错误信息')
+    fingerprint = models.CharField(max_length=64, db_index=True, verbose_name='去重指纹')
+    is_valuable = models.BooleanField(default=True, verbose_name='是否有效')
+    filter_reason = models.CharField(max_length=200, blank=True, verbose_name='过滤原因')
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        db_table = 'api_traffic_entries'
+        verbose_name = 'API流量条目'
+        verbose_name_plural = 'API流量条目'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.request_method} {self.request_url}"
+
+
+class ApiTrafficVariableRule(models.Model):
+    """
+    变量提取规则。
+    """
+
+    entry = models.ForeignKey(
+        ApiTrafficEntry,
+        on_delete=models.CASCADE,
+        related_name='variable_rules',
+        verbose_name='关联条目'
+    )
+    variable_name = models.CharField(max_length=100, verbose_name='变量名')
+    source_type = models.CharField(
+        max_length=20,
+        choices=[('JSONPATH', 'JSONPath'), ('REGEX', 'Regex'), ('HEADER', 'Header')],
+        verbose_name='提取类型'
+    )
+    expression = models.CharField(max_length=500, verbose_name='表达式')
+    target_scope = models.CharField(
+        max_length=20,
+        choices=[('SCENARIO', '场景变量'), ('GLOBAL', '全局变量')],
+        default='SCENARIO'
+    )
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+    class Meta:
+        db_table = 'api_traffic_variable_rules'
+        verbose_name = 'API流量变量规则'
+        verbose_name_plural = 'API流量变量规则'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.entry_id} - {self.variable_name}"
+
+
+class ApiGeneratedArtifact(models.Model):
+    """
+    生成结果与追溯记录。
+    """
+
+    project = models.ForeignKey(
+        ApiProject,
+        on_delete=models.CASCADE,
+        related_name='generated_artifacts',
+        verbose_name='所属项目'
+    )
+    source_type = models.CharField(
+        max_length=20,
+        choices=[('TRAFFIC', '流量录制'), ('RAG', '文档生成')],
+        verbose_name='来源类型'
+    )
+    source_id = models.IntegerField(verbose_name='来源ID')
+    artifact_type = models.CharField(
+        max_length=20,
+        choices=[('TEST_CASE', '单接口用例'), ('SCENARIO', '场景用例')],
+        verbose_name='产物类型'
+    )
+    name = models.CharField(max_length=200, verbose_name='名称')
+    status = models.CharField(
+        max_length=20,
+        choices=[('DRAFT', '草稿'), ('READY', '可提交'), ('COMMITTED', '已提交'), ('FAILED', '失败')],
+        default='DRAFT'
+    )
+    payload = JSONField(default=dict, blank=True, verbose_name='产物内容')
+    preview_diff = JSONField(default=dict, blank=True, verbose_name='预览差异')
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='generated_artifacts',
+        verbose_name='创建者'
+    )
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_time = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+
+    class Meta:
+        db_table = 'api_generated_artifacts'
+        verbose_name = 'API生成产物'
+        verbose_name_plural = 'API生成产物'
+        ordering = ['-created_time']
+
+    def __str__(self):
+        return f"{self.project.name} - {self.name}"

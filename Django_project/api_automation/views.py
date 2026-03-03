@@ -19,12 +19,21 @@ API自动化测试模块的视图层定义。
     ApiTestReportViewSet        -- 测试报告只读查询
     ApiDataDriverViewSet        -- 数据驱动 CRUD
     ApiHttpExecutionRecordViewSet -- HTTP执行记录只读查询 + 统计
+    ApiTrafficCaptureViewSet    -- 流量录制上传与解析
+    ApiTrafficSessionViewSet    -- 流量会话只读查询 + 生成
+    ApiTrafficEntryViewSet      -- 流量条目只读查询
+    ApiTrafficVariableRuleViewSet -- 变量规则管理
+    ApiGeneratedArtifactViewSet -- 生成产物管理
+    ApiTestScenarioViewSet      -- 场景用例管理
     DashboardViewSet            -- 仪表盘统计 + 多维度报告
     ApiTestCaseAssertionViewSet -- 断言配置 CRUD + 批量操作
     ApiTestCaseExtractionViewSet -- 数据提取配置 CRUD + 批量操作
     UserViewSet                 -- 用户列表 + 注册
     CurrentUserView             -- 当前用户信息
 """
+import os
+import uuid
+
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.utils import timezone
@@ -41,6 +50,11 @@ from .models import (
     ApiDataDriver,
     ApiHttpExecutionRecord,
     ApiProject,
+    ApiGeneratedArtifact,
+    ApiTrafficCapture,
+    ApiTrafficEntry,
+    ApiTrafficSession,
+    ApiTrafficVariableRule,
     ApiTestCase,
     ApiTestCaseAssertion,
     ApiTestCaseExtraction,
@@ -48,14 +62,20 @@ from .models import (
     ApiTestExecution,
     ApiTestReport,
     ApiTestResult,
+    ApiTestScenario,
 )
 from .serializers import (
     ApiCollectionDetailSerializer,
     ApiCollectionSerializer,
     ApiDataDriverSerializer,
     ApiHttpExecutionRecordSerializer,
+    ApiGeneratedArtifactSerializer,
     ApiProjectDetailSerializer,
     ApiProjectSerializer,
+    ApiTrafficCaptureSerializer,
+    ApiTrafficEntrySerializer,
+    ApiTrafficSessionSerializer,
+    ApiTrafficVariableRuleSerializer,
     ApiTestCaseDetailSerializer,
     ApiTestCaseListSerializer,
     ApiTestCaseSerializer,
@@ -65,11 +85,17 @@ from .serializers import (
     ApiTestExecutionSerializer,
     ApiTestReportSerializer,
     ApiTestResultSerializer,
+    ApiTestScenarioSerializer,
     ApiTestCaseAssertionSerializer,
     ApiTestCaseExtractionSerializer,
     UserSerializer,
 )
 from .services.cascade_delete_service import cascade_delete_service
+from .services.traffic_artifact_gate_service import ArtifactGateService
+from .services.traffic_filter_service import TrafficFilterService
+from .services.traffic_parameterize_service import ParameterizeService
+from .services.traffic_parse_service import TrafficParseError, TrafficParseService
+from .services.traffic_scenario_builder import TrafficScenarioBuilder
 
 # WebSocket 服务：仅在依赖可用时启用，用于实时推送执行状态
 try:
@@ -790,6 +816,420 @@ class ApiHttpExecutionRecordViewSet(viewsets.ReadOnlyModelViewSet):
             'error': stats['error'] or 0,
             'favorite': stats['favorite'] or 0
         })
+
+
+# =============================================================================
+# 流量录制回放生成用例
+# =============================================================================
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Traffic Capture'])
+class ApiTrafficCaptureViewSet(viewsets.ModelViewSet):
+    """流量录制任务管理。"""
+
+    serializer_class = ApiTrafficCaptureSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project', 'status']
+    ordering_fields = ['created_time', 'updated_time']
+    ordering = ['-created_time']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiTrafficCapture.objects.none()
+        queryset = ApiTrafficCapture.objects.filter(is_deleted=False)
+        if not user.is_superuser:
+            queryset = queryset.filter(project__owner=user)
+        project_id = self.request.query_params.get('project_id')
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        project_id = request.data.get('project')
+        if not project_id:
+            return Response({'error': 'project_id 不能为空'}, status=status.HTTP_400_BAD_REQUEST)
+
+        file_obj = request.FILES.get('file')
+        file_content = request.data.get('file_content')
+        file_format = request.data.get('file_format', 'JSON')
+        name = request.data.get('name') or '流量录制'
+        capture_type = request.data.get('capture_type', 'PROXY_UPLOAD')
+
+        if file_obj:
+            file_bytes = file_obj.read()
+        elif file_content:
+            file_bytes = file_content.encode('utf-8')
+        else:
+            return Response({'error': '请上传文件或提供 file_content'}, status=status.HTTP_400_BAD_REQUEST)
+
+        parse_service = TrafficParseService()
+        if len(file_bytes) > parse_service.max_file_size:
+            return Response({
+                'error': '文件大小超过限制',
+                'code': 'FILE_TOO_LARGE',
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        content_hash = TrafficParseService.compute_hash(file_bytes)
+        existing = ApiTrafficCapture.objects.filter(
+            project_id=project_id,
+            content_hash=content_hash,
+            is_deleted=False
+        ).first()
+        if existing and not request.data.get('force_new'):
+            serializer = self.get_serializer(existing)
+            return Response({'duplicated': True, 'capture': serializer.data})
+
+        upload_dir = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'traffic')
+        os.makedirs(upload_dir, exist_ok=True)
+        file_name = f"{uuid.uuid4().hex}.{file_format.lower()}"
+        file_path = os.path.abspath(os.path.join(upload_dir, file_name))
+        with open(file_path, 'wb') as f:
+            f.write(file_bytes)
+
+        capture = ApiTrafficCapture.objects.create(
+            project_id=project_id,
+            name=name,
+            description=request.data.get('description'),
+            capture_type=capture_type,
+            file_path=file_path,
+            file_format=file_format,
+            file_size=len(file_bytes),
+            content_hash=content_hash,
+            processing_config={
+                'file_format': file_format,
+                'upload_source': 'API',
+            },
+            created_by=request.user
+        )
+
+        serializer = self.get_serializer(capture)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def parse(self, request, pk=None):
+        capture = self.get_object()
+        capture.status = 'PARSING'
+        capture.save()
+
+        parse_service = TrafficParseService()
+        filter_service = TrafficFilterService()
+
+        try:
+            with open(capture.file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            entries = parse_service.parse_content(content, file_format=capture.file_format)
+            capture.total_entries = len(entries)
+
+            filtered_entries, stats = filter_service.filter_entries(entries)
+            valuable_entries = [e for e in filtered_entries if e.get('is_valuable', True)]
+            if valuable_entries:
+                session = ApiTrafficSession.objects.create(
+                    project=capture.project,
+                    capture=capture,
+                    session_key=f"session-{capture.id}-{uuid.uuid4().hex[:6]}",
+                    start_time=timezone.now(),
+                    end_time=timezone.now(),
+                    duration_ms=0,
+                    entry_count=len(valuable_entries),
+                    status='READY',
+                    tags=[]
+                )
+
+                for entry in filtered_entries:
+                    ApiTrafficEntry.objects.create(
+                        session=session,
+                        request_method=entry.get('request_method') or 'GET',
+                        request_url=entry.get('request_url') or '',
+                        request_headers=entry.get('request_headers') or {},
+                        request_params=entry.get('request_params') or {},
+                        request_body=entry.get('request_body') or {},
+                        response_status=entry.get('response_status'),
+                        response_headers=entry.get('response_headers') or {},
+                        response_body=entry.get('response_body') or {},
+                        response_time_ms=entry.get('response_time_ms') or 0,
+                        error_info=entry.get('error_info') or {},
+                        fingerprint=entry.get('fingerprint') or '',
+                        is_valuable=entry.get('is_valuable', True),
+                        filter_reason=entry.get('filter_reason', ''),
+                    )
+
+            capture.filtered_entries = len(valuable_entries)
+            capture.sessions_count = 1 if valuable_entries else 0
+            capture.status = 'PARSED'
+            capture.processing_config.update({
+                'filter_stats': stats,
+            })
+            capture.save()
+
+            return Response({
+                'capture_id': capture.id,
+                'sessions_count': capture.sessions_count,
+                'total_entries': capture.total_entries,
+                'filtered_entries': capture.filtered_entries,
+                'message': '无可用会话' if capture.sessions_count == 0 else '解析成功',
+            })
+
+        except TrafficParseError as exc:
+            capture.status = 'FAILED'
+            capture.error_info = {'code': exc.code, 'message': exc.message}
+            capture.save()
+            return Response({'error': exc.message}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as exc:
+            capture.status = 'FAILED'
+            capture.error_info = {'message': str(exc)}
+            capture.save()
+            return Response({'error': f'解析失败: {str(exc)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Traffic Session'])
+class ApiTrafficSessionViewSet(viewsets.ReadOnlyModelViewSet):
+    """流量会话只读视图集。"""
+
+    serializer_class = ApiTrafficSessionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project', 'capture', 'status']
+    ordering_fields = ['created_time']
+    ordering = ['-created_time']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiTrafficSession.objects.none()
+        queryset = ApiTrafficSession.objects.all()
+        if not user.is_superuser:
+            queryset = queryset.filter(project__owner=user)
+        return queryset
+
+    @action(detail=True, methods=['post'])
+    def generate(self, request, pk=None):
+        session = self.get_object()
+        entries = list(session.entries.all().order_by('created_time'))
+        entry_dicts = [
+            {
+                'request_method': entry.request_method,
+                'request_url': entry.request_url,
+                'request_headers': entry.request_headers,
+                'request_params': entry.request_params,
+                'request_body': entry.request_body,
+                'response_status': entry.response_status,
+                'response_headers': entry.response_headers,
+                'response_body': entry.response_body,
+                'response_time_ms': entry.response_time_ms,
+                'is_valuable': entry.is_valuable,
+            }
+            for entry in entries
+        ]
+
+        parameterized_entries, variable_rules, conflicts = ParameterizeService().parameterize(entry_dicts)
+        scenario_payload = TrafficScenarioBuilder().build(parameterized_entries)
+
+        if variable_rules:
+            primary_entry = entries[0] if entries else None
+            for rule in variable_rules:
+                if primary_entry:
+                    ApiTrafficVariableRule.objects.create(
+                        entry=primary_entry,
+                        variable_name=rule['variable_name'],
+                        source_type=rule['source_type'],
+                        expression=rule['expression'],
+                        target_scope=rule['target_scope'],
+                    )
+
+        payload = {
+            'steps': scenario_payload['steps'],
+            'variables': variable_rules,
+            'conflicts': conflicts,
+            'requires_manual_confirmation': scenario_payload['requires_manual_confirmation'],
+        }
+
+        artifact = ApiGeneratedArtifact.objects.create(
+            project=session.project,
+            source_type='TRAFFIC',
+            source_id=session.id,
+            artifact_type='SCENARIO',
+            name=request.data.get('name') or f"流量生成场景-{session.id}",
+            status='DRAFT',
+            payload=payload,
+            created_by=request.user
+        )
+
+        serializer = ApiGeneratedArtifactSerializer(artifact)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Traffic Entry'])
+class ApiTrafficEntryViewSet(viewsets.ReadOnlyModelViewSet):
+    """流量条目只读视图集。"""
+
+    serializer_class = ApiTrafficEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['session']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiTrafficEntry.objects.none()
+        queryset = ApiTrafficEntry.objects.all()
+        if not user.is_superuser:
+            queryset = queryset.filter(session__project__owner=user)
+        return queryset
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Traffic Variable Rules'])
+class ApiTrafficVariableRuleViewSet(viewsets.ModelViewSet):
+    """变量提取规则管理。"""
+
+    serializer_class = ApiTrafficVariableRuleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['entry']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiTrafficVariableRule.objects.none()
+        queryset = ApiTrafficVariableRule.objects.all()
+        if not user.is_superuser:
+            queryset = queryset.filter(entry__session__project__owner=user)
+        return queryset
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Generated Artifacts'])
+class ApiGeneratedArtifactViewSet(viewsets.ModelViewSet):
+    """生成产物管理。"""
+
+    serializer_class = ApiGeneratedArtifactSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project', 'source_type', 'status']
+    ordering_fields = ['created_time', 'updated_time']
+    ordering = ['-created_time']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiGeneratedArtifact.objects.none()
+        queryset = ApiGeneratedArtifact.objects.all()
+        if not user.is_superuser:
+            queryset = queryset.filter(project__owner=user)
+        return queryset
+
+    @action(detail=True, methods=['get'])
+    def preview(self, request, pk=None):
+        artifact = self.get_object()
+        payload = artifact.payload or {}
+        if artifact.source_type == 'TRAFFIC' and artifact.source_id:
+            rules_queryset = ApiTrafficVariableRule.objects.filter(
+                entry__session_id=artifact.source_id
+            ).order_by('id')
+            if rules_queryset.exists():
+                payload = {
+                    **payload,
+                    'variables': [
+                        {
+                            'id': rule.id,
+                            'entry': rule.entry_id,
+                            'variable_name': rule.variable_name,
+                            'source_type': rule.source_type,
+                            'expression': rule.expression,
+                            'target_scope': rule.target_scope,
+                        }
+                        for rule in rules_queryset
+                    ]
+                }
+        return Response({'payload': payload})
+
+    @action(detail=True, methods=['post'])
+    def trial_run(self, request, pk=None):
+        artifact = self.get_object()
+        passed = bool(request.data.get('passed'))
+        error_info = request.data.get('error_info')
+        ArtifactGateService().apply_trial_result(artifact, passed=passed, error_info=error_info)
+        artifact.save()
+        return Response(ApiGeneratedArtifactSerializer(artifact).data)
+
+    @action(detail=True, methods=['post'])
+    def commit(self, request, pk=None):
+        artifact = self.get_object()
+        if artifact.status != 'READY':
+            return Response({'error': '试运行未通过，禁止提交'}, status=status.HTTP_400_BAD_REQUEST)
+
+        payload = artifact.payload or {}
+        steps = payload.get('steps', [])
+
+        scenario = ApiTestScenario.objects.create(
+            project=artifact.project,
+            name=artifact.name,
+            description='流量录制生成场景',
+            status='ACTIVE',
+            created_by=request.user,
+            steps=[]
+        )
+
+        scenario_steps = []
+        for step in steps:
+            request_info = step.get('request', {})
+            test_case = ApiTestCase.objects.create(
+                project=artifact.project,
+                name=step.get('name') or artifact.name,
+                description='流量录制生成用例',
+                method=request_info.get('method') or 'GET',
+                url=request_info.get('url') or '',
+                headers=request_info.get('headers') or {},
+                params=request_info.get('params') or {},
+                body=request_info.get('body') or {},
+                tests=step.get('assertions') or [],
+                created_by=request.user,
+            )
+            scenario_steps.append({
+                'order': step.get('step_order'),
+                'test_case_id': test_case.id,
+                'name': test_case.name,
+            })
+
+        scenario.steps = scenario_steps
+        scenario.save()
+
+        artifact.status = 'COMMITTED'
+        artifact.preview_diff = {'scenario_id': scenario.id}
+        artifact.save()
+
+        return Response({
+            'artifact_id': artifact.id,
+            'scenario_id': scenario.id,
+            'test_case_count': len(scenario_steps)
+        }, status=status.HTTP_201_CREATED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@swagger_auto_schema(tags=['Test Scenario'])
+class ApiTestScenarioViewSet(viewsets.ModelViewSet):
+    """场景用例管理。"""
+
+    serializer_class = ApiTestScenarioSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project', 'status']
+    ordering_fields = ['created_time']
+    ordering = ['-created_time']
+
+    def get_queryset(self):
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return ApiTestScenario.objects.none()
+        queryset = ApiTestScenario.objects.filter(is_deleted=False)
+        if not user.is_superuser:
+            queryset = queryset.filter(project__owner=user)
+        return queryset
 
 
 # =============================================================================

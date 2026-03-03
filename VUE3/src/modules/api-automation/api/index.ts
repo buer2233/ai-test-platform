@@ -40,3 +40,5 @@ export * from './dashboard'
 export * from './recycleBin'
 /** HTTP 执行器 API */
 export * from './httpExecutor'
+/** 流量录制生成 API */
+export * from './traffic'

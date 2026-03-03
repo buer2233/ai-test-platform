@@ -15,7 +15,13 @@ from django.contrib import admin
 from .models import (
     ApiCollection,
     ApiDataDriver,
+    ApiGeneratedArtifact,
     ApiProject,
+    ApiTestScenario,
+    ApiTrafficCapture,
+    ApiTrafficEntry,
+    ApiTrafficSession,
+    ApiTrafficVariableRule,
     ApiTestCase,
     ApiTestEnvironment,
     ApiTestExecution,
@@ -188,3 +194,63 @@ class ApiDataDriverAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs.filter(is_deleted=False)
         return qs.filter(project__owner=request.user, is_deleted=False)
+
+
+@admin.register(ApiTrafficCapture)
+class ApiTrafficCaptureAdmin(admin.ModelAdmin):
+    """流量录制任务管理。"""
+
+    list_display = ['name', 'project', 'status', 'file_format', 'created_time']
+    list_filter = ['project', 'status', 'created_time']
+    search_fields = ['name', 'description']
+    readonly_fields = ['created_time', 'updated_time']
+
+
+@admin.register(ApiTrafficSession)
+class ApiTrafficSessionAdmin(admin.ModelAdmin):
+    """流量会话管理。"""
+
+    list_display = ['session_key', 'project', 'status', 'entry_count', 'created_time']
+    list_filter = ['project', 'status']
+    search_fields = ['session_key']
+    readonly_fields = ['created_time']
+
+
+@admin.register(ApiTrafficEntry)
+class ApiTrafficEntryAdmin(admin.ModelAdmin):
+    """流量条目管理。"""
+
+    list_display = ['request_method', 'request_url', 'response_status', 'is_valuable', 'created_time']
+    list_filter = ['is_valuable']
+    search_fields = ['request_url']
+    readonly_fields = ['created_time']
+
+
+@admin.register(ApiTrafficVariableRule)
+class ApiTrafficVariableRuleAdmin(admin.ModelAdmin):
+    """变量规则管理。"""
+
+    list_display = ['variable_name', 'source_type', 'target_scope', 'created_time']
+    list_filter = ['source_type', 'target_scope']
+    search_fields = ['variable_name']
+    readonly_fields = ['created_time']
+
+
+@admin.register(ApiGeneratedArtifact)
+class ApiGeneratedArtifactAdmin(admin.ModelAdmin):
+    """生成产物管理。"""
+
+    list_display = ['name', 'project', 'source_type', 'status', 'created_time']
+    list_filter = ['project', 'source_type', 'status']
+    search_fields = ['name']
+    readonly_fields = ['created_time', 'updated_time']
+
+
+@admin.register(ApiTestScenario)
+class ApiTestScenarioAdmin(admin.ModelAdmin):
+    """场景用例管理。"""
+
+    list_display = ['name', 'project', 'status', 'created_time']
+    list_filter = ['project', 'status']
+    search_fields = ['name']
+    readonly_fields = ['created_time', 'updated_time']

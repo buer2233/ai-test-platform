@@ -27,7 +27,13 @@ from .views import (
     ApiCollectionViewSet,
     ApiDataDriverViewSet,
     ApiHttpExecutionRecordViewSet,
+    ApiGeneratedArtifactViewSet,
     ApiProjectViewSet,
+    ApiTestScenarioViewSet,
+    ApiTrafficCaptureViewSet,
+    ApiTrafficEntryViewSet,
+    ApiTrafficSessionViewSet,
+    ApiTrafficVariableRuleViewSet,
     ApiTestCaseAssertionViewSet,
     ApiTestCaseExtractionViewSet,
     ApiTestCaseViewSet,
@@ -57,6 +63,12 @@ router.register(r'test-results', ApiTestResultViewSet, basename='api-test-result
 router.register(r'reports', ApiTestReportViewSet, basename='api-reports')
 router.register(r'data-drivers', ApiDataDriverViewSet, basename='api-data-drivers')
 router.register(r'http-execution-records', ApiHttpExecutionRecordViewSet, basename='http-execution-records')
+router.register(r'traffic-captures', ApiTrafficCaptureViewSet, basename='traffic-captures')
+router.register(r'traffic-sessions', ApiTrafficSessionViewSet, basename='traffic-sessions')
+router.register(r'traffic-entries', ApiTrafficEntryViewSet, basename='traffic-entries')
+router.register(r'traffic-variable-rules', ApiTrafficVariableRuleViewSet, basename='traffic-variable-rules')
+router.register(r'generated-artifacts', ApiGeneratedArtifactViewSet, basename='generated-artifacts')
+router.register(r'test-scenarios', ApiTestScenarioViewSet, basename='test-scenarios')
 router.register(r'dashboard', DashboardViewSet, basename='api-dashboard')
 router.register(r'users', UserViewSet, basename='api-users')
 router.register(r'recycle-bin', RecycleBinViewSet, basename='recycle-bin')

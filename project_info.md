@@ -1,6 +1,6 @@
 # AI自动化测试平台 - 总项目说明（现状盘点版）
 
-> 更新时间：2026-02-13
+> 更新时间：2026-03-03
 > 文档目的：基于当前仓库代码，给出“已实现 / 未实现 / 预计实现”的全盘分析，作为开发与协作基线。
 
 ## 1. 项目定位
@@ -92,6 +92,24 @@ test_case/               # 手工测试用例
 - 回收站
 
 路由定义：`VUE3/src/modules/api-automation/router/index.ts`
+
+### 5.2.1 API 自动化最新开发进度（2026-03-03）
+
+已完成“方案A：流量录制回放生成用例”主链路落地（严格对齐 `develop_document/12A-traffic-based-generation.md`）：
+
+- **项目内入口**：项目详情页新增“流量录制生成”入口，进入 `projects/:id/traffic-capture`
+- **后端能力**：录制上传、解析、会话生成、参数化、草稿预览、试运行门禁、提交落库（`ApiTestCase/ApiTestScenario`）
+- **质量门禁**：新增大文件拦截、无可用会话提示、变量规则编辑后预览同步
+- **测试闭环**：
+  - 服务层单测：`Django_project/api_automation/tests/test_traffic_services.py`
+  - 集成测试：`Django_project/api_automation/tests/test_traffic_api_django.py`
+  - E2E：`VUE3/tests/06-traffic-generation.spec.ts`
+
+下一步开发计划（P0）：
+
+1. 增加“解析任务异步化 + 进度回传”能力，避免大文件解析阻塞请求线程。
+2. 在预览页提供结构化编辑（变量、断言、步骤）替代纯 JSON 文本编辑。
+3. 将流量生成链路纳入统一 CI 门禁（后端关键测试 + 前端 E2E 分组执行）。
 
 ### 5.3 UI 自动化模块（后端）
 

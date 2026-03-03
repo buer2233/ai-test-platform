@@ -17,6 +17,7 @@ const Layout = () => import('../components/Layout/index.vue')
 const Dashboard = () => import('../views/Dashboard/index.vue')
 const ProjectList = () => import('../views/Project/ProjectList.vue')
 const ProjectDetail = () => import('../views/Project/ProjectDetail.vue')
+const TrafficCapture = () => import('../views/Traffic/TrafficCapture.vue')
 const CollectionList = () => import('../views/Collection/CollectionList.vue')
 const CollectionDetail = () => import('../views/Collection/CollectionDetail.vue')
 const TestCaseList = () => import('../views/TestCase/TestCaseList.vue')
@@ -76,6 +77,16 @@ export const routes: RouteRecordRaw[] = [
         component: ProjectDetail,
         meta: {
           title: '项目详情',
+          hidden: true
+        },
+        props: true
+      },
+      {
+        path: 'projects/:id/traffic-capture',
+        name: 'ProjectTrafficCapture',
+        component: TrafficCapture,
+        meta: {
+          title: '流量录制生成',
           hidden: true
         },
         props: true

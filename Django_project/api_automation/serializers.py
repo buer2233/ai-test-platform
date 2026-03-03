@@ -23,6 +23,11 @@ from .models import (
     ApiDataDriver,
     ApiHttpExecutionRecord,
     ApiProject,
+    ApiGeneratedArtifact,
+    ApiTrafficCapture,
+    ApiTrafficEntry,
+    ApiTrafficSession,
+    ApiTrafficVariableRule,
     ApiTestCase,
     ApiTestCaseAssertion,
     ApiTestCaseExtraction,
@@ -30,6 +35,7 @@ from .models import (
     ApiTestExecution,
     ApiTestReport,
     ApiTestResult,
+    ApiTestScenario,
 )
 
 
@@ -539,6 +545,120 @@ class ApiDataDriverSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("所选测试用例不属于该项目")
 
         return attrs
+
+
+# =============================================================================
+# 流量录制与生成序列化器
+# =============================================================================
+
+
+class ApiTrafficCaptureSerializer(serializers.ModelSerializer):
+    """流量录制任务序列化器。"""
+
+    project_name = serializers.CharField(source='project.name', read_only=True)
+    processing_config = JSONFieldSerializer(required=False, default=dict)
+    error_info = JSONFieldSerializer(required=False, default=dict)
+
+    class Meta:
+        model = ApiTrafficCapture
+        fields = [
+            'id', 'project', 'project_name', 'name', 'description',
+            'capture_type', 'file_path', 'file_format', 'file_size',
+            'content_hash', 'status', 'total_entries', 'filtered_entries',
+            'sessions_count', 'processing_config', 'error_info',
+            'created_by', 'created_time', 'updated_time'
+        ]
+        read_only_fields = [
+            'id', 'file_path', 'file_size', 'content_hash', 'status',
+            'total_entries', 'filtered_entries', 'sessions_count',
+            'created_by', 'created_time', 'updated_time'
+        ]
+
+    def validate_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("录制名称不能为空")
+        return value.strip()
+
+
+class ApiTrafficSessionSerializer(serializers.ModelSerializer):
+    """流量会话序列化器。"""
+
+    project_name = serializers.CharField(source='project.name', read_only=True)
+
+    class Meta:
+        model = ApiTrafficSession
+        fields = [
+            'id', 'project', 'project_name', 'capture', 'session_key',
+            'start_time', 'end_time', 'duration_ms', 'entry_count',
+            'status', 'tags', 'created_time'
+        ]
+        read_only_fields = ['id', 'created_time']
+
+
+class ApiTrafficEntrySerializer(serializers.ModelSerializer):
+    """流量条目序列化器。"""
+
+    request_headers = JSONFieldSerializer(required=False, default=dict)
+    request_params = JSONFieldSerializer(required=False, default=dict)
+    request_body = JSONFieldSerializer(required=False, default=dict)
+    response_headers = JSONFieldSerializer(required=False, default=dict)
+    response_body = JSONFieldSerializer(required=False, default=dict)
+    error_info = JSONFieldSerializer(required=False, default=dict)
+
+    class Meta:
+        model = ApiTrafficEntry
+        fields = [
+            'id', 'session', 'request_method', 'request_url',
+            'request_headers', 'request_params', 'request_body',
+            'response_status', 'response_headers', 'response_body',
+            'response_time_ms', 'error_info', 'fingerprint',
+            'is_valuable', 'filter_reason', 'created_time'
+        ]
+        read_only_fields = ['id', 'fingerprint', 'created_time']
+
+
+class ApiTrafficVariableRuleSerializer(serializers.ModelSerializer):
+    """变量提取规则序列化器。"""
+
+    class Meta:
+        model = ApiTrafficVariableRule
+        fields = [
+            'id', 'entry', 'variable_name', 'source_type', 'expression',
+            'target_scope', 'created_time'
+        ]
+        read_only_fields = ['id', 'created_time']
+
+
+class ApiGeneratedArtifactSerializer(serializers.ModelSerializer):
+    """生成产物序列化器。"""
+
+    project_name = serializers.CharField(source='project.name', read_only=True)
+    payload = JSONFieldSerializer(required=False, default=dict)
+    preview_diff = JSONFieldSerializer(required=False, default=dict)
+
+    class Meta:
+        model = ApiGeneratedArtifact
+        fields = [
+            'id', 'project', 'project_name', 'source_type', 'source_id',
+            'artifact_type', 'name', 'status', 'payload', 'preview_diff',
+            'created_by', 'created_time', 'updated_time'
+        ]
+        read_only_fields = ['id', 'status', 'created_by', 'created_time', 'updated_time']
+
+
+class ApiTestScenarioSerializer(serializers.ModelSerializer):
+    """场景用例序列化器。"""
+
+    project_name = serializers.CharField(source='project.name', read_only=True)
+    steps = JSONFieldSerializer(required=False, default=list)
+
+    class Meta:
+        model = ApiTestScenario
+        fields = [
+            'id', 'project', 'project_name', 'name', 'description',
+            'steps', 'status', 'created_by', 'created_time', 'updated_time'
+        ]
+        read_only_fields = ['id', 'created_by', 'created_time', 'updated_time']
 
 
 # =============================================================================
