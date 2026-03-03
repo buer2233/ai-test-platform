@@ -27,7 +27,9 @@
 - 场景式多步骤串联（ApiTestScenario + Step）
 - 执行记录与报告展示
 
-**结论**：生成后的用例建议统一落库为 **ApiTestCase + ApiTestScenario**，减少重复执行引擎开发成本。
+**结论**：生成后的用例建议统一落库为 **ApiTestCase + ApiTestScenario**，减少重复执行引擎开发成本，并与现有执行/报告体系复用。
+
+**命名策略（已确认）**：用例名称由 AI 在生成阶段基于接口信息或功能信息自动生成，支持人工二次编辑。
 
 ---
 
@@ -107,17 +109,18 @@
   - TrafficScenarioBuilder
 
 - **API**
-  - POST `/api/v1/api-automation/traffic-captures/` 上传/创建录制
+  - POST `/api/v1/api-automation/traffic-captures/` 上传/创建录制（需 project_id）
   - POST `/api/v1/api-automation/traffic-captures/{id}/parse/`
   - GET `/api/v1/api-automation/traffic-sessions/`
-  - POST `/api/v1/api-automation/traffic-sessions/{id}/generate/`
+  - POST `/api/v1/api-automation/traffic-sessions/{id}/generate/`（需 project_id）
   - GET `/api/v1/api-automation/generated-artifacts/{id}/preview/`
 
 ### 4.5 前端实现要点
+- 项目内入口（项目详情页/列表操作：录制生成用例）
 - 录制管理页（上传文件、解析状态）
 - 会话列表与筛选
 - 用例预览与编辑（变量、断言、步骤顺序）
-- 一键生成并保存
+- 一键生成（生成草稿）与试运行结果展示
 
 ---
 
@@ -159,12 +162,13 @@ docker run -d --name qdrant -p 6333:6333 qdrant/qdrant
   - CaseValidateService
 
 - **API**
-  - POST `/api/v1/api-automation/doc-sources/` 上传文档
+  - POST `/api/v1/api-automation/doc-sources/` 上传文档（需 project_id）
   - POST `/api/v1/api-automation/doc-sources/{id}/ingest/`
-  - POST `/api/v1/api-automation/rag/generate/`
+  - POST `/api/v1/api-automation/rag/generate/`（需 project_id）
   - GET `/api/v1/api-automation/rag/tasks/{id}/`
 
 ### 5.5 前端实现要点
+- 项目内入口（项目详情页/列表操作：文档解析生成用例）
 - 文档管理页（上传/解析/状态）
 - 生成向导页（需求输入、预览）
 - 生成结果确认页
@@ -174,13 +178,15 @@ docker run -d --name qdrant -p 6333:6333 qdrant/qdrant
 ## 6. 统一生成与人工确认流程
 
 ```
-生成任务 -> 预览 -> 人工确认 -> 保存为用例/场景 -> 执行 -> 报告
+生成任务 -> 预览 -> 人工确认 -> 试运行 -> 通过后提交 -> 报告
+                     ^ 失败则修改并重试
 ```
 
 **关键配置**
 - 断言默认模板（状态码/关键字段）
 - 变量提取规则可编辑
 - 执行环境选择
+- 提交门禁：试运行全部通过后才允许提交/发布
 
 ---
 
@@ -238,10 +244,10 @@ docker run -d --name qdrant -p 6333:6333 qdrant/qdrant
 
 ---
 
-## 11. 需要确认的细节
-- 是否已有统一命名规范（用例名/场景名）
-- 生成用例后默认归属项目/集合策略
-- 是否需要生成后自动执行一轮回放
+## 11. 确认信息（已确认）
+- 用例名称由 AI 在生成阶段自动生成，可手动调整
+- 项目需手动创建，生成入口在项目内触发（录制或文档解析）
+- 生成后必须执行测试，全部通过后才允许提交；失败则修改重试
 
 ---
 
