@@ -48,15 +48,18 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 按照自动提交和推送规则提交代码到GitHub远端
 ```
 
+### 重大的新功能开发:
+
 ```text
-使用tdd-workflow重构开发现有的所有前端内容,参考前端技能（frontend-design、frontend-patterns、canvas-design）,重构目前所有的前端显示和样式,包括登录页面和接口自动化、UI自动化，并满足如下的要求
-1.舍弃现在VUE的element组件,全部重构为更有高级感且美观大气的组件
-2.前端样式和风格参考图片：https://origin.picgo.net/2026/02/12/image28933957c3de33cb.png
-3.仅进行前端重构，不影响任何后端功能和接口
-4.删除目前已有的所有UI测试用例
-5.重构后针对目前的前端使用playwright-mcp进行全面的端到端的UI自动化测试
-6.所有开发和测试完成后，执行commit和push
-7.所有改动全部自动执行，不要询问我
+重大的新功能开发:
+使用tdd-workflow技能,严格依据开发文档进行开发.过程全自动运行,期间不要询问我,直到开发和测试满足要求为止,并提交代码.
+开发文档：\develop_document\12A-traffic-based-generation.md
+测试文档：\test_case\13A-traffic-generation-test-cases.md
+前端技能参考：frontend-design、frontend-patterns、canvas-design
+后端技能参考：api-design、backend-patterns、django-tdd、python-patterns、python-testing
+开发后测试完成后:
+1. 在project_info.md(接口自动化),或ui_project_info.md(UI自动化)中更新开发进度,和下一步开发计划.
+2. 依据新开发需求调整README.md
 ```
 
 ```text
@@ -77,7 +80,6 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 ```text
 全自动危险模式的开启命令
 claude --dangerously-skip-permissions
-
 ```
 
 ```text
@@ -890,8 +892,19 @@ http://localhost:3000/dashboard
 ```text
 需求对接回答:
 
+1. 生成的用例,两者都需要加
+2. 录制流量来源于代理抓包(可使用Python的第三方库实现)
+3. 暂不考虑数据脱敏,但保留后续按要求追加脱敏规则的口子
+4. 文档统一使用Markdown文档
+5. 自动化生成+人工确认并执行测试分析测试报告
+6. 两种方案的实现方案和后端/前端的实现方案,设计思路都需要完整的写出来,并保存设计方案到文件夹\develop_document下,后续按照设计文档进行开发
+7. 现在还没有向量数据库,请帮我选型一个部署方便的方案
 
-
+确认信息回复:
+1. 用例名称通过执行时AI分析接口信息或功能信息自动生成
+2. 项目是需要手动新建,用例在项目下可以点击操作执行录制生成用例,或AI解析接口文档和功能文档生成用例
+3. 生成后需要执行测试,并确保全部测试通过后才能提交,测试失败则需要修改,直到成功为止
+按照回复和你之前的总结就行补充开发文档
 
 ```
 
