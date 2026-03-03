@@ -50,6 +50,10 @@
 - 方案A（流量录制回放）：`develop_document/12A-traffic-based-generation.md`
 - 方案B（RAG 文档解析）：`develop_document/12B-rag-doc-generation.md`
 
+**TDD 约束（强制）**：
+- 开发必须先写测试，覆盖率 >= 80%（单元 + 集成 + E2E）
+- 全部测试通过才允许提交；失败必须修复并重测直至全绿
+
 ---
 
 ## 4. 方案A：流量录制回放生成用例
