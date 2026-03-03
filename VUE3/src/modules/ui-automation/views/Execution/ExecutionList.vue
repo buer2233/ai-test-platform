@@ -351,7 +351,6 @@ onMounted(async () => {
   fetchExecutions()
 })
 </script>
-</script>
 
 <style scoped>
 .execution-list {
