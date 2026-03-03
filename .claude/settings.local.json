@@ -44,7 +44,8 @@
       "mcp__playwright-mcp__browser_evaluate",
       "mcp__playwright-mcp__browser_close",
       "mcp__playwright-mcp__browser_click",
-      "mcp__playwright-mcp__browser_hover"
+      "mcp__playwright-mcp__browser_hover",
+      "mcp__sequential-thinking__sequentialthinking"
     ],
     "deny": [
       "Bash(rm -rf:)",

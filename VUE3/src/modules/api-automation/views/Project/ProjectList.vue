@@ -20,14 +20,7 @@
     <!-- 工具栏 -->
     <div class="table-toolbar">
       <div class="table-toolbar-left">
-        <el-button type="primary" @click="handleCreate">
-          <el-icon><Plus /></el-icon>
-          创建项目
-        </el-button>
-        <el-button type="danger" :disabled="!selectedProjects.length" @click="handleBatchDelete">
-          <el-icon><Delete /></el-icon>
-          批量删除
-        </el-button>
+        <el-button icon="Refresh" @click="loadData">刷新</el-button>
       </div>
       <div class="table-toolbar-right">
         <el-input
@@ -38,7 +31,14 @@
           @input="handleSearch"
           style="width: 250px"
         />
-        <el-button icon="Refresh" @click="loadData">刷新</el-button>
+        <el-button type="primary" @click="handleCreate">
+          <el-icon><Plus /></el-icon>
+          创建项目
+        </el-button>
+        <el-button type="danger" :disabled="!selectedProjects.length" @click="handleBatchDelete">
+          <el-icon><Delete /></el-icon>
+          批量删除
+        </el-button>
       </div>
     </div>
 
@@ -399,6 +399,25 @@ onMounted(() => {
 <style scoped>
 .project-list-container {
   padding: 20px;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.table-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-container {
