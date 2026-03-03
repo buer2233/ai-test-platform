@@ -46,12 +46,19 @@
   - Updated design doc with confirmed naming/project/submit gate rules
   - Split scheme into two standalone files with detailed data models
   - Added TDD workflow requirement and test gate to both schemes
+  - Optimized test cases and added script skeletons for both schemes
 - Files created/modified:
   - task_plan.md (updated)
   - develop_document/12-api-testcase-auto-generation.md (updated)
   - findings.md (updated)
   - develop_document/12A-traffic-based-generation.md (created)
   - develop_document/12B-rag-doc-generation.md (created)
+  - test_case/13A-traffic-generation-test-cases.md (updated)
+  - test_case/13B-rag-generation-test-cases.md (updated)
+  - test_case/api_test/test_traffic_generation_skeleton.py (created)
+  - test_case/api_test/test_rag_generation_skeleton.py (created)
+  - test_case/playwright_Test/11-traffic-generation.spec.ts (created)
+  - test_case/playwright_Test/12-rag-generation.spec.ts (created)
 
 ## Test Results
 | Test | Input | Expected | Actual | Status |

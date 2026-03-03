@@ -45,6 +45,8 @@ class ApiTrafficCapture(models.Model):
     total_entries = models.IntegerField(default=0)
     filtered_entries = models.IntegerField(default=0)
     sessions_count = models.IntegerField(default=0)
+    error_info = JSONField(default=dict, blank=True)
+    processing_config = JSONField(default=dict, blank=True)  # 解析/过滤/切分配置
 
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
@@ -152,6 +154,30 @@ class ApiGeneratedArtifact(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
 ```
+
+---
+
+## 2.6 需求对接纪要与优化（PM/开发/测试）
+
+**产品经理（PM）关注**
+- 入口必须在项目内，生成过程可视化、可追溯
+- 用例名称自动生成，且允许人工调整
+- 失败要有可读提示，支持重试与可编辑
+
+**开发（DEV）关注**
+- 解析与过滤应异步执行，避免阻塞上传
+- 需要 content_hash 去重与处理配置可追溯（processing_config）
+- 变量命名冲突需显式标记，避免自动覆盖
+
+**测试（QA）关注**
+- 解析失败必须有 error_info，便于定位问题
+- 试运行门禁必须强制执行，全通过才允许提交
+- 生成链路可重复执行，便于回归验证
+
+**优化结论**
+- 上传/解析统一记录 error_info 与 processing_config
+- 允许同一录制重复解析（按配置差异区分）
+- 试运行失败禁止提交，必须修复并重测
 
 ---
 

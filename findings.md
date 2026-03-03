@@ -41,6 +41,8 @@
 - develop_document/12-api-testcase-auto-generation.md
 - develop_document/12A-traffic-based-generation.md
 - develop_document/12B-rag-doc-generation.md
+- test_case/13A-traffic-generation-test-cases.md
+- test_case/13B-rag-generation-test-cases.md
 
 ## Visual/Browser Findings
 -

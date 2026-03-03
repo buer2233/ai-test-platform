@@ -44,6 +44,8 @@ class ApiDocSource(models.Model):
         default='UPLOADED'
     )
     chunk_count = models.IntegerField(default=0)
+    error_info = JSONField(default=dict, blank=True)
+    ingest_config = JSONField(default=dict, blank=True)  # 切分/清洗配置
 
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
@@ -112,6 +114,30 @@ class ApiRagQuery(models.Model):
 ### 3.5 ApiGeneratedArtifact（生成结果与追溯）
 
 > 同方案A，仅 source_type 设为 RAG，source_id 对应 ApiRagQuery.id
+
+---
+
+## 3.6 需求对接纪要与优化（PM/开发/测试）
+
+**产品经理（PM）关注**
+- 入口在项目内，文档版本可管理
+- 生成结果必须可编辑并可回溯来源文档
+- 失败提示清晰并可重试
+
+**开发（DEV）关注**
+- 文档切分策略需要可配置（ingest_config）
+- 向量库连接与集合配置需项目级隔离
+- 生成过程可追踪（rag_query 记录）
+
+**测试（QA）关注**
+- 入库失败必须记录 error_info
+- 检索为空、向量库异常需明确错误码
+- 试运行门禁强制执行，失败不能提交
+
+**优化结论**
+- 入库记录 error_info + ingest_config
+- 向量库配置作为项目必填项
+- 检索与生成全链路可追溯
 
 ---
 
