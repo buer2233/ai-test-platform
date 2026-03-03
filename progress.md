@@ -44,10 +44,13 @@
 - Actions taken:
   - Delivered design doc and requirement confirmation to user
   - Updated design doc with confirmed naming/project/submit gate rules
+  - Split scheme into two standalone files with detailed data models
 - Files created/modified:
   - task_plan.md (updated)
   - develop_document/12-api-testcase-auto-generation.md (updated)
   - findings.md (updated)
+  - develop_document/12A-traffic-based-generation.md (created)
+  - develop_document/12B-rag-doc-generation.md (created)
 
 ## Test Results
 | Test | Input | Expected | Actual | Status |

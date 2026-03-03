@@ -46,6 +46,10 @@
 - ApiTestScenario: 多步骤串联
 - 生成来源（traffic / rag）与追溯信息
 
+**方案拆分文档**：
+- 方案A（流量录制回放）：`develop_document/12A-traffic-based-generation.md`
+- 方案B（RAG 文档解析）：`develop_document/12B-rag-doc-generation.md`
+
 ---
 
 ## 4. 方案A：流量录制回放生成用例
