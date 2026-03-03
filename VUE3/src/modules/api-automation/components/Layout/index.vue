@@ -327,7 +327,7 @@ const handleResize = () => {
 
 /** 点击侧边栏外部区域时关闭模块切换下拉菜单 */
 const handleClickOutside = (event: Event) => {
-  if (target.closest('.sidebar-logo')) {
+  if ((event.target as HTMLElement)?.closest('.sidebar-logo')) {
     return
   }
   showModuleDropdown.value = false
