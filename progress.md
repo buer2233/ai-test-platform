@@ -45,6 +45,7 @@
   - Delivered design doc and requirement confirmation to user
   - Updated design doc with confirmed naming/project/submit gate rules
   - Split scheme into two standalone files with detailed data models
+  - Added TDD workflow requirement and test gate to both schemes
 - Files created/modified:
   - task_plan.md (updated)
   - develop_document/12-api-testcase-auto-generation.md (updated)
