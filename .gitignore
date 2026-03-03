@@ -97,6 +97,9 @@ Django_project/ui_automation/browser-use-*/run/
 Django_project/ui_automation/browser-use-*/report/
 Django_project/ui_automation/browser-use-*/debug.log
 Django_project/ui_automation/browser-use-*/info.log
+Django_project/uploads/
+uploads/
+issue/
 
 # Temporary files
 *.tmp
