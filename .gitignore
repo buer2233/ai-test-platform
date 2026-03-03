@@ -100,6 +100,7 @@ Django_project/ui_automation/browser-use-*/info.log
 Django_project/uploads/
 uploads/
 issue/
+.playwright-mcp/
 
 # Temporary files
 *.tmp

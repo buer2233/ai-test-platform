@@ -33,7 +33,7 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 ```
 
 ```text
-跳转指定页面捕获问题并修复:http://localhost:3000/projects/18
+跳转指定页面捕获问题并修复:http://localhost:3000/projects/6/traffic-capture
 使用playwright访问如下页面,抓取其中的前端日志:Console,和接口请求信息(Network),分析其中的报错信息并解决.
 ```
 
@@ -60,6 +60,8 @@ CLAUDE.md、project_info.md、README.md,ui_project_info.md
 开发后测试完成后:
 1. 在project_info.md(接口自动化),或ui_project_info.md(UI自动化)中更新开发进度,和下一步开发计划.
 2. 依据新开发需求调整README.md
+
+重要:刚才开发已经进行了一部分了,但因为大模型连接问题导致了开发中断,你可以通过git diff查看本地已经修改但还没commit的代码,并且在已经开发代码的基础继续完成开发!!!
 ```
 
 ```text
