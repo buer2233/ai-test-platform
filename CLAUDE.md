@@ -79,6 +79,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - 后端服务地址固定：**http://127.0.0.1:8000/**（IP占用表示服务已启动,直接使用,未占用才开启）
 - 后端代码改动后，如涉及模型变更需执行数据库迁移
 - **已包含内容的文件,禁止使用Write工具覆盖整个文件**，如必须覆盖请先备份
+- **所有 `.md` 文件的文件名必须使用英文**，禁止在文件名中包含中文字符；使用小写字母、数字和连字符（`-`）命名，例如 `02-http-executor-engine.md`
 
 ## 重要文档/目录
 
