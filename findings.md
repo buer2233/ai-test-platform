@@ -38,6 +38,8 @@
 - develop_document/09-test-case-feature-optimization.md
 - develop_document/09-test-scenario-feature.md
 - develop_document/12-api-testcase-auto-generation.md
+- develop_document/12A-traffic-based-generation.md
+- develop_document/12B-rag-doc-generation.md
 
 ## Visual/Browser Findings
 -
