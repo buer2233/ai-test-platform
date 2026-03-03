@@ -20,10 +20,61 @@
     <!-- 工具栏 -->
     <div class="table-toolbar">
       <div class="table-toolbar-left">
-        <el-button type="primary" @click="handleRefresh">
+        <el-button @click="handleRefresh">
           <el-icon><Refresh /></el-icon>
           刷新
         </el-button>
+      </div>
+      <div class="table-toolbar-right">
+        <el-select
+          v-model="searchForm.project"
+          placeholder="选择项目"
+          clearable
+          @change="handleProjectChange"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="project in projectOptions"
+            :key="project.value"
+            :label="project.label"
+            :value="project.value"
+          />
+        </el-select>
+        <el-select
+          v-model="searchForm.environment"
+          placeholder="选择环境"
+          clearable
+          @change="handleSearch"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="env in environmentOptions"
+            :key="env.value"
+            :label="env.label"
+            :value="env.value"
+          />
+        </el-select>
+        <el-select
+          v-model="searchForm.status"
+          placeholder="执行状态"
+          clearable
+          @change="handleSearch"
+          style="width: 130px"
+        >
+          <el-option label="待执行" value="PENDING" />
+          <el-option label="运行中" value="RUNNING" />
+          <el-option label="已完成" value="COMPLETED" />
+          <el-option label="失败" value="FAILED" />
+          <el-option label="已取消" value="CANCELLED" />
+        </el-select>
+        <el-input
+          v-model="searchForm.keyword"
+          placeholder="搜索执行名称"
+          prefix-icon="Search"
+          clearable
+          @input="handleSearch"
+          style="width: 250px"
+        />
         <el-dropdown
           split-button
           type="success"
@@ -50,57 +101,6 @@
           <el-icon><Delete /></el-icon>
           批量删除
         </el-button>
-      </div>
-      <div class="table-toolbar-right">
-        <el-select
-          v-model="searchForm.project"
-          placeholder="选择项目"
-          clearable
-          @change="handleProjectChange"
-          style="width: 150px; margin-right: 10px"
-        >
-          <el-option
-            v-for="project in projectOptions"
-            :key="project.value"
-            :label="project.label"
-            :value="project.value"
-          />
-        </el-select>
-        <el-select
-          v-model="searchForm.environment"
-          placeholder="选择环境"
-          clearable
-          @change="handleSearch"
-          style="width: 150px; margin-right: 10px"
-        >
-          <el-option
-            v-for="env in environmentOptions"
-            :key="env.value"
-            :label="env.label"
-            :value="env.value"
-          />
-        </el-select>
-        <el-select
-          v-model="searchForm.status"
-          placeholder="执行状态"
-          clearable
-          @change="handleSearch"
-          style="width: 130px; margin-right: 10px"
-        >
-          <el-option label="待执行" value="PENDING" />
-          <el-option label="运行中" value="RUNNING" />
-          <el-option label="已完成" value="COMPLETED" />
-          <el-option label="失败" value="FAILED" />
-          <el-option label="已取消" value="CANCELLED" />
-        </el-select>
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="搜索执行名称"
-          prefix-icon="Search"
-          clearable
-          @input="handleSearch"
-          style="width: 250px"
-        />
       </div>
     </div>
 
@@ -542,6 +542,20 @@ onMounted(async () => {
 <style scoped>
 .report-list-container {
   padding: 20px;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.table-toolbar-left,
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-container {

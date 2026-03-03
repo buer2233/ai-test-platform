@@ -20,6 +20,58 @@
     <!-- 工具栏 -->
     <div class="table-toolbar">
       <div class="table-toolbar-left">
+        <el-button icon="Refresh" @click="loadData">刷新</el-button>
+      </div>
+      <div class="table-toolbar-right">
+        <el-select
+          v-model="searchForm.project"
+          placeholder="选择项目"
+          clearable
+          @change="handleProjectChange"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="project in projectOptions"
+            :key="project.value"
+            :label="project.label"
+            :value="project.value"
+          />
+        </el-select>
+        <el-select
+          v-model="searchForm.collection"
+          placeholder="选择集合"
+          clearable
+          @change="handleSearch"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="collection in collectionOptions"
+            :key="collection.value"
+            :label="collection.label"
+            :value="collection.value"
+          />
+        </el-select>
+        <el-select
+          v-model="searchForm.method"
+          placeholder="请求方法"
+          clearable
+          @change="handleSearch"
+          style="width: 120px"
+        >
+          <el-option label="GET" value="GET" />
+          <el-option label="POST" value="POST" />
+          <el-option label="PUT" value="PUT" />
+          <el-option label="PATCH" value="PATCH" />
+          <el-option label="DELETE" value="DELETE" />
+        </el-select>
+        <el-input
+          v-model="searchForm.keyword"
+          placeholder="搜索用例名称或URL"
+          prefix-icon="Search"
+          clearable
+          @input="handleSearch"
+          style="width: 250px"
+        />
         <el-button type="primary" @click="handleCreate">
           <el-icon><Plus /></el-icon>
           创建接口
@@ -76,58 +128,6 @@
           <el-icon><Delete /></el-icon>
           批量删除
         </el-button>
-      </div>
-      <div class="table-toolbar-right">
-        <el-select
-          v-model="searchForm.project"
-          placeholder="选择项目"
-          clearable
-          @change="handleProjectChange"
-          style="width: 150px; margin-right: 10px"
-        >
-          <el-option
-            v-for="project in projectOptions"
-            :key="project.value"
-            :label="project.label"
-            :value="project.value"
-          />
-        </el-select>
-        <el-select
-          v-model="searchForm.collection"
-          placeholder="选择集合"
-          clearable
-          @change="handleSearch"
-          style="width: 150px; margin-right: 10px"
-        >
-          <el-option
-            v-for="collection in collectionOptions"
-            :key="collection.value"
-            :label="collection.label"
-            :value="collection.value"
-          />
-        </el-select>
-        <el-select
-          v-model="searchForm.method"
-          placeholder="请求方法"
-          clearable
-          @change="handleSearch"
-          style="width: 120px; margin-right: 10px"
-        >
-          <el-option label="GET" value="GET" />
-          <el-option label="POST" value="POST" />
-          <el-option label="PUT" value="PUT" />
-          <el-option label="PATCH" value="PATCH" />
-          <el-option label="DELETE" value="DELETE" />
-        </el-select>
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="搜索用例名称或URL"
-          prefix-icon="Search"
-          clearable
-          @input="handleSearch"
-          style="width: 250px"
-        />
-        <el-button icon="Refresh" @click="loadData">刷新</el-button>
       </div>
     </div>
 
@@ -834,6 +834,20 @@ onMounted(async () => {
 <style scoped>
 .testcase-list-container {
   padding: 20px;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.table-toolbar-left,
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-container {
