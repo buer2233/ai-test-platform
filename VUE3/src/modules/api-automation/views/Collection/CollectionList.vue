@@ -20,14 +20,7 @@
     <!-- 工具栏 -->
     <div class="table-toolbar">
       <div class="table-toolbar-left">
-        <el-button type="primary" @click="handleCreate">
-          <el-icon><Plus /></el-icon>
-          创建集合
-        </el-button>
-        <el-button type="danger" :disabled="!selectedCollections.length" @click="handleBatchDelete">
-          <el-icon><Delete /></el-icon>
-          批量删除
-        </el-button>
+        <el-button icon="Refresh" @click="loadData">刷新</el-button>
       </div>
       <div class="table-toolbar-right">
         <el-select
@@ -35,7 +28,7 @@
           placeholder="选择项目"
           clearable
           @change="handleSearch"
-          style="width: 200px; margin-right: 10px"
+          style="width: 200px"
         >
           <el-option
             v-for="project in projectOptions"
@@ -52,7 +45,14 @@
           @input="handleSearch"
           style="width: 250px"
         />
-        <el-button icon="Refresh" @click="loadData">刷新</el-button>
+        <el-button type="primary" @click="handleCreate">
+          <el-icon><Plus /></el-icon>
+          创建集合
+        </el-button>
+        <el-button type="danger" :disabled="!selectedCollections.length" @click="handleBatchDelete">
+          <el-icon><Delete /></el-icon>
+          批量删除
+        </el-button>
       </div>
     </div>
 
@@ -378,6 +378,20 @@ onMounted(async () => {
 <style scoped>
 .collection-list-container {
   padding: 20px;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.table-toolbar-left,
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-container {
